@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Config/etc/system_file.xsd">
+    <system>
+        <tab id="styla" translate="label" sortOrder="10">
+            <label>Styla Connect</label>
+        </tab>
+ 
+        <section id="styla_connect2" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Styla Connect2</label>
+            <tab>styla</tab>
+            <resource>Styla_Connect2::styla_connect2</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General</label>
+                <field id="enable" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable the Module</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>
+                        You can shutdown the whole module, here.
+                    </comment>
+                </field>
+                <field id="frontend_name" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Frontend Name (route)</label>
+                    <comment>
+                        This is the public URL route that will be used for the magazine. Defaults to "magazine", as in "http://your-store-url.com/magazine"
+                    </comment>
+                </field>
+            </group>
+        </section>
+ 
+    </system>
+</config>
