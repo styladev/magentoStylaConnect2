@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+
+    <preference for="Styla\Connect2\Api\ProductRepositoryInterface"
+                type="Styla\Connect2\Model\Api\ProductRepository" />
+    <preference for="Styla\Connect2\Api\Data\StylaProductInterface"
+                type="Styla\Connect2\Model\Api\StylaProduct" />
+    <preference for="Styla\Connect2\Api\Data\StylaSearchResultsInterface" type="Magento\Framework\Api\SearchResults" />
+
+</config>

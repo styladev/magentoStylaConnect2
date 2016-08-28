@@ -1,0 +1,54 @@
+<form action="<?php /* @escapeNotVerified */ echo $block->getConnectUrl() ?>" method="post" id="connect-form">
+    <?= $this->getChildHtml('store_switcher') ?>
+    <?= $block->getBlockHtml('formkey')?>
+    <div style="clear:both">
+        <fieldset class="admin__fieldset">
+            <legend class="admin__legend">
+                <span><?php /* @escapeNotVerified */ echo __('Use this form to request access data from Styla.') ?></span>
+            </legend><br/>
+            <div class="admin__field _required field-email">
+                <label for="username" class="admin__field-label">
+                    <span><?php /* @escapeNotVerified */ echo __('Styla Account Email') ?></span>
+                </label>
+                <div class="admin__field-control">
+                    <input id="email"
+                           class="admin__control-text"
+                           type="text"
+                           name="styla[email]"
+                           autofocus
+                           value=""
+                           data-validate="{required:true}"
+                           placeholder="<?php /* @escapeNotVerified */ echo __('email') ?>"
+                        />
+                </div>
+            </div>
+            <div class="admin__field _required field-password">
+                <label for="login" class="admin__field-label">
+                    <span><?php /* @escapeNotVerified */ echo __('Password') ?></span>
+                </label>
+                <div class="admin__field-control">
+                    <input id="login"
+                           class="admin__control-text"
+                           type="password"
+                           name="styla[password]"
+                           data-validate="{required:true}"
+                           value=""
+                           placeholder="<?php /* @escapeNotVerified */ echo __('password') ?>"
+                        />
+                </div>
+            </div>
+            <div class="actions">
+                <button
+                    <?php $block->getUiId(); ?>
+                    class="action-connect action-primary">
+                    <span><?php /* @escapeNotVerified */ echo __('Connect to Styla') ?></span>
+                </button>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script>
+    require(["jquery","mage/mage"],function($){
+       $('#connect-form').mage('form').mage('validation');
+    });
+</script>
