@@ -3,7 +3,6 @@ namespace Styla\Connect2\Helper;
 
 class Config extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const STYLA_API_CONNECTOR_URL_PRODUCTION = 'http://live.styla.com/api/magento';
     const DEFAULT_ROUTE_NAME = 'magazin';
     
     const URL_ASSETS_PROD       = 'http://cdn.styla.com/';
@@ -25,6 +24,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_NAVIGATION_ENABLED = 'styla_connect2/general/menu_link_enabled';
     const XML_NAVIGATION_LABEL = 'styla_connect2/general/menu_link_label';
     const XML_USING_LAYOUT = 'styla_connect2/general/is_using_magento_layout';
+    const XML_IS_DEVELOPER = 'styla_connect2/developer/is_developer_mode';
+    const XML_OVERRIDE_URL = 'styla_connect2/developer/override_%s_url';
     
     //these are the configuration fields which may be returned by the connector
     protected $_apiConfigurationFields = array(
@@ -38,6 +39,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     
     protected $_apiVersion;
     protected $_configuredRouteName;
+    protected $_isDeveloperMode;
     
     public function __construct(
             \Magento\Framework\App\Helper\Context $context,
@@ -177,8 +179,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
         
-        $path = sprintf('styla_connect/developer/override_%s_url', $url);
-        $url = Mage::getStoreConfig($path);
+        $path = sprintf(self::XML_OVERRIDE_URL, $url);
+        $url = $this->scopeConfig->getValue($path);
         if($url) {
             $url = rtrim($url, "/") . "/";
         }
@@ -193,10 +195,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isDeveloperMode()
     {
-        return false; //TODO: implement dev mode
-        
         if(null === $this->_isDeveloperMode) {
-            $this->_isDeveloperMode = Mage::getStoreConfigFlag('styla_connect/developer/is_developer_mode');
+            $this->_isDeveloperMode = (bool)$this->scopeConfig->getValue(self::XML_IS_DEVELOPER);
         }
         return $this->_isDeveloperMode;
     }
@@ -290,12 +290,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public function getPluginVersion()
     {
         return "2.0.0.0"; //TODO: get the real version
-    }
-    
-    public function getConnectorApiUrl()
-    {
-        //TODO: fix this to be configurable
-        return self::STYLA_API_CONNECTOR_URL_PRODUCTION;
     }
     
     public function parseScope($scope = null)

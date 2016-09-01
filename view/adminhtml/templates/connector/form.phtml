@@ -37,6 +37,27 @@
                         />
                 </div>
             </div>
+            <?php if($this->isDeveloperMode()): ?>
+                <div class="admin__field">
+                    <div>
+                        <h3><?= __('Developer Mode Connection URL override') ?></h3>
+                        <span><?= __('If filled, will override the default API url used for connecting to Styla.') ?></span><br/>
+                        <i><span><?= __('Default Url is: ') ?><?= \Styla\Connect2\Model\Styla\Api\Connector::STYLA_API_CONNECTOR_URL_PRODUCTION ?></span></i>
+                    </div>
+                    <label for="connection_url" class="admin__field-label">
+                        <span><?php /* @escapeNotVerified */ echo __('Override Connection Url') ?></span>
+                    </label>
+                    <div class="admin__field-control">
+                        <input id="connection_url"
+                               class="admin__control-text"
+                               type="text"
+                               name="connection_url"
+                               value=""
+                               placeholder="<?php /* @escapeNotVerified */ echo __('override connection url (can be empty)') ?>"
+                            />
+                    </div>
+                </div>
+            <?php endif ?>
             <div class="actions">
                 <button
                     <?php $block->getUiId(); ?>

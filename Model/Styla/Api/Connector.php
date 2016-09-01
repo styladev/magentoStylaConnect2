@@ -7,6 +7,8 @@ use Magento\Integration\Model\Integration as IntegrationModel;
 
 class Connector
 {
+    const STYLA_API_CONNECTOR_URL_PRODUCTION = 'http://live.styla.com/api/magento';
+    
     const ADMIN_USERNAME = 'StylaConnect2AdminUser';
     const ADMIN_EMAIL_PREPEND = "styla_connect2_";
     const CONSUMER_NAME = "Styla Api Consumer";
@@ -21,6 +23,7 @@ class Connector
     protected $stylaApi;
     protected $configHelper;
     protected $integrationService;
+    protected $request;
     
     //these are the resources that our Styla Integration will be able to use.
     //currently, we only need the products and categories
@@ -36,7 +39,8 @@ class Connector
         TokenFactory $tokenFactory,
         \Styla\Connect2\Model\Styla\Api $stylaApi,
         \Styla\Connect2\Helper\Config $configHelper,
-        \Magento\Integration\Api\IntegrationServiceInterface $integrationService
+        \Magento\Integration\Api\IntegrationServiceInterface $integrationService,
+        \Magento\Framework\App\Request\Http $request
     ) {
         $this->messageManager = $messageManager;
         $this->userFactory = $userFactory;
@@ -46,6 +50,25 @@ class Connector
         $this->stylaApi = $stylaApi;
         $this->configHelper = $configHelper;
         $this->integrationService = $integrationService;
+        $this->request = $request;
+    }
+    
+    
+    
+    public function getConnectorApiUrl()
+    {
+        $connectionUrl = self::STYLA_API_CONNECTOR_URL_PRODUCTION;
+
+        if($this->configHelper->isDeveloperMode() && $forcedUrl = $this->request->getParam('connection_url')) {
+            //do some basic validation on the url given by the admin
+            if(filter_var($forcedUrl, FILTER_VALIDATE_URL) === false) {
+                throw new \Exception('The Connection URL you provided is invalid.');
+            }
+
+            $connectionUrl = $forcedUrl;
+        }
+
+        return $connectionUrl;
     }
     
     /**
