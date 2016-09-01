@@ -14,7 +14,16 @@ abstract class AbstractType
     protected $_requestTimeout;
     protected $_requestConnectTimeout;
     
+    /**
+     *
+     * @var \Styla\Connect2\Model\Styla\Api
+     */
     protected $stylaApi;
+    
+    /**
+     *
+     * @var \Styla\Connect2\Helper\Config
+     */
     protected $configHelper;
     
     public function __construct(
@@ -35,8 +44,7 @@ abstract class AbstractType
      * Initialize this request with data to pass on to the api service
      *
      * @param string $requestPath
-     * @param null   $params
-     * @return Styla_Connect_Model_Styla_Api_Request_Type_Abstract
+     * @param mixed   $params
      */
     public function initialize($requestPath, $params = null)
     {
@@ -123,7 +131,7 @@ abstract class AbstractType
 
     /**
      *
-     * @return Styla_Connect_Model_Styla_Api
+     * @return \Styla\Connect2\Model\Styla\Api
      */
     public function getApi()
     {
@@ -132,7 +140,7 @@ abstract class AbstractType
 
     /**
      *
-     * @return Styla_Connect_Helper_Config
+     * @return \Styla\Connect2\Helper\Config
      */
     public function getConfigHelper()
     {

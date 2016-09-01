@@ -2,7 +2,7 @@
 namespace Styla\Connect2\Model\Styla\Api;
 
 /**
- * TODO: this isn't wotking, it's mage1 class!
+ * TODO: this isn't wotking, it's still a mage1 class!
  */
 
 /**

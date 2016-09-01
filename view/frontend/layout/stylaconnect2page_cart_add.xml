@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">        
+    <referenceBlock name="content">
+        <container name="stylaconnect2.cart_content" as="stylaconnect2.cart_content">
+            <!-- add blocks here, to have them rendered after a successful add-to-cart, and returned as html string in the json response -->
+        </container>
+    </referenceBlock>
+</page>

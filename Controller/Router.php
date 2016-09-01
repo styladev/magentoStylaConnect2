@@ -56,12 +56,30 @@ class Router implements \Magento\Framework\App\RouterInterface
             return;
         }
 
+        //we want the part after the initial magazine uri, as it may point us to the user's intention
+        $route = $this->_getRouteSettings($identifier);
+        $request->setParam('path', $route);
+        
         /*
          * We have match and now we will forward action
          */
         return $this->actionFactory->create(
                         'Magento\Framework\App\Action\Forward', ['request' => $request]
         );
+    }
+    
+    /**
+     * Get only the last part of the route, leading up to a specific page
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function _getRouteSettings($path)
+    {
+        //the path should not contain the trailing slash, the styla api is not expecting it
+        $path = rtrim(str_replace($this->_getFrontendName(), '', $path), '/');
+
+        return $path;
     }
 
     /**

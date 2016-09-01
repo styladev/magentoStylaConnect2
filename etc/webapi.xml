@@ -3,7 +3,7 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
     <route url="/V1/styla_product/:productId" method="GET">
-        <service class="Styla\Connect2\Api\ProductRepositoryInterface" method="getById"/>
+        <service class="Styla\Connect2\Api\ProductRepositoryInterface" method="getOne"/>
         <resources>
             <resource ref="Magento_Catalog::products"/>
         </resources>
@@ -16,10 +16,17 @@
         </resources>
     </route>
     
-    <route url="/V1/styla_product_test" method="GET">
-        <service class="Styla\Connect2\Api\ProductRepositoryInterface" method="test"/>
+    <route url="/V1/styla_category/:rootCategoryId" method="GET">
+        <service class="Styla\Connect2\Api\CategoryManagementInterface" method="getTree"/>
         <resources>
-            <resource ref="Magento_Catalog::products"/>
+            <resource ref="Magento_Catalog::categories"/>
+        </resources>
+    </route>
+    
+    <route url="/V1/styla_category" method="GET">
+        <service class="Styla\Connect2\Api\CategoryManagementInterface" method="getTree"/>
+        <resources>
+            <resource ref="Magento_Catalog::categories"/>
         </resources>
     </route>
 </routes>

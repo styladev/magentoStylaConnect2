@@ -20,7 +20,6 @@ abstract class AbstractType
      * Set the headers from this response, already parsed to an array
      *
      * @param array $headers
-     * @return \Styla_Connect_Model_Styla_Api_Response_Type_Abstract
      */
     public function setResponseHeaders(array $headers)
     {
@@ -73,7 +72,7 @@ abstract class AbstractType
      * Get the final result of an Api call. If the api response is in json, it wll be processed, first.
      *
      * @return string
-     * @throws Styla_Connect_Exception
+     * @throws \Exception
      */
     public function getResult()
     {
@@ -125,7 +124,7 @@ abstract class AbstractType
     /**
      *
      * @param mixed                    $apiCallResult
-     * @param Varien_Http_Adapter_Curl $apiService
+     * @param \Magento\Framework\HTTP\Adapter\Curl $apiService
      */
     public function initialize($apiCallResult, $apiService)
     {
@@ -133,7 +132,7 @@ abstract class AbstractType
         $this->_error      = $apiService->getError();
         $this->_httpStatus = $apiService->getInfo(CURLINFO_HTTP_CODE);
     }
-
+    
     public function getHttpStatus()
     {
         return $this->_httpStatus;
@@ -146,7 +145,7 @@ abstract class AbstractType
 
     /**
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     public function getProcessedResult()
     {
@@ -162,7 +161,7 @@ abstract class AbstractType
 
     /**
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     public function getJsonResult()
     {

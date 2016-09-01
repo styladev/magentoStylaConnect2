@@ -1,40 +1,25 @@
 <?php
-/**
- *
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
-
 namespace Styla\Connect2\Api;
 
 /**
- * Customer CRUD interface.
+ * Styla Product Api interface.
  * @api
  */
 interface ProductRepositoryInterface
 {
     /**
-     * Get customer by customer ID.
+     * Get one product by it's id
      *
      * @param int $productId
-     * @return \Styla\Connect2\Api\Data\ProductInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException If product with the specified ID does not exist.
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
-    public function getById($productId);
+    public function getOne($productId);
     
     /**
      * Get product list
      *
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @return \Styla\Connect2\Api\Data\StylaSearchResultsInterface
+     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null);
-    
-    /**
-     * test
-     * 
-     * @return \Styla\Connect2\Api\Data\StylaProductInterface
-     */
-    public function test();
 }

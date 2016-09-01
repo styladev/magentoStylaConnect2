@@ -11,9 +11,25 @@ class Api
     const REQUEST_TYPE_VERSION              = 'version';
     const REQUEST_TYPE_REGISTER_MAGENTO_API = 'register';
     
+    /**
+     *
+     * @var \Styla\Connect2\Model\Styla\Api\RequestFactory
+     */
     protected $requestFactory;
+    
+    /**
+     *
+     * @var \Styla\Connect2\Model\Styla\Api\ResponseFactory
+     */
     protected $responseFactory;
+    
+    /**
+     *
+     * @var \Magento\Framework\HTTP\Adapter\Curl 
+     */
     protected $curl;
+    
+    protected $_currentApiVersion;
     
     /**
      * these options are used for initializing the connector to api service
@@ -37,9 +53,105 @@ class Api
     }
     
     /**
+     * 
+     * @param string $requestPath
+     * @return boolean|array
+     */
+    public function requestPageData($requestPath = '/')
+    {
+        if (!$requestPath) {
+            $requestPath = '/';
+        }
+        
+        try {
+            $data = $this->getPageSeoData($requestPath);
+            if (isset($data['status']) && $data['status'] !== 200) {
+                return false;
+            }
+            unset($data['code'], $data['status']);
+
+            return $data;
+        } catch (\Exception  $e) {
+            //todo: log magento exception
+            
+            return false;
+        }
+    }
+    
+    public function getPageSeoData($requestPath)
+    {
+        //check if a no-response status was cached
+//        $cache = $this->getCache();
+//        if($cache->load('styla_seo_unreachable')) {
+//            return array();
+//        }
+
+        $seoRequest = $this->getRequest(StylaRequest\Type\Seo::class)
+            ->initialize($requestPath);
+
+        try {
+            $response = $this->callService($seoRequest, true, true);
+        } catch(\Exception $e) {
+            //in case of the SEO request, we don't mind if the connection was failed. we'll just save this failed status for 5 minutes
+            //and not return anything.
+//            $cache->save("1", 'styla_seo_unreachable', array(), 5*60); //save for 5 minutes
+
+            return array();
+        }
+
+        return $response->getResult();
+    }
+    
+    /**
+     * Get the current cache version number from the Styla api
+     *
+     * @return string
+     */
+    public function getCurrentApiVersion()
+    {
+        if (!$this->_currentApiVersion) {
+            $apiVersion = false;
+//            $cache      = $this->getCache();
+//            $apiVersion = $cache->load('styla-api-version');
+
+            if (!$apiVersion) {
+                $request = $this->getRequest(StylaRequest\Type\Version::class);
+
+                try {
+                    $response   = $this->callService($request, false, true);
+                    $apiVersion = $response->getResult();
+                    
+                    //if returned by the response, use the cache-control set lifetime
+                    $cacheTime = $response->getCacheControlValue();
+                    
+                    if (false === $cacheTime) {
+                        $cacheTime = "3600";
+                    }
+
+                    //cache for $cacheTime seconds
+//                    $cache->save(
+//                        $apiVersion,
+//                        'styla-api-version',
+//                        array(Styla_Connect_Model_Styla_Api_Cache::CACHE_TAG),
+//                        $cacheTime
+//                    );
+                } catch(\Exception $e) {
+                    //this request might possibly fail, for example when wrong url is set in developer mode
+                    
+//                    Mage::logException($e);
+                    $apiVersion = 1;
+                }
+            }
+            $this->_currentApiVersion = $apiVersion;
+        }
+
+        return $this->_currentApiVersion;
+    }
+    
+    /**
      * Get the api service connector
      *
-     * @return Varien_Http_Adapter_Curl
+     * @return \Magento\Framework\HTTP\Adapter\Curl
      */
     public function getService($addResultHeaders = false)
     {
@@ -51,6 +163,14 @@ class Api
         return $this->curl;
     }
     
+    /**
+     * 
+     * @param \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType $request
+     * @param bool $canUseCache Can return cached result?
+     * @param bool $useResultHeadersInResponse Should the response also include the parsed headers?
+     * @return mixed
+     * @throws \Exception
+     */
     public function callService(
         StylaRequest\Type\AbstractType $request,
         $canUseCache = true,
@@ -92,7 +212,7 @@ class Api
         if (!$result) {
             throw new \Exception("Couldn't get a result from the API.");
         }
-        
+
         /**
          * the result can contain both the body and http headers, if the $addResultHeaders var is active.
          * we'll need to parse this info, before giving it to the response object

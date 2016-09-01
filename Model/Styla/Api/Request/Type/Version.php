@@ -1,13 +1,10 @@
 <?php
+namespace Styla\Connect2\Model\Styla\Api\Request\Type;
 
-/**
- * Class Styla_Connect_Model_Styla_Api_Request_Type_Version
- */
-class Styla_Connect_Model_Styla_Api_Request_Type_Version extends Styla_Connect_Model_Styla_Api_Request_Type_Abstract
+
+class Version extends \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType
 {
-    /** @deprecated URL_API_VERSION there's now a separate url for the live and stage mode of operation, taken from the configuration helper */
-    const URL_API_VERSION = 'http://live.styla.com/api/version/%s';
-    protected $_requestType = Styla_Connect_Model_Styla_Api::REQUEST_TYPE_VERSION;
+    protected $_requestType = \Styla\Connect2\Model\Styla\Api::REQUEST_TYPE_VERSION;
 
     /**
      * Get the versioning api url, according to the current store and mode of operation
@@ -20,5 +17,13 @@ class Styla_Connect_Model_Styla_Api_Request_Type_Version extends Styla_Connect_M
         
         $versionUrl = $config->getApiVersionUrl();
         return $versionUrl;
+    }
+    
+    /**
+     * 
+     * @return string
+     */
+    public function getResponseType() {
+        return \Styla\Connect2\Model\Styla\Api\Response\Type\Version::class;
     }
 }

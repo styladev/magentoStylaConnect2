@@ -3,13 +3,14 @@ namespace Styla\Connect2\Model\Styla\Api;
 
 use Magento\Integration\Model\Oauth\ConsumerFactory;
 use Magento\Integration\Model\Oauth\TokenFactory;
-use Magento\Authorization\Model\UserContextInterface as UserContextInterface;
+use Magento\Integration\Model\Integration as IntegrationModel;
 
 class Connector
 {
     const ADMIN_USERNAME = 'StylaConnect2AdminUser';
     const ADMIN_EMAIL_PREPEND = "styla_connect2_";
     const CONSUMER_NAME = "Styla Api Consumer";
+    const INTEGRATION_NAME = 'Styla_Connect_Integration';
     
     protected $userFactory;
     protected $connectionData;
@@ -19,15 +20,23 @@ class Connector
     protected $tokenFactory;
     protected $stylaApi;
     protected $configHelper;
+    protected $integrationService;
+    
+    //these are the resources that our Styla Integration will be able to use.
+    //currently, we only need the products and categories
+    protected $integrationResources = [
+        'Magento_Catalog::products', 'Magento_Catalog::categories'
+    ];
     
     public function __construct(
         \Magento\User\Model\UserFactory $userFactory,
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Magento\Integration\Model\OauthService $oauthService,
+        \Magento\Integration\Api\OauthServiceInterface $oauthService,
         ConsumerFactory $consumerFactory,
         TokenFactory $tokenFactory,
         \Styla\Connect2\Model\Styla\Api $stylaApi,
-        \Styla\Connect2\Helper\Config $configHelper
+        \Styla\Connect2\Helper\Config $configHelper,
+        \Magento\Integration\Api\IntegrationServiceInterface $integrationService
     ) {
         $this->messageManager = $messageManager;
         $this->userFactory = $userFactory;
@@ -36,34 +45,115 @@ class Connector
         $this->tokenFactory = $tokenFactory;
         $this->stylaApi = $stylaApi;
         $this->configHelper = $configHelper;
+        $this->integrationService = $integrationService;
     }
     
+    /**
+     * Translate the data returned from the store switcher to a config-saveable scope ids
+     *
+     * @param array $formData
+     * @return array
+     */
+    protected function _getConnectionScope($formData)
+    {
+        $defaultScope = ['scope' => 'default', 'scope_id' => 0];
+        
+        if(!isset($formData['store_switcher'])) {
+            return $defaultScope;
+        }
+        
+        if($formData['store_switcher']) {
+            return ['scope' => 'stores', 'scope_id' => $formData['store_switcher']];
+        }
+        
+        if($formData['store_group_switcher']) {
+            return ['scope' => 'groups', 'scope_id' => $formData['store_group_switcher']];
+        }
+        
+        if($formData['website_switcher']) {
+            return ['scope' => 'websites', 'scope_id' => $formData['website_switcher']];
+        }
+        
+        return $defaultScope;
+    }
+    
+    /**
+     * Connect to Styla. This is the main method.
+     * 
+     * @param array $postData
+     */
     public function connect(array $postData)
     {
         $this->connectionData = $postData;
         
-        //TODO:
-        $connectionScope = null;
-        //$connectionScope = $this->_getConnectionScope($connectionFormData, $scopeData);
+        //we need an integration for styla
+        $integration = $this->getIntegration();
         
-        //i need an admin user
-        $user = $this->getAdminUser();
-        if($user === false) {
-            throw new \Exception("Can't create the admin user.");
-        }
+        $connectionScope = $this->_getConnectionScope($postData);
         
         //i need an oauth consumer
-        $consumer = $this->getConsumer();
+        $consumer = $this->getConsumer($integration);
         
         //i need to get or create and authorize a token for this consumer
-        $token = $this->getToken($consumer, $user);
+        $token = $this->getToken($consumer);
         
         //at this point, i should have all the stuff i need for making my connection
+        //i'll now be sending this all to styla:
         $connectionData = $this->sendRegistrationRequest($this->getStylaLoginData(), $consumer, $token);
         
+        //save the connection data i got from styla:
         $this->configHelper->updateConnectionConfiguration($connectionData, $connectionScope);
     }
     
+    public function getIntegration()
+    {
+        //do we have an integration already?
+        $existingIntegration = $this->integrationService->findByName(self::INTEGRATION_NAME);
+        if($existingIntegration && $existingIntegration->getId()) {
+            $this->_registerIntegration($existingIntegration); //make sure the integration is actually activated
+            
+            return $existingIntegration;
+        }
+        
+        //new integration
+        $integrationData = [
+            'name' => self::INTEGRATION_NAME,
+            'all_resources' => 0,
+            'resource' => $this->integrationResources
+        ];        
+        
+        $integration = $this->integrationService->create($integrationData);
+        $this->_registerIntegration($integration); //activate the integration
+        
+        return $integration;
+    }
+    
+    /**
+     * Register the integration as activated, so it's usable.
+     * 
+     * @throws \Exception
+     */
+    protected function _registerIntegration($integration)
+    {
+        if($integration->getStatus() == IntegrationModel::STATUS_ACTIVE) {
+            return; //already done
+        }
+        
+        //create the permanent token
+        if ($this->oauthService->createAccessToken($integration->getConsumerId(), 1)) {
+            $integration->setStatus(IntegrationModel::STATUS_ACTIVE)->save();
+        } else {
+            throw new \Exception('Failed authorizing the Styla integration.');
+        }
+    }
+    
+    /**
+     * Send the registration data to Styla
+     * 
+     * @param array $loginData
+     * @return array
+     * @throws \Exception
+     */
     public function sendRegistrationRequest($loginData, $consumer, $token)
     {
         $apiRequest = $this->stylaApi->getRequest(\Styla\Connect2\Model\Styla\Api\Request\Type\Register::class);
@@ -92,11 +182,19 @@ class Connector
         return $connectionData;
     }
     
+    /**
+     * 
+     * @return array|bool
+     */
     public function getStylaLoginData()
     {
         return isset($this->connectionData['styla']) ? $this->connectionData['styla'] : false;
     }
     
+    /**
+     * 
+     * @deprecated the integration doesn't need an admin user
+     */
     public function getAdminUser()
     {
         $user = $this->userFactory->create();
@@ -151,56 +249,18 @@ class Connector
         return substr(str_shuffle(strtolower(sha1(rand() . time() . "styla_connect2"))),0, 9);
     }
     
-    public function getConsumer()
+    public function getConsumer($integration)
     {
-        //try to find an already existing consumer
-        $consumerCollection = $this->consumerFactory->create()->getCollection()
-                ->addFieldToFilter('name', self::CONSUMER_NAME);
-        
-        $existingConsumer = $consumerCollection->getFirstItem();
-        if($existingConsumer->getId()) {
-            return $existingConsumer;
-        }
-        
-        //we need to create a new consumer
-        try {
-            $consumer = $this->oauthService->createConsumer(['name' => self::CONSUMER_NAME]);
-        } catch(\Magento\Framework\Oauth\Exception $e) {
-            throw \Exception($e->getMessage());
+        //the integration must already have a consumer, so we're just getting it here
+        $consumer = $this->consumerFactory->create()->load($integration->getConsumerId());
+        if(!$consumer->getId()) {
+            throw new \Exception('Invalid Styla Integration.');
         }
         
         return $consumer;
     }
     
-    public function getToken(\Magento\Integration\Model\Oauth\Consumer $consumer, $adminUser)
-    {
-        //do we have a token already?
-        $ourToken = $this->_getExistingToken($consumer);
-        
-        //if no token, i gotta create one
-        //this will get me the token i need:
-        if(!$ourToken && !$this->oauthService->createAccessToken($consumer->getId(), true)) {
-            throw new \Exception('Failed creating an access token for this consumer.');
-        }
-        
-        //the token needs to be set to our admin user, and validated now
-        $ourToken = $this->_getExistingToken($consumer);
-        if(!$ourToken) {
-            throw new \Exception('Failed loading an access token.');
-        }
-        
-        if(!$ourToken->getAuthorized()) {
-            $ourToken->setUserType(UserContextInterface::USER_TYPE_ADMIN);
-            $ourToken->setAdminId($adminUser->getId());
-            $ourToken->setAuthorized(1);
-            
-            $ourToken->save();
-        }
-        
-        return $ourToken;
-    }
-    
-    protected function _getExistingToken($consumer)
+    protected function getToken(\Magento\Integration\Model\Oauth\Consumer $consumer)
     {
         if(!$consumer->getId()) {
             throw new \Exception("Invalid consumer provided.");
@@ -215,6 +275,6 @@ class Connector
             return $existingToken;
         }
         
-        return false;
+        throw new \Exception('Missing token for the Styla Integration.');
     }
 }

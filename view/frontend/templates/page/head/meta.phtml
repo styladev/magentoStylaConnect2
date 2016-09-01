@@ -1,0 +1,23 @@
+<?php /** @var $this Styla_Connect_Block_Magazine_Head */ ?>
+
+<?php foreach ($this->getMetaTags() as $type => $tags): ?>
+    <?php foreach ($tags as $tag): ?>
+        <?php
+        $attributes = array();
+        $tagName    = $tag['tag'];
+
+        if (isset($tag['attributes'])) {
+            foreach ($tag['attributes'] as $key => $value) {
+                $attributes[] = sprintf('%s="%s"', $key, $value);
+            }
+        }
+        $attributes = implode(' ', $attributes);
+        ?>
+
+        <?php if (isset($tag['content'])): ?>
+            <?php echo sprintf('<%s %s>%s</%s>', $tagName, $attributes, $tag['content'], $tagName) ?>
+        <?php else: ?>
+            <?php echo sprintf('<%s %s />', $tagName, $attributes) ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+<?php endforeach; ?>

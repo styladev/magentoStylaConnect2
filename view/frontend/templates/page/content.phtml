@@ -1,0 +1,12 @@
+<?php /** @var $this Styla_Connect_Block_Magazine_Content */ ?>
+
+<?php $page = $this->getPage(); ?>
+<?php echo $page->getNoScript() ?>
+
+<div id="stylaMagazine"></div>
+<script src="<?php echo $page->getScriptUrl()?>" 
+    data-language="<?php echo $page->getLanguageCode() ?>"
+    data-rootpath="<?php echo $this->getRootPath()?>"
+    data-pluginversion="<?php echo $this->getPluginVersion()?>"
+ async></script>
+<link rel="stylesheet" type="text/css" href="<?php echo $page->getCssUrl() ?>">

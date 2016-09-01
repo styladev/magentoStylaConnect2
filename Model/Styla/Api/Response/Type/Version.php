@@ -1,11 +1,12 @@
 <?php
+namespace Styla\Connect2\Model\Styla\Api\Response\Type;
 
-/**
- * Class Styla_Connect_Model_Styla_Api_Response_Type_Version
- *
- */
-class Styla_Connect_Model_Styla_Api_Response_Type_Version extends Styla_Connect_Model_Styla_Api_Response_Type_Abstract
+class Version extends \Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType
 {
+    /**
+     * 
+     * @return string
+     */
     public function getResult()
     {
         try {

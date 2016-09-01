@@ -5,8 +5,62 @@
         <styla_connect2>
             <general>
                 <enable>0</enable>
-                <frontend_name>magazine</frontend_name>
+                <frontend_name>magazin</frontend_name>
+                <menu_link_enabled>1</menu_link_enabled>
+                <menu_link_label>Magazine</menu_link_label>
+                <is_using_magento_layout>1</is_using_magento_layout>
             </general>
+            
+            <rest_data>
+                <!-- if you try adding more data fields here, remember that you also need to change the Api/Data/...Interface.php
+                    for the entity you change, as only the fields defined in the interface are returned by the Rest Api. The interface
+                    must have getters for the same field you define in the arguments for the converter as "styla_field". Eg. getShopId()
+                    -->
+                <product>
+                    <shop_id>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Simple</class>
+                        <arguments>
+                            <magento_field>entity_id</magento_field>
+                            <styla_field>shop_id</styla_field>
+                        </arguments>
+                    </shop_id>
+                    <images>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\Gallery</class>
+                        <arguments>
+                            <identifier>gallery</identifier>
+                            <magento_field>all_gallery_images_values</magento_field>
+                            <styla_field>images</styla_field>
+                        </arguments>
+                    </images>
+                    <image_small>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Simple</class>
+                        <arguments>
+                            <magento_field>small_image</magento_field>
+                            <styla_field>image_small</styla_field>
+                        </arguments>
+                    </image_small>
+                    <caption>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\Gallery</class>
+                        <arguments>
+                            <identifier>gallery</identifier>
+                            <magento_field>main_image_caption</magento_field>
+                            <styla_field>caption</styla_field>
+                        </arguments>
+                    </caption>
+                    <page_url>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\Url</class>
+                        <arguments>
+                            <styla_field>page_url</styla_field>
+                        </arguments>
+                    </page_url>
+                    <shop>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\Sellable</class>
+                        <arguments>
+                            <styla_field>shop</styla_field>
+                        </arguments>
+                    </shop>
+                </product>
+            </rest_data>
         </styla_connect2>
     </default>
 </config>
