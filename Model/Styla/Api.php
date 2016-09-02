@@ -29,6 +29,14 @@ class Api
      */
     protected $curl;
     
+    /**
+     *
+     * @var \Styla\Connect2\Model\Styla\Api\Cache
+     */
+    protected $cache;
+    protected $cacheFactory;
+
+
     protected $_currentApiVersion;
     
     /**
@@ -45,11 +53,26 @@ class Api
     public function __construct(
         \Styla\Connect2\Model\Styla\Api\RequestFactory $requestFactory,
         \Styla\Connect2\Model\Styla\Api\ResponseFactory $responseFactory,
+        \Styla\Connect2\Model\Styla\Api\CacheFactory $cacheFactory,
         Curl $curl
     ) {
         $this->requestFactory = $requestFactory;
         $this->responseFactory = $responseFactory;
         $this->curl = $curl;
+        $this->cacheFactory = $cacheFactory;
+    }
+    
+    /**
+     * 
+     * @return \Styla\Connect2\Model\Styla\Api\Cache
+     */
+    public function getCache()
+    {
+        if(null === $this->cache) {
+            $this->cache = $this->cacheFactory->create();
+        }
+        
+        return $this->cache;
     }
     
     /**
@@ -81,10 +104,10 @@ class Api
     public function getPageSeoData($requestPath)
     {
         //check if a no-response status was cached
-//        $cache = $this->getCache();
-//        if($cache->load('styla_seo_unreachable')) {
-//            return array();
-//        }
+        $cache = $this->getCache();
+        if($cache->load('styla_seo_unreachable')) {
+            return array();
+        }
 
         $seoRequest = $this->getRequest(StylaRequest\Type\Seo::class)
             ->initialize($requestPath);
@@ -94,7 +117,7 @@ class Api
         } catch(\Exception $e) {
             //in case of the SEO request, we don't mind if the connection was failed. we'll just save this failed status for 5 minutes
             //and not return anything.
-//            $cache->save("1", 'styla_seo_unreachable', array(), 5*60); //save for 5 minutes
+            $cache->save("1", 'styla_seo_unreachable', 5*60); //save for 5 minutes
 
             return array();
         }
@@ -111,8 +134,8 @@ class Api
     {
         if (!$this->_currentApiVersion) {
             $apiVersion = false;
-//            $cache      = $this->getCache();
-//            $apiVersion = $cache->load('styla-api-version');
+            $cache      = $this->getCache();
+            $apiVersion = $cache->load('stylaapiversion');
 
             if (!$apiVersion) {
                 $request = $this->getRequest(StylaRequest\Type\Version::class);
@@ -129,16 +152,14 @@ class Api
                     }
 
                     //cache for $cacheTime seconds
-//                    $cache->save(
-//                        $apiVersion,
-//                        'styla-api-version',
-//                        array(Styla_Connect_Model_Styla_Api_Cache::CACHE_TAG),
-//                        $cacheTime
-//                    );
+                    $cache->save(
+                        $apiVersion,
+                        'stylaapiversion',
+                        $cacheTime
+                    );
                 } catch(\Exception $e) {
                     //this request might possibly fail, for example when wrong url is set in developer mode
                     
-//                    Mage::logException($e);
                     $apiVersion = 1;
                 }
             }
@@ -177,10 +198,10 @@ class Api
         $useResultHeadersInResponse = false
     )
     {
-//        $cache = $this->getCache();
-//        if ($canUseCache && $cachedResponse = $cache->getCachedApiResponse($request)) {
-//            return $cachedResponse;
-//        }
+        $cache = $this->getCache();
+        if ($canUseCache && $cachedResponse = $cache->getCachedApiResponse($request)) {
+            return $cachedResponse;
+        }
         
         $requestApiUrl = $request->getApiUrl();
         /** @var Varien_Http_Adapter_Curl $service */
@@ -232,9 +253,9 @@ class Api
             $response->setResponseHeaders($resultHeaders);
         }
 
-//        if ($canUseCache && $response->getHttpStatus() === 200) {
-//            $cache->storeApiResponse($request, $response);
-//        }
+        if ($canUseCache && $response->getHttpStatus() === 200) {
+            $cache->storeApiResponse($request, $response);
+        }
 
         return $response;
     }

@@ -1,33 +1,30 @@
 <?php
 namespace Styla\Connect2\Model\Styla\Api;
 
-/**
- * TODO: this isn't wotking, it's still a mage1 class!
- */
-
-/**
- * Class Styla_Connect_Model_Styla_Api_Cache
- *
- */
 class Cache
 {
-    const CACHE_TAG   = 'STYLA_CONNECT';
-    const CACHE_GROUP = 'styla_connect';
-
-    protected $_cache;
-    protected $_api;
-
+    const CACHE_TAG   = 'STYLA_CONNECT2';
+    const CACHE_GROUP = 'styla_connect2';
 
     /**
-     * Is this cache type enabled
-     *
-     * @return bool
+     * We're using the builtin Magento2 WebApi (Web Services) cache
+     * 
+     * @var \Magento\Webapi\Model\Cache\Type\Webapi
      */
-    public function isEnabled()
-    {
-        $useCache = Mage::app()->useCache(self::CACHE_GROUP);
+    protected $_cache;
+    
+    protected $_configHelper;
+    protected $_api;
+    protected $_cacheLifetime;
 
-        return $useCache;
+    public function __construct(
+        \Magento\Webapi\Model\Cache\Type\Webapi $cache,
+        \Styla\Connect2\Model\Styla\Api $api,
+        \Styla\Connect2\Helper\Config $configHelper
+    ) {
+        $this->_cache = $cache;
+        $this->_api = $api;
+        $this->_configHelper = $configHelper;
     }
 
     /**
@@ -35,53 +32,55 @@ class Cache
      * @param null       $id
      * @param array      $tags
      * @param bool|false $specificLifetime
-     * @param int        $priority
      */
-    public function save($data, $id = null, $tags = array(), $specificLifetime = false, $priority = 8)
+    public function save($data, $id, $specificLifetime = null)
     {
-        $tags[] = self::CACHE_TAG;
-        $tags   = array_unique($tags);
-
-        if ($specificLifetime === false) {
+        if ($specificLifetime === null) {
             $specificLifetime = $this->getCacheLifetime();
         }
+        
+        if(is_array($data)) {
+            $data = serialize($data);
+        }
 
-        $this->getCache()->save($data, $id, $tags, $specificLifetime, $priority);
+        return $this->_cache->save($data, $id, [self::CACHE_TAG], $specificLifetime);
     }
 
     /**
      * @param            $id
      * @param bool|false $doNotTestCacheValidity
-     * @param bool|false $doNotUnserialize
      * @return false|mixed
      */
-    public function load($id, $doNotTestCacheValidity = false, $doNotUnserialize = false)
+    public function load($id, $doNotTestCacheValidity = false)
     {
-        return $this->getCache()->load($id, $doNotTestCacheValidity, $doNotUnserialize);
+        if(false === $doNotTestCacheValidity) {
+            if(false === $this->_cache->test($id)) {
+                return false;
+            }
+        }
+        
+        $data = $this->_cache->load($id);
+        return $data ? $data : false;
     }
 
     /**
      *
-     * @return Styla_Connect_Model_Styla_Api
+     * @return \Styla\Connect2\Model\Styla\Api
      */
     public function getApi()
     {
-        if (!$this->_api) {
-            $this->_api = Mage::getSingleton('styla_connect/styla_api');
-        }
-
         return $this->_api;
     }
 
     /**
      * Store the api response in cache, if possible
      *
-     * @param Styla_Connect_Model_Styla_Api_Request_Type_Abstract  $request
-     * @param Styla_Connect_Model_Styla_Api_Response_Type_Abstract $response
+     * @param \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType  $request
+     * @param \Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType $response
      */
     public function storeApiResponse($request, $response)
     {
-        if (!$this->isEnabled() || $response->getHttpStatus() !== 200) {
+        if ($response->getHttpStatus() !== 200) {
             return;
         }
 
@@ -91,11 +90,22 @@ class Cache
         $this->save($cachedData, $cacheKey);
     }
 
+    /**
+     * 
+     * @return int|null
+     */
     public function getCacheLifetime()
     {
-        return Mage::helper('styla_connect/config')->getCacheLifetime();
+        if(null === $this->_cacheLifetime) {
+            $this->_cacheLifetime = $this->_configHelper->getCacheLifetime();
+        }
+        return $this->_cacheLifetime;
     }
 
+    /**
+     * 
+     * @return string|bool
+     */
     public function getApiVersion()
     {
         return $this->getApi()->getCurrentApiVersion();
@@ -103,7 +113,7 @@ class Cache
 
     /**
      *
-     * @param Styla_Connect_Model_Styla_Api_Request_Type_Abstract $request
+     * @param  $request
      * @return string
      */
     public function getCacheKey($request)
@@ -116,17 +126,13 @@ class Cache
     /**
      * If possible, load a cached response
      *
-     * @param Styla_Connect_Model_Styla_Api_Request_Type_Abstract $request
-     * @return boolean|Styla_Connect_Model_Styla_Api_Response_Type_Abstract
+     * @param \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType $request
+     * @return boolean|\Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType
      */
     public function getCachedApiResponse($request)
     {
-        if (!$this->isEnabled()) {
-            return false;
-        }
-
         $key    = $this->getCacheKey($request);
-        $cached = $this->load($key);
+        $cached = $this->load($key, true, true);
         if (!$cached) {
             return false;
         }
@@ -141,14 +147,10 @@ class Cache
 
     /**
      *
-     * @return Zend_Cache_Core
+     * @return \Magento\Webapi\Model\Cache\Type\Webapi
      */
     protected function getCache()
     {
-        if (!$this->_cache) {
-            $this->_cache = Mage::app()->getCache();
-        }
-
         return $this->_cache;
     }
 

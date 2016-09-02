@@ -26,6 +26,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_USING_LAYOUT = 'styla_connect2/general/is_using_magento_layout';
     const XML_IS_DEVELOPER = 'styla_connect2/developer/is_developer_mode';
     const XML_OVERRIDE_URL = 'styla_connect2/developer/override_%s_url';
+    const XML_CACHE_LIFETIME = 'styla_connect2/general/cache_lifetime';
     
     //these are the configuration fields which may be returned by the connector
     protected $_apiConfigurationFields = array(
@@ -251,6 +252,16 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public function getNavigationLinkLabel()
     {
         return $this->getScopeConfig()->getValue(self::XML_NAVIGATION_LABEL);
+    }
+    
+    /**
+     * 
+     * @return null|int
+     */
+    public function getCacheLifetime()
+    {
+        $cacheLifetime = $this->getScopeConfig()->getValue(self::XML_CACHE_LIFETIME);
+        return $cacheLifetime ? (int)$cacheLifetime : null;
     }
     
     /**
