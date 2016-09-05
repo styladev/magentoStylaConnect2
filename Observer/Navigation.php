@@ -8,11 +8,14 @@ use Magento\Framework\Event\ObserverInterface;
 class Navigation implements ObserverInterface
 {
     protected $configHelper;
+    protected $request;
     
     public function __construct(
-        \Styla\Connect2\Helper\Config $configHelper
+        \Styla\Connect2\Helper\Config $configHelper,
+        \Magento\Framework\App\Request\Http $request
     ) {
         $this->configHelper = $configHelper;
+        $this->request = $request;
     }
     
     /**
@@ -32,7 +35,7 @@ class Navigation implements ObserverInterface
             'name'      => $this->configHelper->getNavigationLinkLabel(),
             'id'        => 'styla-magazine',
             'url'       => $magazineUrl,
-            'is_active' => $this->configHelper->isNavigationLinkEnabled(),
+            'is_active' => $this->request->getControllerModule() == "Styla_Connect2"
         ];
         
         $node = new Node($data, 'id', $tree, $menu);
