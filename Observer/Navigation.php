@@ -26,6 +26,10 @@ class Navigation implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
+        if(!$this->configHelper->isNavigationLinkEnabled()) {
+            return;
+        }
+        
         /** @var \Magento\Framework\Data\Tree\Node $menu */
         $menu = $observer->getMenu();
         
