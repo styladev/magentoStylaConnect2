@@ -30,8 +30,9 @@ class ConverterChain
     /**
      * 
      * @param \Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection $collection
+     * @param \Magento\Store\Api\Data\StoreInterface $store
      */
-    public function addCollectionRequirements($collection)
+    public function addCollectionRequirements($collection, $store = null)
     {
         $requirementsIdentifiers = [];
         

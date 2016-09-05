@@ -5,27 +5,35 @@ use Styla\Connect2\Model\Api\Converter\Type as ConverterType;
 
 class Gallery extends ConverterType\AbstractType
 {
+    const ALL_STORES = '0';
+    
     const SEPARATOR = '||';
     const GALLERY_KEY_VALUES = 'all_gallery_images_values';
     const GALLERY_KEY = 'all_gallery_images';
     const MAIN_IMAGE_CAPTION_KEY = 'main_image_caption';
     
-    protected function _addCollectionRequirements($collection) {
+    protected $converterHelper;
+    
+    public function __construct(
+        \Styla\Connect2\Helper\Converter $converterHelper
+    ) {
+        $this->converterHelper = $converterHelper;
+    }
+    
+    protected function _addCollectionRequirements($collection, $store = null) {
         /** @var \Zend_Db_Select $select */
         $select = $collection->getSelect();
         
-        //TODO: load also only from the proper store view!!!!!!!//
-        //
-        //
-        //
-        //
-        //
-        
+        //images set to "any store" and "our current store"
+        $storeIds = [self::ALL_STORES];
+        if($store !== null && $store->getId() != self::ALL_STORES) {
+            $storeIds[] = $store->getId();
+        }
         
         //add all the gallery values for this product
         $select->joinLeft(
             [self::GALLERY_KEY_VALUES => 'catalog_product_entity_media_gallery_value'], 
-            self::GALLERY_KEY_VALUES . '.entity_id = e.entity_id', 
+            self::GALLERY_KEY_VALUES . '.entity_id = e.entity_id' . ' AND ' . self::GALLERY_KEY_VALUES . '.store_id IN(' . implode(',', $storeIds) . ')', 
             [
                 self::GALLERY_KEY_VALUES . '.label as ' . self::MAIN_IMAGE_CAPTION_KEY
             ]
@@ -50,6 +58,12 @@ class Gallery extends ConverterType\AbstractType
     
     protected function _convertItem($item) {
         $value = explode(self::SEPARATOR, $item->getData($this->getMagentoField()));
+        
+        if($this->getArgument('use_url')) {
+            foreach($value as &$singleValue) {
+                $singleValue = $this->converterHelper->getUrlForMedia($singleValue);
+            }
+        }
         
         $this->_convertedValue = count($value) == 1 ? reset($value) : $value;
     }

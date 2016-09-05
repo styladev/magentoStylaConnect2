@@ -30,6 +30,12 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * @var \Magento\Framework\Api\Search\FilterGroupBuilder
      */
     protected $filterGroupBuilder;
+    
+    /**
+     *
+     * @var \Magento\Catalog\Model\CategoryFactory 
+     */
+    protected $categoryFactory;
 
     /**
      * 
@@ -60,11 +66,13 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     public function __construct(\Magento\Catalog\Model\ProductFactory $productFactory, \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper $initializationHelper, \Magento\Catalog\Api\Data\ProductSearchResultsInterfaceFactory $searchResultsFactory, \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory, \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder, \Magento\Catalog\Api\ProductAttributeRepositoryInterface $attributeRepository, \Magento\Catalog\Model\ResourceModel\Product $resourceModel, \Magento\Catalog\Model\Product\Initialization\Helper\ProductLinks $linkInitializer, \Magento\Catalog\Model\Product\LinkTypeProvider $linkTypeProvider, \Magento\Store\Model\StoreManagerInterface $storeManager, \Magento\Framework\Api\FilterBuilder $filterBuilder, \Magento\Catalog\Api\ProductAttributeRepositoryInterface $metadataServiceInterface, \Magento\Framework\Api\ExtensibleDataObjectConverter $extensibleDataObjectConverter, \Magento\Catalog\Model\Product\Option\Converter $optionConverter, \Magento\Framework\Filesystem $fileSystem, \Magento\Framework\Api\ImageContentValidatorInterface $contentValidator, \Magento\Framework\Api\Data\ImageContentInterfaceFactory $contentFactory, \Magento\Catalog\Model\Product\Gallery\MimeTypeExtensionMap $mimeTypeExtensionMap, \Magento\Framework\Api\ImageProcessorInterface $imageProcessor, \Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface $extensionAttributesJoinProcessor,
             \Styla\Connect2\Api\Data\StylaProductSearchResultsInterfaceFactory $stylaSearchResultsFactory,
             \Styla\Connect2\Model\Api\Converter\ConverterFactory $converterFactory,
-            \Magento\Framework\Api\Search\FilterGroupBuilder $filterGroupBuilder
+            \Magento\Framework\Api\Search\FilterGroupBuilder $filterGroupBuilder,
+            \Magento\Catalog\Model\CategoryFactory $categoryFactory
     ) {
         $this->stylaSearchResultsFactory = $stylaSearchResultsFactory;
         $this->converterFactory = $converterFactory;
         $this->filterGroupBuilder = $filterGroupBuilder;
+        $this->categoryFactory = $categoryFactory;
         
         return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
     }
@@ -107,13 +115,67 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     /**
      * 
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     */
+    protected function _processSearchCriteria($searchCriteria)
+    {
+        //if no search criteria provided, apply default
+        if($searchCriteria === null) {
+            $searchCriteria = $this->_getDefaultSearchCriteria();
+            return;
+        }
+        
+        //there's one specific thing to do for category id search criteria.
+        //that is, if a product is assigned to any category, it should also show up
+        //when we search in any of this category's parent.
+        foreach($searchCriteria->getFilterGroups() as $group) {
+            foreach($group->getFilters() as $filter) {
+                if($filter->getField() == 'category_id') {
+                    $this->_addAllRelatedCategoriesCriteria($filter);
+                }
+            }
+        }
+    }
+    
+    /**
+     * When we search for a specific category by it's id, we should also add all this category's
+     * children to the filter (the way magento anchor categories are loaded)
+     * 
+     * @param \Magento\Framework\Api\Filter $filter
+     */
+    protected function _addAllRelatedCategoriesCriteria($filter)
+    {
+        //i'm only applying this if we're searching for one specific category, as in 'category_id EQ SOME_ID'
+        $conditionType = $filter->getConditionType() ? $filter->getConditionType() : 'eq';
+        if($conditionType != 'eq') {
+            return;
+        }
+        
+        $categoryId = $filter->getValue();
+        $category = $this->categoryFactory->create()->load($categoryId);
+        if(!$category->getId()) {
+            return;
+        }
+        
+        $allRelatedCategories = [];
+        $allRelatedCategories[$categoryId] = $categoryId;
+        
+        //we unfortunately also want all the children of this category, so more loading
+        $childrenIds = $category->getChildren($category, true);
+        $allRelatedCategories = array_merge($allRelatedCategories, explode(',', $childrenIds));
+        
+        //now instead of one category, we get all it's children as well
+        $filter->setValue($allRelatedCategories);
+        $filter->setConditionType('in');
+    }
+    
+    /**
+     * 
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
      * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null)
     {
-        if($searchCriteria === null) {
-            $searchCriteria = $this->_getDefaultSearchCriteria();
-        }
+        $this->_processSearchCriteria($searchCriteria);
         
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $collection = $this->collectionFactory->create();
@@ -143,7 +205,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         
         //the data required by styla is different than what our collection returns,
         //so we run "converters" on the result. the converters may need additional joins on the collection, to work
-        $this->_addConverterRequirementsToCollection($collection);
+        $store = $this->storeManager->getStore();
+        $this->_addConverterRequirementsToCollection($collection, $store);
         
         $collection->load();
         
@@ -163,11 +226,11 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * 
      * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $collection
      */
-    protected function _addConverterRequirementsToCollection($collection)
+    protected function _addConverterRequirementsToCollection($collection, $store)
     {
         $converterChain = $this->getConverters();
         
-        $converterChain->addCollectionRequirements($collection);
+        $converterChain->addCollectionRequirements($collection, $store);
     }
     
     /**

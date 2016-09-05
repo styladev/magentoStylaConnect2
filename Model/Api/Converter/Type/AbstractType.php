@@ -23,13 +23,14 @@ abstract class AbstractType
     /**
      * 
      * @param \Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection $collection
+     * @param \Magento\Store\Api\Data\StoreInterface $store
      */
-    final public function addCollectionRequirements($collection)
+    final public function addCollectionRequirements($collection, $store = null)
     {
-        $this->_addCollectionRequirements($collection);
+        $this->_addCollectionRequirements($collection, $store);
     }
     
-    protected function _addCollectionRequirements($collection)
+    protected function _addCollectionRequirements($collection, $store = null)
     {
         //overwrite this in child converters, if you need to do something with the collection
     }

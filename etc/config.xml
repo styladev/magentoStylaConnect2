@@ -31,10 +31,18 @@
                             <identifier>gallery</identifier>
                             <magento_field>all_gallery_images_values</magento_field>
                             <styla_field>images</styla_field>
+                            <use_url>1</use_url>
                         </arguments>
                     </images>
+                    <image>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\SingleImage</class>
+                        <arguments>
+                            <magento_field>image</magento_field>
+                            <styla_field>image</styla_field>
+                        </arguments>
+                    </image>
                     <image_small>
-                        <class>\Styla\Connect2\Model\Api\Converter\Type\Simple</class>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\SingleImage</class>
                         <arguments>
                             <magento_field>small_image</magento_field>
                             <styla_field>image_small</styla_field>
