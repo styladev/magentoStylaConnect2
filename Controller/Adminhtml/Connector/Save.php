@@ -2,7 +2,7 @@
 namespace Styla\Connect2\Controller\Adminhtml\Connector;
 use Magento\Framework\App\Action\Context;
 
-class Save extends \Magento\Framework\App\Action\Action
+class Save extends \Magento\Backend\App\Action
 {
     protected $connector;
 

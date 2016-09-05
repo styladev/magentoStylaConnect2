@@ -3,7 +3,7 @@ namespace Styla\Connect2\Controller\Adminhtml\Connector;
 use Magento\Framework\View\Result\PageFactory as PageFactory;
 use Magento\Framework\App\Action\Context;
 
-class Connect extends \Magento\Framework\App\Action\Action
+class Connect extends \Magento\Backend\App\Action
 {
     protected $pageFactory;
     
