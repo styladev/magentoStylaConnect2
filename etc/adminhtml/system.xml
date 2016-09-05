@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Config/etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/system_file.xsd">
     <system>
         <tab id="styla" translate="label" sortOrder="10">
             <label>Styla Connect</label>
@@ -92,16 +92,25 @@
                 <field id="override_seo_url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Override Url for SEO Api</label>
                     <comment>If filled, use this url instead of the automatically-acquired one. Eg. http://seo.styla.com/</comment>
+                    <depends>
+                        <field id="is_developer_mode">1</field>
+                    </depends>
                 </field>
                 
                 <field id="override_cdn_url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Override Url for CDN/Assets</label>
                     <comment>If filled, use this url instead of the automatically-acquired one. Eg. http://cdn.styla.com/</comment>
+                    <depends>
+                        <field id="is_developer_mode">1</field>
+                    </depends>
                 </field>
                 
                 <field id="override_api_url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Override Url for Styla Content Version API</label>
                     <comment>If filled, use this url instead of the automatically-acquired one. Eg. http://live.styla.com/</comment>
+                    <depends>
+                        <field id="is_developer_mode">1</field>
+                    </depends>
                 </field>
             </group>
         </section>

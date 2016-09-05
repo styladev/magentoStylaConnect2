@@ -116,12 +116,12 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * 
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
      */
-    protected function _processSearchCriteria($searchCriteria)
+    protected function _processSearchCriteria($searchCriteria = null)
     {
         //if no search criteria provided, apply default
         if($searchCriteria === null) {
             $searchCriteria = $this->_getDefaultSearchCriteria();
-            return;
+            return $searchCriteria;
         }
         
         //there's one specific thing to do for category id search criteria.
@@ -134,6 +134,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
                 }
             }
         }
+        
+        return $searchCriteria;
     }
     
     /**
@@ -175,7 +177,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null)
     {
-        $this->_processSearchCriteria($searchCriteria);
+        $searchCriteria = $this->_processSearchCriteria($searchCriteria);
         
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $collection = $this->collectionFactory->create();

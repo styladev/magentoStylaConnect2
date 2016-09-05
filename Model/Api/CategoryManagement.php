@@ -51,6 +51,17 @@ class CategoryManagement extends \Magento\Catalog\Model\CategoryManagement
     }
     
     /**
+     * Get top level hidden root category
+     *
+     * @return \Magento\Catalog\Model\Category
+     */
+    private function getTopLevelCategory()
+    {
+        $categoriesCollection = $this->categoriesFactory->create();
+        return $categoriesCollection->addFilter('level', ['eq' => 0])->getFirstItem();
+    }
+    
+    /**
      * Check is request use default scope
      *
      * @return bool

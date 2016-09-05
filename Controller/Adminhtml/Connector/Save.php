@@ -31,9 +31,9 @@ class Save extends \Magento\Backend\App\Action
             }
         }
         
-        //redirect back to the connect page
+        //redirect back to the styla settings page
         $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('styla_connect2/connector/connect');
+        $resultRedirect->setPath('admin/system_config/edit', ['section' => 'styla_connect2']);
         
         return $resultRedirect;
     }

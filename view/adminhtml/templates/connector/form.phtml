@@ -1,6 +1,6 @@
 <form action="<?php /* @escapeNotVerified */ echo $block->getConnectUrl() ?>" method="post" id="connect-form">
-    <?= $this->getChildHtml('store_switcher') ?>
-    <?= $block->getBlockHtml('formkey')?>
+    <?php echo $this->getChildHtml('store_switcher') ?>
+    <?php echo $block->getBlockHtml('formkey')?>
     <div style="clear:both">
         <fieldset class="admin__fieldset">
             <legend class="admin__legend">
@@ -40,9 +40,9 @@
             <?php if($this->isDeveloperMode()): ?>
                 <div class="admin__field">
                     <div>
-                        <h3><?= __('Developer Mode Connection URL override') ?></h3>
-                        <span><?= __('If filled, will override the default API url used for connecting to Styla.') ?></span><br/>
-                        <i><span><?= __('Default Url is: ') ?><?= \Styla\Connect2\Model\Styla\Api\Connector::STYLA_API_CONNECTOR_URL_PRODUCTION ?></span></i>
+                        <h3><?php echo __('Developer Mode Connection URL override') ?></h3>
+                        <span><?php echo __('If filled, will override the default API url used for connecting to Styla.') ?></span><br/>
+                        <i><span><?php echo __('Default Url is: ') ?><?php echo \Styla\Connect2\Model\Styla\Api\Connector::STYLA_API_CONNECTOR_URL_PRODUCTION ?></span></i>
                     </div>
                     <label for="connection_url" class="admin__field-label">
                         <span><?php /* @escapeNotVerified */ echo __('Override Connection Url') ?></span>

@@ -1,7 +1,10 @@
 <?php
 namespace Styla\Connect2\Model\Api\Converter\Type;
 
-abstract class AbstractType
+use \Styla\Connect2\Api\ConverterInterface as ConverterInterface;
+
+abstract class AbstractType 
+    implements ConverterInterface
 {
     const ARGUMENT_STYLA_FIELD   = "styla_field";
     const ARGUMENT_MAGENTO_FIELD = "magento_field";
@@ -41,6 +44,15 @@ abstract class AbstractType
      * @var mixed $item
      */
     abstract protected function _convertItem($item);
+    
+    /**
+     * 
+     * @return mixed
+     */
+    public function getConvertedValue()
+    {
+        return $this->_convertedValue;
+    }
     
     /**
      * 

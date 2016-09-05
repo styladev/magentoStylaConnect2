@@ -282,7 +282,7 @@ class Page
 
     /**
      *
-     * @return Styla_Connect_Helper_Config
+     * @return \Styla\Connect2\Helper\Config
      */
     public function getConfigHelper()
     {
@@ -290,7 +290,7 @@ class Page
     }
 
     /**
-     * @return Styla_Connect_Model_Styla_Api
+     * @return \Styla\Connect2\Model\Styla\Api
      */
     protected function _getApi()
     {

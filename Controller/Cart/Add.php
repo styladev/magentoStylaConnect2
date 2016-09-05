@@ -1,6 +1,8 @@
 <?php
 namespace Styla\Connect2\Controller\Cart;
 
+use \Magento\Framework\Webapi\Exception as WebapiException;
+
 class Add extends \Magento\Checkout\Controller\Cart\Add
 {
     /**
@@ -32,20 +34,11 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
      */
     public function execute()
     {
-//        if (!$this->_formKeyValidator->validate($this->getRequest())) {
-//            return $this->resultRedirectFactory->create()->setPath('*/*/');
-//        }
-        
-//        $this->_renderHtml();die();
+        //if (!$this->_formKeyValidator->validate($this->getRequest())) {
+        //    return $this->resultRedirectFactory->create()->setPath('*/*/');
+        //}
 
         $params = $this->getRequest()->getParams();
-        
-        //try loading the blocks
-//        $page = $this->resultPageFactory->create();
-//        $layout = $page->getLayout();
-//        $block = $layout->getBlock('stylaconnect2.cart_content');
-//        
-//        var_dump($layout->renderElement('stylaconnect2.cart_content'));
         
         $success = false;
         $errors = [];
@@ -100,20 +93,26 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
             ]);
         } else {
             //nothing to render (error result), so we'll just return a json error response
-            $jsonResult->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_NOT_FOUND);
+            $jsonResult->setHttpResponseCode(WebapiException::HTTP_NOT_FOUND);
             $jsonResult->setData($errors);
         }
         
         return $jsonResult;
     }
     
+    /**
+     * This method will load the part of layout within the "stylaconnect2.cart_content" container
+     * and return it's html content
+     * 
+     * @return string
+     */
     protected function _renderHtml()
     {
         $page = $this->resultPageFactory->create();
         
         $layout = $page->getLayout();
         
-        //render the contents of our car_content container
+        //render the contents of our cart_content container
         return $layout->renderElement('stylaconnect2.cart_content');
     }
 }

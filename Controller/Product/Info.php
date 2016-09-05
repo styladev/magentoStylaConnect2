@@ -2,6 +2,7 @@
 namespace Styla\Connect2\Controller\Product;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use \Magento\Framework\Webapi\Exception as WebapiException;
 
 class Info extends \Magento\Framework\App\Action\Action
 {
@@ -40,7 +41,7 @@ class Info extends \Magento\Framework\App\Action\Action
         $jsonResult = $this->resultJsonFactory->create();
         if(!empty($errors)) {
             $jsonResult->setData(['errors' => $errors]);
-            $jsonResult->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_NOT_FOUND);
+            $jsonResult->setHttpResponseCode(WebapiException::HTTP_NOT_FOUND);
         } else {
             $jsonResult->setData($result);
         }

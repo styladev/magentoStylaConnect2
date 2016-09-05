@@ -8,6 +8,8 @@
 
 namespace Styla\Connect2\Block\Adminhtml\Connector\Config;
 
+use \Magento\Framework\Data\Form\Element\AbstractElement as AbstractElement;
+
 /**
  * Renderer for PayPal banner in System Configuration
  * @author      Magento Core Team <core@magentocommerce.com>
@@ -25,7 +27,7 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      */
-    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function render(AbstractElement $element)
     {
         $elementOriginalData = $element->getOriginalData();
         if (isset($elementOriginalData['help_link'])) {

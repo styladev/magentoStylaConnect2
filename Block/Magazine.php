@@ -1,14 +1,26 @@
 <?php
 namespace Styla\Connect2\Block;
+
 use Magento\Framework\View\Element\Template;
 
-/**
- * Class Styla_Connect_Block_Magazine
- */
 class Magazine extends Template
 {
+    /**
+     *
+     * @var \Styla\Connect2\Model\Page
+     */
     protected $_page;
+    
+    /**
+     *
+     * @var \Magento\Framework\Registry
+     */
     protected $_registry;
+    
+    /**
+     *
+     * @var \Styla\Connect2\Helper\Config
+     */
     protected $_configHelper;
     
     public function __construct(Template\Context $context, 
@@ -22,6 +34,10 @@ class Magazine extends Template
         return parent::__construct($context, $data);
     }
     
+    /**
+     * 
+     * @return \Styla\Connect2\Model\Page
+     */
     public function getPage()
     {
         if(null === $this->_page) {
@@ -33,7 +49,7 @@ class Magazine extends Template
 
     /**
      *
-     * @return Styla_Connect_Helper_Config
+     * @return \Styla\Connect2\Helper\Config
      */
     public function getConfigHelper()
     {

@@ -230,6 +230,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->_configuredRouteName;
     }
     
+    /**
+     * Get the username, valid for retrieving data from Styla
+     * 
+     * @return string
+     */
     public function getUsername()
     {
         return $this->getScopeConfig()->getValue(self::XML_USERNAME);
@@ -303,6 +308,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         return "2.0.0.0"; //TODO: get the real version
     }
     
+    /**
+     * 
+     * @param mixed $scope
+     * @return array
+     */
     public function parseScope($scope = null)
     {
         $scopeName = 'default';
@@ -311,6 +321,11 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         return is_array($scope) ? $scope : ['scope' => $scopeName, 'scope_id' => $scopeId];
     }
     
+    /**
+     * 
+     * @param array $connectionData
+     * @param mixed $scope
+     */
     public function updateConnectionConfiguration(array $connectionData, $scope = null)
     {
         $scope = $this->parseScope($scope);

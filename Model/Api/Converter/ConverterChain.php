@@ -1,6 +1,8 @@
 <?php
 namespace Styla\Connect2\Model\Api\Converter;
 
+use Styla\Connect2\Api\ConverterInterface as ConverterInterface;
+
 class ConverterChain
 {
     /**
@@ -11,9 +13,9 @@ class ConverterChain
     
     /**
      * 
-     * @param \Styla\Connect2\Model\Api\Converter\Type\AbstractType $converter
+     * @param ConverterInterface $converter
      */
-    public function addConverter(\Styla\Connect2\Model\Api\Converter\Type\AbstractType $converter)
+    public function addConverter(ConverterInterface $converter)
     {
         $this->_converters[] = $converter;
     }
