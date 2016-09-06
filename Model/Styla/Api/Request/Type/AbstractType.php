@@ -10,30 +10,31 @@ abstract class AbstractType
     protected $_params;
 
     protected $_connectionType = HttpRequest::METHOD_GET;
-    
+
     protected $_requestTimeout;
     protected $_requestConnectTimeout;
-    
+
     /**
      *
      * @var \Styla\Connect2\Model\Styla\Api
      */
     protected $stylaApi;
-    
+
     /**
      *
      * @var \Styla\Connect2\Helper\Config
      */
     protected $configHelper;
-    
+
     public function __construct(
         \Styla\Connect2\Model\Styla\Api $stylaApi,
         \Styla\Connect2\Helper\Config $configHelper
-    ) {
+    )
+    {
         $this->configHelper = $configHelper;
-        $this->stylaApi = $stylaApi;
+        $this->stylaApi     = $stylaApi;
     }
-    
+
     /**
      *
      * @return string
@@ -44,7 +45,9 @@ abstract class AbstractType
      * Initialize this request with data to pass on to the api service
      *
      * @param string $requestPath
-     * @param mixed   $params
+     * @param mixed  $params
+     *
+     * @return $this
      */
     public function initialize($requestPath, $params = null)
     {
@@ -146,23 +149,23 @@ abstract class AbstractType
     {
         return $this->configHelper;
     }
-    
+
     /**
      * Get the connection timeout settings for this request.
-     * 
+     *
      * @return false|array
      */
     public function getConnectionTimeoutOptions()
     {
-        $options = array();
-        
-        if(null !== $this->_requestConnectTimeout) {
+        $options = [];
+
+        if (null !== $this->_requestConnectTimeout) {
             $options[CURLOPT_CONNECTTIMEOUT] = $this->_requestConnectTimeout;
         }
-        if(null !== $this->_requestTimeout) {
+        if (null !== $this->_requestTimeout) {
             $options[CURLOPT_TIMEOUT] = $this->_requestTimeout;
         }
-        
+
         return empty($options) ? false : $options;
     }
 }

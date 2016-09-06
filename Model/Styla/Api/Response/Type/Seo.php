@@ -1,7 +1,7 @@
 <?php
 namespace Styla\Connect2\Model\Styla\Api\Response\Type;
 
-class Seo extends \Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType
+class Seo extends AbstractType
 {
     protected $_contentType = self::CONTENT_TYPE_JSON;
 
@@ -19,7 +19,7 @@ class Seo extends \Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType
             );
         }
 
-        $result = array();
+        $result = [];
 
         //if there was an invalid result - we'll return an empty seo result and move on
         if ($this->getHttpStatus() != 200) {

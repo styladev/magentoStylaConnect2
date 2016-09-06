@@ -1,40 +1,43 @@
 <?php
 namespace Styla\Connect2\Controller\Adminhtml\Connector;
-use Magento\Framework\App\Action\Context;
 
-class Save extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\Context;
+use Styla\Connect2\Model\Styla\Api\Connector;
+
+class Save extends Action
 {
     protected $connector;
 
     /**
-     * @param Action\Context $context
+     * @param Action\Context|Context $context
+     * @param Connector              $connector
      */
-    public function __construct(
-        Context $context,
-        \Styla\Connect2\Model\Styla\Api\Connector $connector
-    ) {
+    public function __construct(Context $context, Connector $connector)
+    {
         $this->connector = $connector;
-        
+
         return parent::__construct($context);
     }
-    
-    public function execute() {
+
+    public function execute()
+    {
         $data = $this->getRequest()->getPostValue();
-        
+
         if ($data) {
             try {
                 $this->connector->connect($data);
-                
-                $this->messageManager->addSuccess('Successfully connected to Styla. You can now use your magazine.');
-            } catch(\Exception $e) {
-                $this->messageManager->addError($e->getMessage());
+
+                $this->messageManager->addSuccessMessage('Successfully connected to Styla. You can now use your magazine.');
+            } catch (\Exception $e) {
+                $this->messageManager->addErrorMessage($e->getMessage());
             }
         }
-        
+
         //redirect back to the styla settings page
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath('admin/system_config/edit', ['section' => 'styla_connect2']);
-        
+
         return $resultRedirect;
     }
 }

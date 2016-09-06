@@ -1,10 +1,12 @@
 <?php
 namespace Styla\Connect2\Block\Magazine;
 
-class Content extends \Styla\Connect2\Block\Magazine
+use Styla\Connect2\Block\Magazine;
+
+class Content extends Magazine
 {
     /**
-     * 
+     *
      * @return string
      */
     public function getNoscript()
@@ -14,7 +16,7 @@ class Content extends \Styla\Connect2\Block\Magazine
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getRootPath()
@@ -23,7 +25,7 @@ class Content extends \Styla\Connect2\Block\Magazine
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getPluginVersion()

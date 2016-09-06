@@ -20,6 +20,8 @@ abstract class AbstractType
      * Set the headers from this response, already parsed to an array
      *
      * @param array $headers
+     *
+     * @return $this
      */
     public function setResponseHeaders(array $headers)
     {
@@ -59,7 +61,7 @@ abstract class AbstractType
             return false;
         }
 
-        $cacheControl = array();
+        $cacheControl = [];
         foreach ($values as $line) {
             list($name, $value) = explode('=', $line);
             $cacheControl[$name] = $value;
@@ -123,7 +125,7 @@ abstract class AbstractType
 
     /**
      *
-     * @param mixed                    $apiCallResult
+     * @param mixed                                $apiCallResult
      * @param \Magento\Framework\HTTP\Adapter\Curl $apiService
      */
     public function initialize($apiCallResult, $apiService)
@@ -132,7 +134,7 @@ abstract class AbstractType
         $this->_error      = $apiService->getError();
         $this->_httpStatus = $apiService->getInfo(CURLINFO_HTTP_CODE);
     }
-    
+
     public function getHttpStatus()
     {
         return $this->_httpStatus;

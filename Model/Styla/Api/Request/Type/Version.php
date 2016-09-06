@@ -2,7 +2,7 @@
 namespace Styla\Connect2\Model\Styla\Api\Request\Type;
 
 
-class Version extends \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType
+class Version extends AbstractType
 {
     protected $_requestType = \Styla\Connect2\Model\Styla\Api::REQUEST_TYPE_VERSION;
 
@@ -14,16 +14,17 @@ class Version extends \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType
     public function getApiUrl()
     {
         $config = $this->getConfigHelper();
-        
+
         $versionUrl = $config->getApiVersionUrl();
         return $versionUrl;
     }
-    
+
     /**
-     * 
+     *
      * @return string
      */
-    public function getResponseType() {
+    public function getResponseType()
+    {
         return \Styla\Connect2\Model\Styla\Api\Response\Type\Version::class;
     }
 }

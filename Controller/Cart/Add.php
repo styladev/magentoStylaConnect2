@@ -9,23 +9,31 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
      * @var \Magento\Framework\View\Result\PageFactory
      */
     protected $resultPageFactory;
-    
+
     protected $resultJsonFactory;
-    
+
     protected $cartHelper;
-    
-    public function __construct(\Magento\Framework\App\Action\Context $context, \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig, \Magento\Checkout\Model\Session $checkoutSession, \Magento\Store\Model\StoreManagerInterface $storeManager, \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator, \Magento\Checkout\Model\Cart $cart, \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
+        \Magento\Checkout\Model\Cart $cart,
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Magento\Checkout\Helper\Cart $cartHelper
-    ) {
+    )
+    {
         $this->resultPageFactory = $resultPageFactory;
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->cartHelper = $cartHelper;
-        
+        $this->cartHelper        = $cartHelper;
+
         parent::__construct($context, $scopeConfig, $checkoutSession, $storeManager, $formKeyValidator, $cart, $productRepository);
     }
-    
+
     /**
      * Add product to shopping cart action
      *
@@ -39,13 +47,13 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
         //}
 
         $params = $this->getRequest()->getParams();
-        
+
         $success = false;
-        $errors = [];
-        
+        $errors  = [];
+
         try {
             if (isset($params['qty'])) {
-                $filter = new \Zend_Filter_LocalizedToNormalized(
+                $filter        = new \Zend_Filter_LocalizedToNormalized(
                     ['locale' => $this->_objectManager->get('Magento\Framework\Locale\ResolverInterface')->getLocale()]
                 );
                 $params['qty'] = $filter->filter($params['qty']);
@@ -76,42 +84,42 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
             if (!$this->cart->getQuote()->getHasError()) {
                 $success = true;
             }
-            
+
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $errors = array_unique(explode("\n", $e->getMessage()));
 
         } catch (\Exception $e) {
             $errors[] = __('We can\'t add this item to your shopping cart right now.');
         }
-        
+
         $jsonResult = $this->resultJsonFactory->create();
-        if($success) {
-            
+        if ($success) {
+
             $jsonResult->setData([
                 'success' => 1,
-                'html' => $this->_renderHtml()
+                'html'    => $this->_renderHtml()
             ]);
         } else {
             //nothing to render (error result), so we'll just return a json error response
             $jsonResult->setHttpResponseCode(WebapiException::HTTP_NOT_FOUND);
             $jsonResult->setData($errors);
         }
-        
+
         return $jsonResult;
     }
-    
+
     /**
      * This method will load the part of layout within the "stylaconnect2.cart_content" container
      * and return it's html content
-     * 
+     *
      * @return string
      */
     protected function _renderHtml()
     {
         $page = $this->resultPageFactory->create();
-        
+
         $layout = $page->getLayout();
-        
+
         //render the contents of our cart_content container
         return $layout->renderElement('stylaconnect2.cart_content');
     }

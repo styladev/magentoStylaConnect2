@@ -1,6 +1,8 @@
 <?php
 namespace Styla\Connect2\Model\Styla\Api;
 
+use Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType as StylaRequest;
+
 class Cache
 {
     const CACHE_TAG   = 'STYLA_CONNECT2';
@@ -8,11 +10,11 @@ class Cache
 
     /**
      * We're using the builtin Magento2 WebApi (Web Services) cache
-     * 
+     *
      * @var \Magento\Webapi\Model\Cache\Type\Webapi
      */
     protected $_cache;
-    
+
     protected $_configHelper;
     protected $_api;
     protected $_cacheLifetime;
@@ -21,25 +23,27 @@ class Cache
         \Magento\Webapi\Model\Cache\Type\Webapi $cache,
         \Styla\Connect2\Model\Styla\Api $api,
         \Styla\Connect2\Helper\Config $configHelper
-    ) {
-        $this->_cache = $cache;
-        $this->_api = $api;
+    )
+    {
+        $this->_cache        = $cache;
+        $this->_api          = $api;
         $this->_configHelper = $configHelper;
     }
 
     /**
      * @param            $data
      * @param null       $id
-     * @param array      $tags
      * @param bool|false $specificLifetime
+     *
+     * @return bool
      */
     public function save($data, $id, $specificLifetime = null)
     {
         if ($specificLifetime === null) {
             $specificLifetime = $this->getCacheLifetime();
         }
-        
-        if(is_array($data)) {
+
+        if (is_array($data)) {
             $data = serialize($data);
         }
 
@@ -53,12 +57,12 @@ class Cache
      */
     public function load($id, $doNotTestCacheValidity = false)
     {
-        if(false === $doNotTestCacheValidity) {
-            if(false === $this->_cache->test($id)) {
+        if (false === $doNotTestCacheValidity) {
+            if (false === $this->_cache->test($id)) {
                 return false;
             }
         }
-        
+
         $data = $this->_cache->load($id);
         return $data ? $data : false;
     }
@@ -75,10 +79,10 @@ class Cache
     /**
      * Store the api response in cache, if possible
      *
-     * @param \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType  $request
-     * @param \Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType $response
+     * @param Request\Type\AbstractType  $request
+     * @param Response\Type\AbstractType $response
      */
-    public function storeApiResponse($request, $response)
+    public function storeApiResponse(Request\Type\AbstractType $request, Response\Type\AbstractType $response)
     {
         if ($response->getHttpStatus() !== 200) {
             return;
@@ -91,19 +95,19 @@ class Cache
     }
 
     /**
-     * 
+     *
      * @return int|null
      */
     public function getCacheLifetime()
     {
-        if(null === $this->_cacheLifetime) {
+        if (null === $this->_cacheLifetime) {
             $this->_cacheLifetime = $this->_configHelper->getCacheLifetime();
         }
         return $this->_cacheLifetime;
     }
 
     /**
-     * 
+     *
      * @return string|bool
      */
     public function getApiVersion()
@@ -116,7 +120,7 @@ class Cache
      * @param  $request
      * @return string
      */
-    public function getCacheKey($request)
+    public function getCacheKey(StylaRequest $request)
     {
         $key = $request->getRequestType() . $request->getRequestPath() . "_" . $this->getApiVersion();
 
@@ -126,13 +130,13 @@ class Cache
     /**
      * If possible, load a cached response
      *
-     * @param \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType $request
+     * @param StylaRequest $request
      * @return boolean|\Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType
      */
-    public function getCachedApiResponse($request)
+    public function getCachedApiResponse(StylaRequest $request)
     {
         $key    = $this->getCacheKey($request);
-        $cached = $this->load($key, true, true);
+        $cached = $this->load($key, true);
         if (!$cached) {
             return false;
         }

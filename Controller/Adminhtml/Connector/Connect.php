@@ -1,9 +1,11 @@
 <?php
 namespace Styla\Connect2\Controller\Adminhtml\Connector;
+
+use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory as PageFactory;
 use Magento\Framework\App\Action\Context;
 
-class Connect extends \Magento\Backend\App\Action
+class Connect extends Action
 {
     protected $pageFactory;
     

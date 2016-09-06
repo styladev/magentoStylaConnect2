@@ -17,9 +17,9 @@ class RequestFactory
     }
 
     /**
-     * @param Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType $type
+     * @param       $type
      * @param array $arguments
-     * @return Event
+     * @return \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType
      */
     public function create($type, $arguments = [])
     {

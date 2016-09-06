@@ -1,20 +1,14 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
-
-// @codingStandardsIgnoreFile
-
 namespace Styla\Connect2\Block\Adminhtml\Connector\Config;
 
-use \Magento\Framework\Data\Form\Element\AbstractElement as AbstractElement;
+use Magento\Backend\Block\Template;
+use Magento\Framework\Data\Form\Element\AbstractElement as AbstractElement;
+use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
 
 /**
- * Renderer for PayPal banner in System Configuration
- * @author      Magento Core Team <core@magentocommerce.com>
+ * Class Hint
  */
-class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework\Data\Form\Element\Renderer\RendererInterface
+class Hint extends Template implements RendererInterface
 {
     /**
      * @var string
@@ -24,7 +18,7 @@ class Hint extends \Magento\Backend\Block\Template implements \Magento\Framework
     /**
      * Render fieldset html
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)

@@ -10,25 +10,25 @@ class Api
     const REQUEST_TYPE_SEO                  = 'seo';
     const REQUEST_TYPE_VERSION              = 'version';
     const REQUEST_TYPE_REGISTER_MAGENTO_API = 'register';
-    
+
     /**
      *
      * @var \Styla\Connect2\Model\Styla\Api\RequestFactory
      */
     protected $requestFactory;
-    
+
     /**
      *
      * @var \Styla\Connect2\Model\Styla\Api\ResponseFactory
      */
     protected $responseFactory;
-    
+
     /**
      *
-     * @var \Magento\Framework\HTTP\Adapter\Curl 
+     * @var \Magento\Framework\HTTP\Adapter\Curl
      */
     protected $curl;
-    
+
     /**
      *
      * @var \Styla\Connect2\Model\Styla\Api\Cache
@@ -38,45 +38,46 @@ class Api
 
 
     protected $_currentApiVersion;
-    
+
     /**
      * these options are used for initializing the connector to api service
      */
-    protected $_apiConnectionOptions = array(
+    protected $_apiConnectionOptions = [
         CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_HTTPHEADER,
-        array(
+        [
             'Accept: application/json',
-        ),
-    );
-    
+        ],
+    ];
+
     public function __construct(
         \Styla\Connect2\Model\Styla\Api\RequestFactory $requestFactory,
         \Styla\Connect2\Model\Styla\Api\ResponseFactory $responseFactory,
         \Styla\Connect2\Model\Styla\Api\CacheFactory $cacheFactory,
         Curl $curl
-    ) {
-        $this->requestFactory = $requestFactory;
+    )
+    {
+        $this->requestFactory  = $requestFactory;
         $this->responseFactory = $responseFactory;
-        $this->curl = $curl;
-        $this->cacheFactory = $cacheFactory;
+        $this->curl            = $curl;
+        $this->cacheFactory    = $cacheFactory;
     }
-    
+
     /**
-     * 
+     *
      * @return \Styla\Connect2\Model\Styla\Api\Cache
      */
     public function getCache()
     {
-        if(null === $this->cache) {
+        if (null === $this->cache) {
             $this->cache = $this->cacheFactory->create();
         }
-        
+
         return $this->cache;
     }
-    
+
     /**
-     * 
+     *
      * @param string $requestPath
      * @return boolean|array
      */
@@ -85,7 +86,7 @@ class Api
         if (!$requestPath) {
             $requestPath = '/';
         }
-        
+
         try {
             $data = $this->getPageSeoData($requestPath);
             if (isset($data['status']) && $data['status'] !== 200) {
@@ -96,17 +97,17 @@ class Api
             return $data;
         } catch (\Exception  $e) {
             //todo: log magento exception
-            
+
             return false;
         }
     }
-    
+
     public function getPageSeoData($requestPath)
     {
         //check if a no-response status was cached
         $cache = $this->getCache();
-        if($cache->load('styla_seo_unreachable')) {
-            return array();
+        if ($cache->load('styla_seo_unreachable')) {
+            return [];
         }
 
         $seoRequest = $this->getRequest(StylaRequest\Type\Seo::class)
@@ -114,17 +115,17 @@ class Api
 
         try {
             $response = $this->callService($seoRequest, true, true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             //in case of the SEO request, we don't mind if the connection was failed. we'll just save this failed status for 5 minutes
             //and not return anything.
-            $cache->save("1", 'styla_seo_unreachable', 5*60); //save for 5 minutes
+            $cache->save("1", 'styla_seo_unreachable', 5 * 60); //save for 5 minutes
 
-            return array();
+            return [];
         }
 
         return $response->getResult();
     }
-    
+
     /**
      * Get the current cache version number from the Styla api
      *
@@ -133,7 +134,6 @@ class Api
     public function getCurrentApiVersion()
     {
         if (!$this->_currentApiVersion) {
-            $apiVersion = false;
             $cache      = $this->getCache();
             $apiVersion = $cache->load('stylaapiversion');
 
@@ -143,10 +143,10 @@ class Api
                 try {
                     $response   = $this->callService($request, false, true);
                     $apiVersion = $response->getResult();
-                    
+
                     //if returned by the response, use the cache-control set lifetime
                     $cacheTime = $response->getCacheControlValue();
-                    
+
                     if (false === $cacheTime) {
                         $cacheTime = "3600";
                     }
@@ -157,9 +157,9 @@ class Api
                         'stylaapiversion',
                         $cacheTime
                     );
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     //this request might possibly fail, for example when wrong url is set in developer mode
-                    
+
                     $apiVersion = 1;
                 }
             }
@@ -168,27 +168,28 @@ class Api
 
         return $this->_currentApiVersion;
     }
-    
+
     /**
      * Get the api service connector
      *
-     * @return \Magento\Framework\HTTP\Adapter\Curl
+     * @param bool $addResultHeaders
+     * @return Curl
      */
     public function getService($addResultHeaders = false)
     {
         $this->curl->setOptions($this->_apiConnectionOptions);
 
         //this will tell curl to omit headers in result, if false
-        $this->curl->setConfig(array('header' => $addResultHeaders));
+        $this->curl->setConfig(['header' => $addResultHeaders]);
 
         return $this->curl;
     }
-    
+
     /**
-     * 
-     * @param \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType $request
-     * @param bool $canUseCache Can return cached result?
-     * @param bool $useResultHeadersInResponse Should the response also include the parsed headers?
+     *
+     * @param StylaRequest\Type\AbstractType $request
+     * @param bool                           $canUseCache Can return cached result?
+     * @param bool                           $useResultHeadersInResponse Should the response also include the parsed headers?
      * @return mixed
      * @throws \Exception
      */
@@ -202,21 +203,20 @@ class Api
         if ($canUseCache && $cachedResponse = $cache->getCachedApiResponse($request)) {
             return $cachedResponse;
         }
-        
+
         $requestApiUrl = $request->getApiUrl();
-        /** @var Varien_Http_Adapter_Curl $service */
         $service       = $this->getService($useResultHeadersInResponse);
-        
+
         //include the request timeout, if set
         $requestTimeoutOptions = $request->getConnectionTimeoutOptions();
-        if($requestTimeoutOptions) {
+        if ($requestTimeoutOptions) {
             $service->setOptions($requestTimeoutOptions);
         }
-        
+
         //fill in the post params, if this is a POST request
         $requestMethod = $request->getConnectionType();
         $requestBody   = '';
-        
+
         if ($requestMethod == \Zend\Http\Request::METHOD_POST) {
             $requestBody = $request->getParams();
         }
@@ -225,10 +225,10 @@ class Api
             $request->getConnectionType(),
             $requestApiUrl,
             '1.1',
-            array('Accept: application/json'),
+            ['Accept: application/json'],
             $requestBody
         );
-        
+
         $result = $service->read();
         if (!$result) {
             throw new \Exception("Couldn't get a result from the API.");
@@ -259,7 +259,7 @@ class Api
 
         return $response;
     }
-    
+
     /**
      * Parse a http response, containing both the headers and content and return it as array
      *
@@ -268,9 +268,9 @@ class Api
      */
     public function parseHttpResponse($response)
     {
-        $headers = array();
+        $headers = [];
         if (false === strpos($response, "\r\n\r\n")) {
-            return array('headers' => array(), 'body' => $response);
+            return ['headers' => [], 'body' => $response];
         }
 
         list($headerContent, $bodyContent) = explode("\r\n\r\n", $response, 2);
@@ -284,23 +284,31 @@ class Api
             }
         }
 
-        return array(
+        return [
             'headers' => $headers,
             'body'    => $bodyContent,
-        );
+        ];
     }
-    
+
+    /**
+     * @param $type
+     * @return Api\Request\Type\AbstractType
+     */
     public function getRequest($type)
     {
         $request = $this->requestFactory->create($type);
-        
+
         return $request;
     }
-    
-    public function getResponse($request)
+
+    /**
+     * @param Api\Request\Type\AbstractType $request
+     * @return Api\Response\Type\AbstractType
+     */
+    public function getResponse(StylaRequest\Type\AbstractType $request)
     {
-        $request = $this->responseFactory->create($request->getResponseType());
-        
-        return $request;
+        $response = $this->responseFactory->create($request->getResponseType());
+
+        return $response;
     }
 }

@@ -16,7 +16,7 @@ class Router implements \Magento\Framework\App\RouterInterface
      * @var \Magento\Framework\App\ResponseInterface
      */
     protected $_response;
-    
+
     /**
      *
      * @var \Styla\Connect2\Helper\Config
@@ -24,16 +24,17 @@ class Router implements \Magento\Framework\App\RouterInterface
     protected $_configHelper;
 
     /**
-     * @param \Magento\Framework\App\ActionFactory $actionFactory
+     * @param \Magento\Framework\App\ActionFactory     $actionFactory
      * @param \Magento\Framework\App\ResponseInterface $response
      */
     public function __construct(
-    \Magento\Framework\App\ActionFactory $actionFactory, \Magento\Framework\App\ResponseInterface $response,
-     \Styla\Connect2\Helper\Config $configHelper
+        \Magento\Framework\App\ActionFactory $actionFactory,
+        \Magento\Framework\App\ResponseInterface $response,
+        \Styla\Connect2\Helper\Config $configHelper
     )
     {
         $this->actionFactory = $actionFactory;
-        $this->_response = $response;
+        $this->_response     = $response;
         $this->_configHelper = $configHelper;
     }
 
@@ -43,31 +44,31 @@ class Router implements \Magento\Framework\App\RouterInterface
      * @param \Magento\Framework\App\RequestInterface $request
      * @return bool
      */
-    public function match(\Magento\Framework\App\RequestInterface $request) 
+    public function match(\Magento\Framework\App\RequestInterface $request)
     {
         $identifier = trim($request->getPathInfo(), '/');
-        
+
         $stylaFrontendName = $this->_getFrontendName();
         if (strpos($identifier, $stylaFrontendName) !== false) {
-            
+
             $request->setModuleName('stylaconnect2page')->setControllerName('page')->setActionName('view');
         } else {
             //There is no match
-            return;
+            return false;
         }
 
         //we want the part after the initial magazine uri, as it may point us to the user's intention
         $route = $this->_getRouteSettings($identifier);
         $request->setParam('path', $route);
-        
+
         /*
          * We have match and now we will forward action
          */
         return $this->actionFactory->create(
-                        'Magento\Framework\App\Action\Forward', ['request' => $request]
+            'Magento\Framework\App\Action\Forward', ['request' => $request]
         );
     }
-    
+
     /**
      * Get only the last part of the route, leading up to a specific page
      *
@@ -83,7 +84,7 @@ class Router implements \Magento\Framework\App\RouterInterface
     }
 
     /**
-     * 
+     *
      * @return string
      */
     protected function _getFrontendName()

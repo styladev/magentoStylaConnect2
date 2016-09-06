@@ -6,16 +6,15 @@ class Info
     const EVENT_GET_RENDERER = 'styla_connect_get_product_info_renderer';
 
     protected $_product;
-    
+
     /**
      *
      * @var \Styla\Connect2\Model\Product\Info\RendererFactory
      */
     protected $rendererFactory;
-    
-    public function __construct(
-        \Styla\Connect2\Model\Product\Info\RendererFactory $rendererFactory
-    ) {
+
+    public function __construct(\Styla\Connect2\Model\Product\Info\RendererFactory $rendererFactory)
+    {
         $this->rendererFactory = $rendererFactory;
     }
 
@@ -41,7 +40,7 @@ class Info
     /**
      *
      * @return \Magento\Catalog\Model\Product
-     * @throws Exception
+     * @throws \Exception
      */
     public function getProduct()
     {
@@ -58,9 +57,9 @@ class Info
      */
     protected function _getProductInfoRenderer()
     {
-        $productType   = $this->getProduct()->getTypeId();
-        $renderer = $this->rendererFactory->createRenderer($productType);
-        
+        $productType = $this->getProduct()->getTypeId();
+        $renderer    = $this->rendererFactory->createRenderer($productType);
+
         return $renderer;
     }
 }

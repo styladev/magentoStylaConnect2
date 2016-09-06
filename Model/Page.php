@@ -23,23 +23,24 @@ class Page
      * @var string
      */
     protected $_eventPrefix = 'magazine_page';
-    
+
     protected $tags;
     protected $baseTags;
     protected $_username;
     protected $_apiVersion;
-    
+
     protected $stylaApi;
     protected $configHelper;
-    
+
     public function __construct(
         \Styla\Connect2\Model\Styla\Api $stylaApi,
         ConfigHelper $configHelper,
         array $data = []
-    ) {
-        $this->stylaApi = $stylaApi;
+    )
+    {
+        $this->stylaApi     = $stylaApi;
         $this->configHelper = $configHelper;
-        
+
         return parent::__construct($data);
     }
 
@@ -47,7 +48,7 @@ class Page
     {
         throw new \Exception('save is not supported!');
     }
-    
+
     public function load($modelId, $field = null)
     {
         throw new \Exception('load not supported. Use loadByPath(), instead.');
@@ -55,7 +56,7 @@ class Page
 
     /**
      * Load the page from styla, using it's path
-     * 
+     *
      * @param string $path
      * @return \Styla\Connect2\Model\Page
      */
@@ -88,12 +89,12 @@ class Page
     public function getBaseMetaData()
     {
         if (!$this->baseTags) {
-            $tags = array(
+            $tags = [
                 'title'       => $this->getTitle(),
                 'description' => $this->getMetaDescription(),
                 'keywords'    => $this->getMetaKeywords(),
                 'robots'      => $this->getMetaRobots(),
-            );
+            ];
 
             $this->baseTags = array_filter($tags);
         }
@@ -118,18 +119,18 @@ class Page
     public function getTags()
     {
         if (!$this->tags) {
-            $this->tags = array();
+            $this->tags = [];
             $tags       = $this->getData('tags');
 
             if (!$tags) {
-                $tags = array();
+                $tags = [];
             }
 
             foreach ($tags as $data) {
                 $tagName = $data['tag'];
 
                 $added = false;
-                foreach (array('name', 'property') as $key) {
+                foreach (['name', 'property'] as $key) {
                     if (isset($data['attributes'][$key])) {
                         $added = true;
                         $this->addTag($tagName . '-' . $data['attributes'][$key], $data);
@@ -149,7 +150,7 @@ class Page
     public function addTag($name, $data)
     {
         if (!isset($this->tags[$name])) {
-            $this->tags[$name] = array();
+            $this->tags[$name] = [];
         }
         $this->tags[$name][] = $data;
 
@@ -167,7 +168,7 @@ class Page
             return $tags[$type];
         }
 
-        return array();
+        return [];
     }
 
     /**

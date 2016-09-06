@@ -1,7 +1,7 @@
 <?php
 namespace Styla\Connect2\Model\Styla\Api\Response\Type;
 
-class Register extends \Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType
+class Register extends AbstractType
 {
     /**
      *

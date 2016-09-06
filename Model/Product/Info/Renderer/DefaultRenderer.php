@@ -12,19 +12,20 @@ class DefaultRenderer
     protected $taxCalculation;
     protected $taxHelper;
     protected $priceHelper;
-    
+
     public function __construct(
-            \Magento\Store\Model\StoreManagerInterface $storeManager,
-            \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
-            \Magento\Tax\Model\Calculation $taxCalculation,
-            \Magento\Tax\Helper\Data $taxHelper,
-            \Magento\Framework\Pricing\Helper\Data $priceHelper
-    ) {
-        $this->_storeManager = $storeManager;
-        $this->stockRegistry = $stockRegistry;
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
+        \Magento\Tax\Model\Calculation $taxCalculation,
+        \Magento\Tax\Helper\Data $taxHelper,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper
+    )
+    {
+        $this->_storeManager  = $storeManager;
+        $this->stockRegistry  = $stockRegistry;
         $this->taxCalculation = $taxCalculation;
-        $this->taxHelper = $taxHelper;
-        $this->priceHelper = $priceHelper;
+        $this->taxHelper      = $taxHelper;
+        $this->priceHelper    = $priceHelper;
     }
 
     /**
@@ -38,7 +39,7 @@ class DefaultRenderer
 
         return $productInfo;
     }
-    
+
     /**
      * Retrieve current store
      *
@@ -58,14 +59,14 @@ class DefaultRenderer
     protected function _collectProductInfo($product)
     {
         //basic product info, same for every possible product type
-        $productInfo = array(
+        $productInfo = [
             'id'            => $product->getId(),
             'type'          => $product->getTypeId(),
             'name'          => $product->getName(),
             'saleable'      => $product->getIsSalable(),
             'price'         => $this->priceHelper->currency($product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue(), true, false),
             'priceTemplate' => $this->getPriceTemplate(),
-        );
+        ];
 
         //if product has active special price
         if ($oldPrice = $this->getOldPrice($product)) {
@@ -84,7 +85,7 @@ class DefaultRenderer
                 $productInfo['maxqty'] = $maxQty;
             }
         }
-        
+
         //add product tax info
         if ($taxInfo = $this->getProductTax($product)) {
             $productInfo['tax'] = $taxInfo;
@@ -111,28 +112,28 @@ class DefaultRenderer
             return false;
         }
 
-        $store = $this->_getStore();
-        $taxRequest     = $this->taxCalculation->getRateRequest(
+        $store      = $this->_getStore();
+        $taxRequest = $this->taxCalculation->getRateRequest(
             null,
             null,
             null,
             $store
         ); //for default address and customer class
-        
+
         $taxRate = $this->taxCalculation->getRate($taxRequest->setProductClassId($taxId)); //get calculated default rate
-        
+
         //get detailed tax info
         $taxRateInfo = $this->taxCalculation->getResource()->getRateInfo($taxRequest);
         $taxLabel    = isset($taxRateInfo['process'][0]['id']) ? $taxRateInfo['process'][0]['id'] : '';
 
         $isTaxIncluded = $this->taxHelper->priceIncludesTax($store);
 
-        $taxInfo = array(
+        $taxInfo = [
             'rate'        => $taxRate,
             'label'       => $taxLabel,
             'taxIncluded' => $isTaxIncluded,
             'showLabel'   => true, //TODO: this should have a system config?
-        );
+        ];
 
         return $taxInfo;
     }
@@ -147,7 +148,7 @@ class DefaultRenderer
     {
         $minQty = null;
         $maxQty = null;
-        
+
         $stockItem = $this->stockRegistry->getStockItem($product->getId());
 
         if ($stockItem) {
@@ -159,7 +160,7 @@ class DefaultRenderer
             return false;
         }
 
-        return array($minQty, $maxQty);
+        return [$minQty, $maxQty];
     }
 
     /**
@@ -180,7 +181,7 @@ class DefaultRenderer
     public function getPriceTemplate()
     {
         $currencyFormat = $this->_getStore()->getCurrentCurrency()->getOutputFormat();
-        
+
         //convert to a format acceptable for Styla
         //normally is contains %s for inserting the price value
         return str_replace('%s', '#{price}', $currencyFormat);
@@ -214,20 +215,20 @@ class DefaultRenderer
     protected function _collectAdditionalProductInfo($product, $productInfo)
     {
         return $productInfo; //todo: fix this wih a magento2 event
-        
+
         //can be overridden and used in productType-specific classes to get more detailed attributes
 
         //allow for collecting additional data outside of the renderer
         $transportObject = new Varien_Object();
         $transportObject->setProductInfo($productInfo);
         $transportObject->setProduct($product);
-        Mage::dispatchEvent(self::EVENT_COLLECT_ADDITIONAL_INFO, array('transport_object' => $transportObject));
+        Mage::dispatchEvent(self::EVENT_COLLECT_ADDITIONAL_INFO, ['transport_object' => $transportObject]);
 
         $productInfo = $transportObject->getProductInfo();
 
         return $productInfo;
     }
-    
+
     /**
      * Replace ',' on '.' for js
      *

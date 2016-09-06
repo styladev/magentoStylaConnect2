@@ -17,9 +17,9 @@ class ResponseFactory
     }
 
     /**
-     * @param Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType $type
+     * @param       $type
      * @param array $arguments
-     * @return Event
+     * @return \Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType
      */
     public function create($type, $arguments = [])
     {
