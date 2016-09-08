@@ -97,6 +97,12 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
             if (!$this->cart->getQuote()->getHasError()) {
                 $success = true;
             }
+            
+            $message = __(
+                'You added %1 to your shopping cart.',
+                $product->getName()
+            );
+            $this->messageManager->addSuccessMessage($message);
 
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $errors = array_unique(explode("\n", $e->getMessage()));

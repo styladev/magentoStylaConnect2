@@ -5,8 +5,12 @@ use Magento\Framework\Api\SortOrder;
 use Styla\Connect2\Model\Api\Converter as DataConverter;
 use Magento\Framework\Api\SearchCriteriaInterface as SearchCriteria;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Framework\Api\Search\SearchCriteriaFactory as FullTextSearchCriteriaFactory;
+use Magento\Framework\Api\Search\SearchInterface as FullTextSearchApi;
+use Magento\Framework\App\Request\Http as Request;
 
 class ProductRepository extends \Magento\Catalog\Model\ProductRepository
+    implements \Styla\Connect2\Api\ProductRepositoryInterface
 {
     const DEFAULT_PAGE_SIZE = 46; //if no limit provided, this will be used
 
@@ -39,6 +43,29 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     protected $categoryFactory;
+    
+    /** 
+     * 
+     * @var FullTextSearchCriteriaFactory
+     */
+    protected $fullTextSearchCriteriaFactory;
+    
+    /** 
+     * 
+     * @var FullTextSearchApi
+     */
+    protected $fullTextSearchApi;
+    
+    /**
+     *
+     * @var Magento\Search\Model\QueryFactory
+     */
+    protected $queryFactory;
+    
+    /**
+     *  @var Request
+     */
+    protected $request;
 
     /**
      *
@@ -90,13 +117,21 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         \Styla\Connect2\Api\Data\StylaProductSearchResultsInterfaceFactory $stylaSearchResultsFactory,
         \Styla\Connect2\Model\Api\Converter\ConverterFactory $converterFactory,
         \Magento\Framework\Api\Search\FilterGroupBuilder $filterGroupBuilder,
-        \Magento\Catalog\Model\CategoryFactory $categoryFactory
+        \Magento\Catalog\Model\CategoryFactory $categoryFactory,
+        FullTextSearchCriteriaFactory $searchCriteriaFactory,
+        FullTextSearchApi $search,
+        \Magento\Search\Model\QueryFactory $queryFactory,
+        Request $request
     )
     {
-        $this->stylaSearchResultsFactory = $stylaSearchResultsFactory;
-        $this->converterFactory          = $converterFactory;
-        $this->filterGroupBuilder        = $filterGroupBuilder;
-        $this->categoryFactory           = $categoryFactory;
+        $this->stylaSearchResultsFactory       = $stylaSearchResultsFactory;
+        $this->converterFactory                = $converterFactory;
+        $this->filterGroupBuilder              = $filterGroupBuilder;
+        $this->categoryFactory                 = $categoryFactory;
+        $this->fullTextSearchApi               = $search;
+        $this->fullTextSearchCriteriaFactory   = $searchCriteriaFactory;
+        $this->queryFactory                    = $queryFactory;
+        $this->request                         = $request;
 
         return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
     }
@@ -112,11 +147,73 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
             ->setPageSize(self::DEFAULT_PAGE_SIZE)
             ->setCurrentPage(0);
     }
+    
+    /**
+     * Perform full text search and find IDs of matching products.
+     *
+     * @return int[]
+     */
+    protected function _searchProductsFullText()
+    {
+        //the query factory will get the term from the "q" url param
+        $query = $this->queryFactory->get();
+        $term = $query->getQueryText();
+        
+        $pageSize = (int)$this->request->getParam('page_size', self::DEFAULT_PAGE_SIZE);
+        $currentPage = (int)$this->request->getParam('current_page', 0);
+        
+        $searchCriteria = $this->fullTextSearchCriteriaFactory->create();
+        
+        /** To get list of available request names see Magento/CatalogSearch/etc/search_request.xml */
+        $searchCriteria->setRequestName('quick_search_container');
+        
+        $filter = $this->filterBuilder->setField('search_term')->setValue($term)->setConditionType('like')->create();
+        $filterGroup = $this->filterGroupBuilder->addFilter($filter)->create();
+        $searchCriteria->setFilterGroups([$filterGroup]);
+        $searchCriteria->setPageSize($pageSize);
+        $searchCriteria->setCurrentPage($currentPage);
+        
+        $searchResults = $this->fullTextSearchApi->search($searchCriteria);
+        $productIds = [];
+        foreach ($searchResults->getItems() as $searchDocument) {
+            $productIds[] = $searchDocument->getId();
+        }
+        
+        return $productIds;
+    }
+    
+    /**
+     * 
+     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function search()
+    {
+        $productIds = $this->_searchProductsFullText();
+        if(!$productIds) {
+            throw new \Magento\Framework\Exception\NoSuchEntityException();
+        }
+        
+        //get the usual list of products, using the ids we just received
+        $idFilter = $this->filterBuilder->setField('entity_id')
+            ->setValue($productIds)
+            ->setConditionType('in')
+            ->create();
+        
+        $filterGroup = $this->filterGroupBuilder->addFilter($idFilter)
+            ->create();
+        
+        $searchCriteria = $this->searchCriteriaBuilder->create()
+            ->setFilterGroups([$filterGroup]);
+        
+        $searchResult = $this->getList($searchCriteria);
+        return $searchResult;
+    }
 
     /**
      *
      * @param int $productId
-     * @return type
+     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
     public function getOne($productId)
     {
