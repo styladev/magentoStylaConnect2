@@ -2,19 +2,29 @@
 namespace Styla\Connect2\Controller\Page;
 
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\Controller\Result\ForwardFactory;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\View\Result\Page as ResultPage;
+use Magento\Framework\Registry;
 
 class View extends Action
 {
     /**
-     * @var \Magento\Framework\Controller\Result\ForwardFactory
+     * 
+     * @var ForwardFactory
      */
     protected $resultForwardFactory;
 
     /**
-     * @var \Magento\Framework\View\Result\PageFactory
+     * 
+     * @var PageFactory
      */
     protected $resultPageFactory;
 
+    /**
+     *
+     * @var Registry
+     */
     protected $registry;
 
 
@@ -29,7 +39,7 @@ class View extends Action
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\ForwardFactory $resultForwardFactory,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Registry $registry
+        Registry $registry
     )
     {
         $this->resultPageFactory    = $resultPageFactory;
@@ -41,9 +51,12 @@ class View extends Action
 
     public function execute()
     {
+        /** @var string|bool $path */
         $path = $this->getRequest()->getParam('path', false);
 
+        /** @var ResultPage $page */
         $page     = $this->resultPageFactory->create();
+        
         $pageData = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getPage($page, $path);
         if ($pageData === false) {
             $resultForward = $this->resultForwardFactory->create();

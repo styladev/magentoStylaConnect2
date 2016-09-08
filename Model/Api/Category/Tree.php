@@ -1,6 +1,10 @@
 <?php
 namespace Styla\Connect2\Model\Api\Category;
 
+use Magento\Catalog\Api\Data\CategoryTreeInterface;
+use Magento\Framework\Data\Tree\Node;
+use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
+
 class Tree extends \Magento\Catalog\Model\Category\Tree
 {
     //this is a list of additional attributes that will be available in the generated category tree
@@ -16,7 +20,7 @@ class Tree extends \Magento\Catalog\Model\Category\Tree
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Category\Tree $categoryTree,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Model\ResourceModel\Category\Collection $categoryCollection,
+        CategoryCollection $categoryCollection,
         \Magento\Catalog\Api\Data\CategoryTreeInterfaceFactory $treeFactory,
         \Styla\Connect2\Api\Data\StylaCategoryTreeInterfaceFactory $stylaTreeFactory
     )
@@ -27,16 +31,16 @@ class Tree extends \Magento\Catalog\Model\Category\Tree
     }
 
     /**
-     * @param \Magento\Framework\Data\Tree\Node $node
+     * @param Node $node
      * @param int                               $depth
      * @param int                               $currentLevel
-     * @return \Magento\Catalog\Api\Data\CategoryTreeInterface
+     * @return CategoryTreeInterface
      */
     public function getTree($node, $depth = null, $currentLevel = 0)
     {
-        /** @var \Magento\Catalog\Api\Data\CategoryTreeInterface[] $children */
+        /** @var CategoryTreeInterface[] $children */
         $children = $this->getChildren($node, $depth, $currentLevel);
-        /** @var \Magento\Catalog\Api\Data\CategoryTreeInterface $tree */
+        /** @var CategoryTreeInterface $tree */
         $tree = $this->stylaTreeFactory->create();
         $tree->setId($node->getId())
             ->setParentId($node->getParentId())
@@ -56,7 +60,7 @@ class Tree extends \Magento\Catalog\Model\Category\Tree
      * Copy the extra attributes from the node (the category data) to the tree
      *
      */
-    protected function _setExtraAttributes($tree, $node)
+    protected function _setExtraAttributes(CategoryTreeInterface $tree, Node $node)
     {
         foreach ($this->_extraAttributes as $attribute) {
             $tree->setData($attribute, $node->getData($attribute));
@@ -67,7 +71,7 @@ class Tree extends \Magento\Catalog\Model\Category\Tree
      * Load any additional attributes into the category collection
      *
      */
-    protected function _addExtraAttributes($collection)
+    protected function _addExtraAttributes(CategoryCollection $collection)
     {
         foreach ($this->_extraAttributes as $attribute) {
             $collection->addAttributeToSelect($attribute);

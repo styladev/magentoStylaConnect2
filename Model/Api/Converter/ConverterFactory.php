@@ -1,7 +1,9 @@
 <?php
 namespace Styla\Connect2\Model\Api\Converter;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface as ScopeConfigInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface as ScopeConfigInterface;
+use Styla\Connect2\Api\ConverterInterface as ConverterInterface;
+use Styla\Connect2\Model\Api\Converter\ConverterChain;
 
 class ConverterFactory
 {
@@ -52,7 +54,7 @@ class ConverterFactory
     }
 
     /**
-     * @param Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType $type
+     * @param string $type
      * @param array                                                    $arguments
      * @return Event
      */
@@ -65,7 +67,7 @@ class ConverterFactory
      * Create the converter chain, based on the current configuration
      *
      * @param string $type
-     * @return \Styla\Connect2\Model\Api\Converter\ConverterChain
+     * @return ConverterChain
      */
     public function createConverterChain($type = self::TYPE_PRODUCT)
     {
@@ -74,6 +76,7 @@ class ConverterFactory
         $converterChain = $this->converterChainFactory->create();
 
         foreach ($converters as $converterConfig) {
+            /** @var ConverterInterface $converter */
             $converter = $this->_create($converterConfig['class']);
             $converter->setArguments($converterConfig['arguments']);
 

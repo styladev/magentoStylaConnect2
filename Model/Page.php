@@ -147,6 +147,12 @@ class Page
         return $this->tags;
     }
 
+    /**
+     * 
+     * @param string $name
+     * @param array $data
+     * @return \Styla\Connect2\Model\Page
+     */
     public function addTag($name, $data)
     {
         if (!isset($this->tags[$name])) {

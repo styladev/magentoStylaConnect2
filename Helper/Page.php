@@ -1,18 +1,30 @@
 <?php
 namespace Styla\Connect2\Helper;
 
-use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Styla\Connect2\Model\PageFactory as StylaPageFactory;
+use Styla\Connect2\Model\Page as StylaPage;
+use Styla\Connect2\Helper\Config as Config;
+use Magento\Framework\View\Result\Page as ResultPage;
 
 class Page extends AbstractHelper
 {
+    /**
+     *
+     * @var StylaPageFactory
+     */
     protected $_pageFactory;
+    
+    /**
+     *
+     * @var Config
+     */
     protected $_configHelper;
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Styla\Connect2\Model\PageFactory $pageFactory,
-        \Styla\Connect2\Helper\Config $configHelper
+        StylaPageFactory $pageFactory,
+        Config $configHelper
     )
     {
         $this->_pageFactory  = $pageFactory;
@@ -22,14 +34,16 @@ class Page extends AbstractHelper
     }
 
     /**
-     * @param \Magento\Framework\View\Result\Page $pageResult
+     * @param ResultPage $pageResult
      * @param bool                                $path
      * @return bool|Page
      */
-    public function getPage(\Magento\Framework\View\Result\Page $pageResult, $path = false)
+    public function getPage(ResultPage $pageResult, $path = false)
     {
+        /** @var string $currentPath */
         $currentPath = $this->getPath($path);
 
+        /** @var StylaPage $page */
         //load from styla
         $page = $this->_pageFactory->create()->loadByPath($currentPath);
         if (!$page->exist()) {
@@ -42,7 +56,12 @@ class Page extends AbstractHelper
         return $page;
     }
 
-    public function setPageLayout($page, $pageResult)
+    /**
+     * 
+     * @param StylaPage $page
+     * @param ResultPage $pageResult
+     */
+    public function setPageLayout(StylaPage $page, ResultPage $pageResult)
     {
         if (!$this->_configHelper->isUsingMagentoLayout()) {
             $pageResult->getConfig()->setPageLayout('empty');
@@ -66,6 +85,11 @@ class Page extends AbstractHelper
         }
     }
 
+    /**
+     * 
+     * @param string $path
+     * @return string
+     */
     public function getPath($path = false)
     {
         return $path !== false ? $path : '/';

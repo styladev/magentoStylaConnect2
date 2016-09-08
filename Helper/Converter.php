@@ -1,11 +1,33 @@
 <?php
 namespace Styla\Connect2\Helper;
 
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Catalog\Model\Product\Media\Config as MediaConfig;
+
 class Converter extends \Magento\Framework\App\Helper\AbstractHelper
 {
+    /**
+     *
+     * @var StoreManagerInterface
+     */
     protected $_storeManager;
+    
+    /**
+     *
+     * @var \Magento\Store\Model\Store
+     */
     protected $_store;
+    
+    /**
+     *
+     * @var string|null
+     */
     protected $_mediaUrl;
+    
+    /**
+     *
+     * @var MediaConfig
+     */
     protected $_catalogProductMediaConfig;
 
     /**
@@ -14,8 +36,8 @@ class Converter extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Catalog\Model\Product\Media\Config $catalogProductMediaConfig
      */
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Model\Product\Media\Config $catalogProductMediaConfig
+        StoreManagerInterface $storeManager,
+        MediaConfig $catalogProductMediaConfig
     )
     {
         $this->_storeManager              = $storeManager;

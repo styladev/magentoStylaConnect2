@@ -2,7 +2,9 @@
 namespace Styla\Connect2\Model\Api;
 
 use Magento\Framework\Api\SortOrder;
-use \Styla\Connect2\Model\Api\Converter as DataConverter;
+use Styla\Connect2\Model\Api\Converter as DataConverter;
+use Magento\Framework\Api\SearchCriteriaInterface as SearchCriteria;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 
 class ProductRepository extends \Magento\Catalog\Model\ProductRepository
 {
@@ -102,7 +104,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     /**
      * If no search criteria is provided in the request, use this as default
      *
-     * @return \Magento\Framework\Api\SearchCriteriaInterface
+     * @return SearchCriteria
      */
     protected function _getDefaultSearchCriteria()
     {
@@ -136,8 +138,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     }
 
     /**
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @return \Magento\Framework\Api\SearchCriteriaInterface
+     * @param SearchCriteria $searchCriteria
+     * @return SearchCriteria
      */
     protected function _processSearchCriteria($searchCriteria = null)
     {
@@ -195,10 +197,10 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
 
     /**
      *
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteria $searchCriteria
      * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null)
+    public function getList(SearchCriteria $searchCriteria = null)
     {
         $searchCriteria = $this->_processSearchCriteria($searchCriteria);
 
@@ -249,9 +251,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     /**
      * Add styla data converters requirements to the product collection.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $collection
+     * @param ProductCollection $collection
      */
-    protected function _addConverterRequirementsToCollection($collection, $store)
+    protected function _addConverterRequirementsToCollection(ProductCollection $collection, $store)
     {
         $converterChain = $this->getConverters();
 
@@ -275,9 +277,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     /**
      * Do the data conversion to a format accepted by styla
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $collection
+     * @param ProductCollection $collection
      */
-    protected function _doConvert($collection)
+    protected function _doConvert(ProductCollection $collection)
     {
         $this->getConverters()->doConversion($collection);
     }

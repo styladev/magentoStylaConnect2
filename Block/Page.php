@@ -9,6 +9,12 @@ class Page extends Template
     protected $_page;
     protected $_registry;
 
+    /**
+     * 
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param Registry $registry
+     * @param array $data
+     */
     public function __construct(Template\Context $context, Registry $registry, array $data = [])
     {
         $this->_registry = $registry;
@@ -21,6 +27,10 @@ class Page extends Template
         return parent::_prepareLayout();
     }
 
+    /**
+     * 
+     * @return Styla\Connect2\Model\Page
+     */
     public function getPage()
     {
         if (null === $this->_page) {
@@ -30,11 +40,19 @@ class Page extends Template
         return $this->_page;
     }
 
+    /**
+     * 
+     * @return string
+     */
     public function getRootPath()
     {
         return $this->getConfigHelper()->getRouteName();
     }
 
+    /**
+     * 
+     * @return string
+     */
     public function getPluginVersion()
     {
         return $this->getConfigHelper()->getPluginVersion();

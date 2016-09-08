@@ -1,6 +1,8 @@
 <?php
 namespace Styla\Connect2\Model\Product;
 
+use Magento\Catalog\Model\Product;
+
 class Info
 {
     const EVENT_GET_RENDERER = 'styla_connect_get_product_info_renderer';
@@ -30,16 +32,16 @@ class Info
 
     /**
      *
-     * @param $product
+     * @param Product $product
      */
-    public function setProduct($product)
+    public function setProduct(Product $product)
     {
         $this->_product = $product;
     }
 
     /**
      *
-     * @return \Magento\Catalog\Model\Product
+     * @return Product
      * @throws \Exception
      */
     public function getProduct()

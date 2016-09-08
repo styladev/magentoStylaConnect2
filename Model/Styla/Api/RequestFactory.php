@@ -1,6 +1,8 @@
 <?php
 namespace Styla\Connect2\Model\Styla\Api;
 
+use Styla\Connect2\Api\Styla\RequestInterface;
+
 class RequestFactory
 {
     /**
@@ -17,9 +19,9 @@ class RequestFactory
     }
 
     /**
-     * @param       $type
+     * @param string $type
      * @param array $arguments
-     * @return \Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType
+     * @return RequestInterface
      */
     public function create($type, $arguments = [])
     {

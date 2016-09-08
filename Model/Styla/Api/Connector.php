@@ -58,6 +58,12 @@ class Connector
     }
 
 
+    /**
+     * Get the URL used for sending the connection data to Styla
+     * 
+     * @return string
+     * @throws \Exception
+     */
     public function getConnectorApiUrl()
     {
         $connectionUrl = self::STYLA_API_CONNECTOR_URL_PRODUCTION;
@@ -80,7 +86,7 @@ class Connector
      * @param array $formData
      * @return array
      */
-    protected function _getConnectionScope($formData)
+    protected function _getConnectionScope(array $formData)
     {
         $defaultScope = ['scope' => 'default', 'scope_id' => 0];
 
@@ -131,6 +137,10 @@ class Connector
         $this->configHelper->updateConnectionConfiguration($connectionData, $connectionScope);
     }
 
+    /**
+     * 
+     * @return Integration
+     */
     public function getIntegration()
     {
         //do we have an integration already?
@@ -148,6 +158,7 @@ class Connector
             'resource'      => $this->integrationResources
         ];
 
+        /** @var Integration $integration */
         $integration = $this->integrationService->create($integrationData);
         $this->_registerIntegration($integration); //activate the integration
 
@@ -223,7 +234,7 @@ class Connector
 
     /**
      *
-     * @deprecated the integration doesn't need an admin user
+     * @deprecated since version 2.0.0.0 the integration doesn't need an admin user
      */
     public function getAdminUser()
     {

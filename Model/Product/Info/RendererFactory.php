@@ -1,7 +1,7 @@
 <?php
 namespace Styla\Connect2\Model\Product\Info;
 
-use Styla\Connect2\Model\Api\Converter\Type\AbstractType;
+use Styla\Connect2\Model\Product\Info\Renderer\DefaultRenderer;
 use Styla\Connect2\Model\Product\Info\Renderer as InfoRenderer;
 
 class RendererFactory
@@ -22,20 +22,20 @@ class RendererFactory
     }
 
     /**
-     * @param AbstractType $type
+     * @param string $typeClass
      * @param array        $arguments
      * @return Event
      */
-    protected function _create($type, $arguments = [])
+    protected function _create($typeClass, $arguments = [])
     {
-        return $this->_objectManager->create($type, $arguments);
+        return $this->_objectManager->create($typeClass, $arguments);
     }
 
     /**
      * Create the right renderer, based on the product type id
      *
      * @param string $productType
-     * @return \Styla\Connect2\Model\Product\Info\Renderer\DefaultRenderer
+     * @return DefaultRenderer
      */
     public function createRenderer($productType = \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE)
     {

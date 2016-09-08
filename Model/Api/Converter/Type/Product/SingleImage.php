@@ -2,12 +2,16 @@
 namespace Styla\Connect2\Model\Api\Converter\Type\Product;
 
 use Styla\Connect2\Model\Api\Converter\Type as ConverterType;
+use Styla\Connect2\Helper\Converter as ConverterHelper;
 
 class SingleImage extends ConverterType\AbstractType
 {
+    /*
+     * @var ConverterHelper
+     */
     protected $converterHelper;
 
-    public function __construct(\Styla\Connect2\Helper\Converter $converterHelper)
+    public function __construct(ConverterHelper $converterHelper)
     {
         $this->converterHelper = $converterHelper;
     }

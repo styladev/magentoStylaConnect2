@@ -1,9 +1,10 @@
 <?php
 namespace Styla\Connect2\Model\Styla\Api\Request\Type;
 
+use Styla\Connect2\Api\Styla\RequestInterface as StylaRequestInterface;
 use Zend\Http\Request as HttpRequest;
 
-abstract class AbstractType
+abstract class AbstractType implements StylaRequestInterface
 {
     protected $_requestPath;
     protected $_requestType;
@@ -34,12 +35,6 @@ abstract class AbstractType
         $this->configHelper = $configHelper;
         $this->stylaApi     = $stylaApi;
     }
-
-    /**
-     *
-     * @return string
-     */
-    abstract public function getApiUrl();
 
     /**
      * Initialize this request with data to pass on to the api service
