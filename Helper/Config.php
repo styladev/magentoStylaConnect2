@@ -88,9 +88,23 @@ class Config extends AbstractHelper
         return $this->scopeConfig;
     }
 
+    /**
+     * 
+     * @return bool
+     */
     public function isEnabled()
     {
         return $this->getScopeConfig()->getValue(self::XML_ENABLED);
+    }
+    
+    /**
+     * Is the module already configured (ready to work) in the current store
+     * 
+     * @return bool
+     */
+    public function isConfiguredForThisStore()
+    {
+        return $this->getUsername() && $this->isEnabled();
     }
 
     public function getFrontendName()
@@ -266,6 +280,10 @@ class Config extends AbstractHelper
      */
     public function isNavigationLinkEnabled()
     {
+        if(!$this->isConfiguredForThisStore()) {
+            return false;
+        }
+        
         return (bool)$this->getScopeConfig()->getValue(self::XML_NAVIGATION_ENABLED);
     }
 

@@ -27,6 +27,7 @@ class Connector
     protected $configHelper;
     protected $integrationService;
     protected $request;
+    protected $cacheTypeList;
 
     //these are the resources that our Styla Integration will be able to use.
     //currently, we only need the products and categories
@@ -43,7 +44,8 @@ class Connector
         \Styla\Connect2\Model\Styla\Api $stylaApi,
         \Styla\Connect2\Helper\Config $configHelper,
         \Magento\Integration\Api\IntegrationServiceInterface $integrationService,
-        \Magento\Framework\App\Request\Http $request
+        \Magento\Framework\App\Request\Http $request,
+        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
     )
     {
         $this->messageManager     = $messageManager;
@@ -55,6 +57,7 @@ class Connector
         $this->configHelper       = $configHelper;
         $this->integrationService = $integrationService;
         $this->request            = $request;
+        $this->cacheTypeList      = $cacheTypeList;
     }
 
 
@@ -135,6 +138,33 @@ class Connector
 
         //save the connection data i got from styla:
         $this->configHelper->updateConnectionConfiguration($connectionData, $connectionScope);
+        
+        //clear magento cache
+        if(!$this->clearMagentoCache()) {
+            $this->messageManager->addError('Failed automatically cleaning Magento cache. Please refresh the cache manually.');
+        }
+    }
+    
+    /**
+     * Clear Magento caches that may be touched by our connection
+     * 
+     * 
+     */
+    public function clearMagentoCache()
+    {
+        $types = ['config','layout','block_html','reflection','config_integration','config_integration_api','full_page','translate'];
+        
+        try {
+            foreach($types as $type) {
+                $this->cacheTypeList->cleanType($type);
+            }
+        } catch (LocalizedException $e) {
+            return false;
+        } catch (\Exception $e) {
+            return false;
+        }
+        
+        return true;
     }
 
     /**

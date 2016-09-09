@@ -8,6 +8,7 @@ use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\Api\Search\SearchCriteriaFactory as FullTextSearchCriteriaFactory;
 use Magento\Framework\Api\Search\SearchInterface as FullTextSearchApi;
 use Magento\Framework\App\Request\Http as Request;
+use Magento\Framework\Api\SortOrderBuilder;
 
 class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     implements \Styla\Connect2\Api\ProductRepositoryInterface
@@ -66,6 +67,11 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      *  @var Request
      */
     protected $request;
+    
+    /**
+     * @var SortOrderBuilder
+     */
+    protected $sortOrderBuilder;
 
     /**
      *
@@ -121,7 +127,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         FullTextSearchCriteriaFactory $searchCriteriaFactory,
         FullTextSearchApi $search,
         \Magento\Search\Model\QueryFactory $queryFactory,
-        Request $request
+        Request $request,
+        SortOrderBuilder $sortOrderBuilder
     )
     {
         $this->stylaSearchResultsFactory       = $stylaSearchResultsFactory;
@@ -132,6 +139,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $this->fullTextSearchCriteriaFactory   = $searchCriteriaFactory;
         $this->queryFactory                    = $queryFactory;
         $this->request                         = $request;
+        $this->sortOrderBuilder                = $sortOrderBuilder;
 
         return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
     }
@@ -143,9 +151,30 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      */
     protected function _getDefaultSearchCriteria()
     {
-        return $this->searchCriteriaBuilder->create()
+        $searchCriteria = $this->searchCriteriaBuilder->create()
             ->setPageSize(self::DEFAULT_PAGE_SIZE)
             ->setCurrentPage(0);
+        
+        $this->_setDefaultSortOrder($searchCriteria);
+        return $searchCriteria;
+    }
+    
+    /**
+     * If no other sort order is already applied on the criteria,
+     * add the default one (entity_id incremental)
+     * 
+     * @param SearchCriteria $searchCriteria
+     */
+    protected function _setDefaultSortOrder(SearchCriteria $searchCriteria)
+    {
+        if($searchCriteria->getSortOrders()) {
+            return;
+        }
+        
+        /** @var \Magento\Framework\Api\SortOrder $sortOrder */
+        $sortOrder = $this->sortOrderBuilder->create();
+        $sortOrder->setField('entity_id')->setDirection('asc');
+        $searchCriteria->setSortOrders([$sortOrder]);
     }
     
     /**
@@ -159,21 +188,15 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $query = $this->queryFactory->get();
         $term = $query->getQueryText();
         
-        $pageSize = (int)$this->request->getParam('page_size', self::DEFAULT_PAGE_SIZE);
-        $currentPage = (int)$this->request->getParam('current_page', 0);
-        
-        $searchCriteria = $this->fullTextSearchCriteriaFactory->create();
-        
-        /** To get list of available request names see Magento/CatalogSearch/etc/search_request.xml */
-        $searchCriteria->setRequestName('quick_search_container');
+        $fulltextSearchCriteria = $this->fullTextSearchCriteriaFactory->create();
+        $fulltextSearchCriteria->setRequestName('quick_search_container');
         
         $filter = $this->filterBuilder->setField('search_term')->setValue($term)->setConditionType('like')->create();
         $filterGroup = $this->filterGroupBuilder->addFilter($filter)->create();
-        $searchCriteria->setFilterGroups([$filterGroup]);
-        $searchCriteria->setPageSize($pageSize);
-        $searchCriteria->setCurrentPage($currentPage);
+        $fulltextSearchCriteria->setFilterGroups([$filterGroup]);
         
-        $searchResults = $this->fullTextSearchApi->search($searchCriteria);
+        //this returns all matching ids, in the score descending order. this result can't be paged.
+        $searchResults = $this->fullTextSearchApi->search($fulltextSearchCriteria);
         $productIds = [];
         foreach ($searchResults->getItems() as $searchDocument) {
             $productIds[] = $searchDocument->getId();
@@ -184,11 +207,14 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     
     /**
      * 
+     * @param SearchCriteria $searchCriteria
      * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function search()
+    public function search(SearchCriteria $searchCriteria = null)
     {
+        $searchCriteria = $this->_processSearchCriteria($searchCriteria);
+
         $productIds = $this->_searchProductsFullText();
         if(!$productIds) {
             throw new \Magento\Framework\Exception\NoSuchEntityException();
@@ -200,11 +226,13 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
             ->setConditionType('in')
             ->create();
         
-        $filterGroup = $this->filterGroupBuilder->addFilter($idFilter)
+        $idFilterGroup = $this->filterGroupBuilder->addFilter($idFilter)
             ->create();
         
-        $searchCriteria = $this->searchCriteriaBuilder->create()
-            ->setFilterGroups([$filterGroup]);
+        $originalFilterGroups = $searchCriteria->getFilterGroups();
+        $originalFilterGroups[] = $idFilterGroup;
+        
+        $searchCriteria->setFilterGroups($originalFilterGroups);
         
         $searchResult = $this->getList($searchCriteria);
         return $searchResult;
@@ -245,6 +273,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
             $searchCriteria = $this->_getDefaultSearchCriteria();
             return $searchCriteria;
         }
+        
+        //if there's no other sort order applied, use the default one
+        $this->_setDefaultSortOrder($searchCriteria);
 
         //there's one specific thing to do for category id search criteria.
         //that is, if a product is assigned to any category, it should also show up
