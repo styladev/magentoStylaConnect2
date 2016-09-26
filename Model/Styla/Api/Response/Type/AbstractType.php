@@ -1,7 +1,10 @@
 <?php
 namespace Styla\Connect2\Model\Styla\Api\Response\Type;
 
-abstract class AbstractType
+use Magento\Framework\HTTP\Adapter\Curl;
+use Styla\Connect2\Api\Styla\ResponseInterface as StylaResponseInterface;
+
+abstract class AbstractType implements StylaResponseInterface
 {
     const CONTENT_TYPE_PLAIN = 'plain';
     const CONTENT_TYPE_JSON  = 'json';
@@ -126,9 +129,9 @@ abstract class AbstractType
     /**
      *
      * @param mixed                                $apiCallResult
-     * @param \Magento\Framework\HTTP\Adapter\Curl $apiService
+     * @param Curl $apiService
      */
-    public function initialize($apiCallResult, $apiService)
+    public function initialize($apiCallResult, Curl $apiService)
     {
         $this->_result     = $apiCallResult;
         $this->_error      = $apiService->getError();

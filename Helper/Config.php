@@ -3,6 +3,9 @@ namespace Styla\Connect2\Helper;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Styla\Connect2\Model\Styla\Api as StylaApi;
+use Magento\Config\Model\ResourceModel\Config as ResourceConfig;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Config extends AbstractHelper
 {
@@ -37,8 +40,22 @@ class Config extends AbstractHelper
         'rootpath' => self::XML_FRONTEND_NAME,
     ];
 
+    /**
+     *
+     * @var ResourceConfig
+     */
     protected $resourceConfig;
+    
+    /**
+     *
+     * @var StylaApi
+     */
     protected $stylaApi;
+    
+    /**
+     *
+     * @var StoreManagerInterface
+     */
     protected $storeManager;
 
     protected $_apiVersion;
@@ -47,9 +64,9 @@ class Config extends AbstractHelper
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Config\Model\ResourceModel\Config $resourceConfig,
-        \Styla\Connect2\Model\Styla\Api $stylaApi,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        ResourceConfig $resourceConfig,
+        StylaApi $stylaApi,
+        StoreManagerInterface $storeManager
     )
     {
         $this->stylaApi       = $stylaApi;
@@ -71,9 +88,23 @@ class Config extends AbstractHelper
         return $this->scopeConfig;
     }
 
+    /**
+     * 
+     * @return bool
+     */
     public function isEnabled()
     {
         return $this->getScopeConfig()->getValue(self::XML_ENABLED);
+    }
+    
+    /**
+     * Is the module already configured (ready to work) in the current store
+     * 
+     * @return bool
+     */
+    public function isConfiguredForThisStore()
+    {
+        return $this->getUsername() && $this->isEnabled();
     }
 
     public function getFrontendName()
@@ -95,6 +126,10 @@ class Config extends AbstractHelper
         return $this->_apiVersion;
     }
 
+    /**
+     * 
+     * @return StylaApi
+     */
     protected function _getApi()
     {
         return $this->stylaApi;
@@ -245,6 +280,10 @@ class Config extends AbstractHelper
      */
     public function isNavigationLinkEnabled()
     {
+        if(!$this->isConfiguredForThisStore()) {
+            return false;
+        }
+        
         return (bool)$this->getScopeConfig()->getValue(self::XML_NAVIGATION_ENABLED);
     }
 

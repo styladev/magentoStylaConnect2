@@ -2,6 +2,8 @@
 namespace Styla\Connect2\Model\Api\Converter\Type\Product;
 
 use Styla\Connect2\Model\Api\Converter\Type as ConverterType;
+use Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection as Collection;
+use Magento\Store\Api\Data\StoreInterface as Store;
 
 class Gallery extends ConverterType\AbstractType
 {
@@ -19,7 +21,12 @@ class Gallery extends ConverterType\AbstractType
         $this->converterHelper = $converterHelper;
     }
 
-    protected function _addCollectionRequirements($collection, $store = null)
+    /**
+     * 
+     * @param Collection $collection
+     * @param Store $store
+     */
+    protected function _addCollectionRequirements(Collection $collection, Store $store = null)
     {
         /** @var \Zend_Db_Select $select */
         $select = $collection->getSelect();

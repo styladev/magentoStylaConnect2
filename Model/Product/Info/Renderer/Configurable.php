@@ -1,20 +1,39 @@
 <?php
 namespace Styla\Connect2\Model\Product\Info\Renderer;
 
+use Magento\ConfigurableProduct\Model\ConfigurableAttributeData;
+use Magento\ConfigurableProduct\Helper\Data as ConfigurableHelper;
+use Magento\Catalog\Helper\Product as ProductHelper;
+use Magento\Catalog\Model\Product;
+
 class Configurable
     extends \Styla\Connect2\Model\Product\Info\Renderer\DefaultRenderer
 {
     protected $_product;
     protected $_allowProducts;
 
+    /**
+     *
+     * @var ConfigurableAttributeData
+     */
     protected $configurableAttributeData;
+    
+    /**
+     *
+     * @var ConfigurableHelper
+     */
     protected $helper;
+    
+    /**
+     *
+     * @var ProductHelper
+     */
     protected $catalogProduct;
 
     public function __construct(
-        \Magento\ConfigurableProduct\Model\ConfigurableAttributeData $configurableData,
-        \Magento\ConfigurableProduct\Helper\Data $helper,
-        \Magento\Catalog\Helper\Product $catalogProduct,
+        ConfigurableAttributeData $configurableData,
+        ConfigurableHelper $helper,
+        ProductHelper $catalogProduct,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Magento\Tax\Model\Calculation $taxCalculation,
@@ -60,11 +79,11 @@ class Configurable
      * This method is basically the same logic that's used for generating the options selects on the product view page.
      * For reference, see ->getJsonConfig() method of the product view block.
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param Product $product
      * @param array                          $productInfo
      * @return array
      */
-    protected function _collectAdditionalProductInfo($product, $productInfo)
+    protected function _collectAdditionalProductInfo(Product $product, $productInfo)
     {
         parent::_collectAdditionalProductInfo($product, $productInfo);
 

@@ -3,7 +3,10 @@ namespace Styla\Connect2\Model\Styla;
 
 use Styla\Connect2\Model\Styla\Api\Request as StylaRequest;
 use Styla\Connect2\Model\Styla\Api\Response as StylaResponse;
+use Styla\Connect2\Api\Styla\RequestInterface;
+use Styla\Connect2\Api\Styla\ResponseInterface;
 use Magento\Framework\HTTP\Adapter\Curl as Curl;
+use Styla\Connect2\Model\Styla\Api\Cache as StylaCache;
 
 class Api
 {
@@ -31,7 +34,7 @@ class Api
 
     /**
      *
-     * @var \Styla\Connect2\Model\Styla\Api\Cache
+     * @var StylaCache
      */
     protected $cache;
     protected $cacheFactory;
@@ -65,7 +68,7 @@ class Api
 
     /**
      *
-     * @return \Styla\Connect2\Model\Styla\Api\Cache
+     * @return StylaCache
      */
     public function getCache()
     {
@@ -102,6 +105,11 @@ class Api
         }
     }
 
+    /**
+     * 
+     * @param string $requestPath
+     * @return mixed
+     */
     public function getPageSeoData($requestPath)
     {
         //check if a no-response status was cached
@@ -138,9 +146,11 @@ class Api
             $apiVersion = $cache->load('stylaapiversion');
 
             if (!$apiVersion) {
+                /** @var RequestInterface $request */
                 $request = $this->getRequest(StylaRequest\Type\Version::class);
 
                 try {
+                    /** @var ResponseInterface $response */
                     $response   = $this->callService($request, false, true);
                     $apiVersion = $response->getResult();
 
@@ -187,14 +197,14 @@ class Api
 
     /**
      *
-     * @param StylaRequest\Type\AbstractType $request
+     * @param RequestInterface               $request
      * @param bool                           $canUseCache Can return cached result?
      * @param bool                           $useResultHeadersInResponse Should the response also include the parsed headers?
      * @return mixed
      * @throws \Exception
      */
     public function callService(
-        StylaRequest\Type\AbstractType $request,
+        RequestInterface $request,
         $canUseCache = true,
         $useResultHeadersInResponse = false
     )
@@ -291,21 +301,22 @@ class Api
     }
 
     /**
-     * @param $type
-     * @return Api\Request\Type\AbstractType
+     * @param string $type
+     * @return RequestInterface
      */
     public function getRequest($type)
     {
+        /** @var RequestInterface $request */
         $request = $this->requestFactory->create($type);
 
         return $request;
     }
 
     /**
-     * @param Api\Request\Type\AbstractType $request
-     * @return Api\Response\Type\AbstractType
+     * @param RequestInterface $request
+     * @return ResponseInterface
      */
-    public function getResponse(StylaRequest\Type\AbstractType $request)
+    public function getResponse(RequestInterface $request)
     {
         $response = $this->responseFactory->create($request->getResponseType());
 

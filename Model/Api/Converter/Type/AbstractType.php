@@ -1,7 +1,9 @@
 <?php
 namespace Styla\Connect2\Model\Api\Converter\Type;
 
-use \Styla\Connect2\Api\ConverterInterface as ConverterInterface;
+use Styla\Connect2\Api\ConverterInterface as ConverterInterface;
+use Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection as Collection;
+use Magento\Store\Api\Data\StoreInterface as Store;
 
 abstract class AbstractType
     implements ConverterInterface
@@ -25,15 +27,20 @@ abstract class AbstractType
 
     /**
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection $collection
-     * @param \Magento\Store\Api\Data\StoreInterface                             $store
+     * @param Collection $collection
+     * @param Store                             $store
      */
-    final public function addCollectionRequirements($collection, $store = null)
+    final public function addCollectionRequirements(Collection $collection, Store $store = null)
     {
         $this->_addCollectionRequirements($collection, $store);
     }
 
-    protected function _addCollectionRequirements($collection, $store = null)
+    /**
+     * 
+     * @param Collection $collection
+     * @param Store $store
+     */
+    protected function _addCollectionRequirements(Collection $collection, Store $store = null)
     {
         //overwrite this in child converters, if you need to do something with the collection
     }

@@ -3,12 +3,28 @@ namespace Styla\Connect2\Controller\Product;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use \Magento\Framework\Webapi\Exception as WebapiException;
+use Magento\Framework\Webapi\Exception as WebapiException;
+use Styla\Connect2\Model\Product\Info as ProductInfo;
+use Magento\Framework\Controller\Result\JsonFactory;
 
 class Info extends \Magento\Framework\App\Action\Action
 {
+    /**
+     *
+     * @var ProductRepositoryInterface 
+     */
     protected $productRepository;
+    
+    /**
+     *
+     * @var ProductInfo 
+     */
     protected $productInfo;
+    
+    /**
+     *
+     * @var JsonFactory 
+     */
     protected $resultJsonFactory;
 
     /**
@@ -21,8 +37,8 @@ class Info extends \Magento\Framework\App\Action\Action
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         ProductRepositoryInterface $productRepository,
-        \Styla\Connect2\Model\Product\Info $productInfo,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+        ProductInfo $productInfo,
+        JsonFactory $resultJsonFactory
     )
     {
         $this->productRepository = $productRepository;
@@ -38,10 +54,12 @@ class Info extends \Magento\Framework\App\Action\Action
         $result = null;
 
         try {
+            /** @var \Magento\Catalog\Model\Product $product */
             $product = $this->_initProduct();
 
             $this->productInfo->setProduct($product);
 
+            /** @var array $result */
             $result = $this->productInfo->getInfo();
         } catch (\Exception $e) {
             $errors[] = $e->getMessage();

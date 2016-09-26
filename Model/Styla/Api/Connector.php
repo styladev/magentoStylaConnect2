@@ -27,6 +27,7 @@ class Connector
     protected $configHelper;
     protected $integrationService;
     protected $request;
+    protected $cacheTypeList;
 
     //these are the resources that our Styla Integration will be able to use.
     //currently, we only need the products and categories
@@ -43,7 +44,8 @@ class Connector
         \Styla\Connect2\Model\Styla\Api $stylaApi,
         \Styla\Connect2\Helper\Config $configHelper,
         \Magento\Integration\Api\IntegrationServiceInterface $integrationService,
-        \Magento\Framework\App\Request\Http $request
+        \Magento\Framework\App\Request\Http $request,
+        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
     )
     {
         $this->messageManager     = $messageManager;
@@ -55,9 +57,16 @@ class Connector
         $this->configHelper       = $configHelper;
         $this->integrationService = $integrationService;
         $this->request            = $request;
+        $this->cacheTypeList      = $cacheTypeList;
     }
 
 
+    /**
+     * Get the URL used for sending the connection data to Styla
+     * 
+     * @return string
+     * @throws \Exception
+     */
     public function getConnectorApiUrl()
     {
         $connectionUrl = self::STYLA_API_CONNECTOR_URL_PRODUCTION;
@@ -80,7 +89,7 @@ class Connector
      * @param array $formData
      * @return array
      */
-    protected function _getConnectionScope($formData)
+    protected function _getConnectionScope(array $formData)
     {
         $defaultScope = ['scope' => 'default', 'scope_id' => 0];
 
@@ -129,8 +138,39 @@ class Connector
 
         //save the connection data i got from styla:
         $this->configHelper->updateConnectionConfiguration($connectionData, $connectionScope);
+        
+        //clear magento cache
+        if(!$this->clearMagentoCache()) {
+            $this->messageManager->addError('Failed automatically cleaning Magento cache. Please refresh the cache manually.');
+        }
+    }
+    
+    /**
+     * Clear Magento caches that may be touched by our connection
+     * 
+     * 
+     */
+    public function clearMagentoCache()
+    {
+        $types = ['config','layout','block_html','reflection','config_integration','config_integration_api','full_page','translate'];
+        
+        try {
+            foreach($types as $type) {
+                $this->cacheTypeList->cleanType($type);
+            }
+        } catch (LocalizedException $e) {
+            return false;
+        } catch (\Exception $e) {
+            return false;
+        }
+        
+        return true;
     }
 
+    /**
+     * 
+     * @return Integration
+     */
     public function getIntegration()
     {
         //do we have an integration already?
@@ -148,6 +188,7 @@ class Connector
             'resource'      => $this->integrationResources
         ];
 
+        /** @var Integration $integration */
         $integration = $this->integrationService->create($integrationData);
         $this->_registerIntegration($integration); //activate the integration
 
@@ -223,7 +264,7 @@ class Connector
 
     /**
      *
-     * @deprecated the integration doesn't need an admin user
+     * @deprecated since version 2.0.0.0 the integration doesn't need an admin user
      */
     public function getAdminUser()
     {

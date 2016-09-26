@@ -2,6 +2,8 @@
 namespace Styla\Connect2\Model\Api\Converter;
 
 use Styla\Connect2\Api\ConverterInterface as ConverterInterface;
+use Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection as Collection;
+use Magento\Store\Api\Data\StoreInterface as Store;
 
 class ConverterChain
 {
@@ -31,10 +33,10 @@ class ConverterChain
 
     /**
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection $collection
-     * @param \Magento\Store\Api\Data\StoreInterface                             $store
+     * @param Collection $collection
+     * @param Store $store
      */
-    public function addCollectionRequirements($collection, $store = null)
+    public function addCollectionRequirements(Collection $collection, Store $store = null)
     {
         $requirementsIdentifiers = [];
 
@@ -52,7 +54,7 @@ class ConverterChain
 
     /**
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection $collection
+     * @param Collection $collection
      */
     public function doConversion($collection)
     {

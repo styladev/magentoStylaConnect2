@@ -7,6 +7,10 @@ use Styla\Connect2\Model\Styla\Api\Connector;
 
 class Save extends Action
 {
+    /**
+     *
+     * @var Connector
+     */
     protected $connector;
 
     /**

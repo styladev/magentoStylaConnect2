@@ -1,7 +1,11 @@
 <?php
 namespace Styla\Connect2\Model\Styla\Api;
 
-use Styla\Connect2\Model\Styla\Api\Request\Type\AbstractType as StylaRequest;
+use Magento\Webapi\Model\Cache\Type\Webapi as WebapiCache;
+use Styla\Connect2\Helper\Config;
+use Styla\Connect2\Model\Styla\Api as StylaApi;
+use Styla\Connect2\Api\Styla\RequestInterface;
+use Styla\Connect2\Api\Styla\ResponseInterface;
 
 class Cache
 {
@@ -11,18 +15,28 @@ class Cache
     /**
      * We're using the builtin Magento2 WebApi (Web Services) cache
      *
-     * @var \Magento\Webapi\Model\Cache\Type\Webapi
+     * @var WebapiCache
      */
     protected $_cache;
 
+    /**
+     *
+     * @var Config
+     */
     protected $_configHelper;
+    
+    /**
+     *
+     * @var StylaApi
+     */
     protected $_api;
+    
     protected $_cacheLifetime;
 
     public function __construct(
-        \Magento\Webapi\Model\Cache\Type\Webapi $cache,
-        \Styla\Connect2\Model\Styla\Api $api,
-        \Styla\Connect2\Helper\Config $configHelper
+        WebapiCache $cache,
+        StylaApi $api,
+        Config $configHelper
     )
     {
         $this->_cache        = $cache;
@@ -69,7 +83,7 @@ class Cache
 
     /**
      *
-     * @return \Styla\Connect2\Model\Styla\Api
+     * @return StylaApi
      */
     public function getApi()
     {
@@ -79,10 +93,10 @@ class Cache
     /**
      * Store the api response in cache, if possible
      *
-     * @param Request\Type\AbstractType  $request
-     * @param Response\Type\AbstractType $response
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
      */
-    public function storeApiResponse(Request\Type\AbstractType $request, Response\Type\AbstractType $response)
+    public function storeApiResponse(RequestInterface $request, ResponseInterface $response)
     {
         if ($response->getHttpStatus() !== 200) {
             return;
@@ -120,7 +134,7 @@ class Cache
      * @param  $request
      * @return string
      */
-    public function getCacheKey(StylaRequest $request)
+    public function getCacheKey(RequestInterface $request)
     {
         $key = $request->getRequestType() . $request->getRequestPath() . "_" . $this->getApiVersion();
 
@@ -130,10 +144,10 @@ class Cache
     /**
      * If possible, load a cached response
      *
-     * @param StylaRequest $request
-     * @return boolean|\Styla\Connect2\Model\Styla\Api\Response\Type\AbstractType
+     * @param RequestInterface $request
+     * @return boolean|ResponseInterface
      */
-    public function getCachedApiResponse(StylaRequest $request)
+    public function getCachedApiResponse(RequestInterface $request)
     {
         $key    = $this->getCacheKey($request);
         $cached = $this->load($key, true);
@@ -151,7 +165,7 @@ class Cache
 
     /**
      *
-     * @return \Magento\Webapi\Model\Cache\Type\Webapi
+     * @return WebapiCache
      */
     protected function getCache()
     {

@@ -6,6 +6,10 @@ use Styla\Connect2\Helper\Config;
 
 class Form extends Template
 {
+    /**
+     *
+     * @var Config
+     */
     protected $configHelper;
 
     public function __construct(

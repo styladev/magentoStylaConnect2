@@ -1,24 +1,64 @@
 <?php
 namespace Styla\Connect2\Model\Product\Info\Renderer;
 
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
+use Magento\Tax\Model\Calculation as TaxCalculation;
+use Magento\Tax\Helper\Data as TaxHelper;
+use Magento\Framework\Pricing\Helper\Data as PriceHelper;
+use Magento\Catalog\Model\Product;
+
 class DefaultRenderer
 {
     //const EVENT_COLLECT_ADDITIONAL_INFO = 'styla_connect_product_info_renderer_collect_additional';
 
     protected $_store;
     protected $manufacturerAttribute;
+    
+    /**
+     *
+     * @var StoreManagerInterface 
+     */
     protected $_storeManager;
+    
+    /**
+     *
+     * @var StockRegistryInterface 
+     */
     protected $stockRegistry;
+    
+    /**
+     *
+     * @var TaxCalculation
+     */
     protected $taxCalculation;
+    
+    /**
+     *
+     * @var TaxHelper
+     */
     protected $taxHelper;
+    
+    /**
+     *
+     * @var PriceHelper
+     */
     protected $priceHelper;
 
+    /**
+     * 
+     * @param StoreManagerInterface $storeManager
+     * @param StockRegistryInterface $stockRegistry
+     * @param TaxCalculation $taxCalculation
+     * @param TaxHelper $taxHelper
+     * @param PriceHelper $priceHelper
+     */
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
-        \Magento\Tax\Model\Calculation $taxCalculation,
-        \Magento\Tax\Helper\Data $taxHelper,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper
+        StoreManagerInterface $storeManager,
+        StockRegistryInterface $stockRegistry,
+        TaxCalculation $taxCalculation,
+        TaxHelper $taxHelper,
+        PriceHelper $priceHelper
     )
     {
         $this->_storeManager  = $storeManager;
@@ -31,9 +71,10 @@ class DefaultRenderer
     /**
      * Collect the data and return it as array, ready to be turned into json
      *
+     * @var Product $product
      * @return array
      */
-    final public function render($product)
+    final public function render(Product $product)
     {
         $productInfo = $this->_collectProductInfo($product);
 
@@ -53,10 +94,10 @@ class DefaultRenderer
     /**
      * Collect the basic information about the product and return it as an array.
      *
-     * @param Mage_Catalog_Model_Product $product
+     * @param Product $product
      * @return array
      */
-    protected function _collectProductInfo($product)
+    protected function _collectProductInfo(Product $product)
     {
         //basic product info, same for every possible product type
         $productInfo = [
@@ -102,10 +143,10 @@ class DefaultRenderer
      * Get the tax info, if this product has a tax class
      * This will load a default tax rate (default address, default customer type)
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param  $product
      * @return boolean|array
      */
-    public function getProductTax($product)
+    public function getProductTax(Product $product)
     {
         $taxId = $product->getTaxClassId();
         if (null === $taxId) {
@@ -141,10 +182,10 @@ class DefaultRenderer
     /**
      * If there are limits for qty in cart for this product, return them
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param Product $product
      * @return boolean|array
      */
-    public function getProductQtyLimits($product)
+    public function getProductQtyLimits(Product $product)
     {
         $minQty = null;
         $maxQty = null;
@@ -190,10 +231,10 @@ class DefaultRenderer
     /**
      * Return the "normal price" of the product, if it has a special price and this special price is active
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param Product $product
      * @return mixed
      */
-    public function getOldPrice($product)
+    public function getOldPrice(Product $product)
     {
         $regularPrice = $product->getPriceInfo()->getPrice('regular_price')->getAmount()->getValue();
         $finalPrice   = $product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue();
@@ -208,11 +249,11 @@ class DefaultRenderer
     /**
      * Load and collect any other product info that we may need
      *
-     * @param Mage_Catalog_Model_Product $product
+     * @param Product $product
      * @param array                      $productInfo
      * @return array
      */
-    protected function _collectAdditionalProductInfo($product, $productInfo)
+    protected function _collectAdditionalProductInfo(Product $product, $productInfo)
     {
         return $productInfo; //todo: fix this wih a magento2 event
 

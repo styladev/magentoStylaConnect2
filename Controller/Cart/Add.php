@@ -1,17 +1,29 @@
 <?php
 namespace Styla\Connect2\Controller\Cart;
 
-use \Magento\Framework\Webapi\Exception as WebapiException;
+use Magento\Framework\Webapi\Exception as WebapiException;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Checkout\Helper\Cart as CartHelper;
 
 class Add extends \Magento\Checkout\Controller\Cart\Add
 {
     /**
-     * @var \Magento\Framework\View\Result\PageFactory
+     * 
+     * @var PageFactory
      */
     protected $resultPageFactory;
 
+    /**
+     *
+     * @var JsonFactory 
+     */
     protected $resultJsonFactory;
 
+    /**
+     *
+     * @var CartHelper
+     */
     protected $cartHelper;
 
     public function __construct(
@@ -22,9 +34,9 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
         \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
         \Magento\Checkout\Model\Cart $cart,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Magento\Checkout\Helper\Cart $cartHelper
+        PageFactory $resultPageFactory,
+        JsonFactory $resultJsonFactory,
+        CartHelper $cartHelper
     )
     {
         $this->resultPageFactory = $resultPageFactory;
@@ -59,6 +71,7 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
                 $params['qty'] = $filter->filter($params['qty']);
             }
 
+            /** @var \Magento\Catalog\Model\Product|bool $product */
             $product = $this->_initProduct();
             $related = $this->getRequest()->getParam('related_product');
 
@@ -84,6 +97,12 @@ class Add extends \Magento\Checkout\Controller\Cart\Add
             if (!$this->cart->getQuote()->getHasError()) {
                 $success = true;
             }
+            
+            $message = __(
+                'You added %1 to your shopping cart.',
+                $product->getName()
+            );
+            $this->messageManager->addSuccessMessage($message);
 
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $errors = array_unique(explode("\n", $e->getMessage()));

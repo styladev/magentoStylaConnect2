@@ -2,9 +2,16 @@
 namespace Styla\Connect2\Model\Api;
 
 use Magento\Framework\Api\SortOrder;
-use \Styla\Connect2\Model\Api\Converter as DataConverter;
+use Styla\Connect2\Model\Api\Converter as DataConverter;
+use Magento\Framework\Api\SearchCriteriaInterface as SearchCriteria;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Framework\Api\Search\SearchCriteriaFactory as FullTextSearchCriteriaFactory;
+use Magento\Framework\Api\Search\SearchInterface as FullTextSearchApi;
+use Magento\Framework\App\Request\Http as Request;
+use Magento\Framework\Api\SortOrderBuilder;
 
 class ProductRepository extends \Magento\Catalog\Model\ProductRepository
+    implements \Styla\Connect2\Api\ProductRepositoryInterface
 {
     const DEFAULT_PAGE_SIZE = 46; //if no limit provided, this will be used
 
@@ -37,6 +44,34 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     protected $categoryFactory;
+    
+    /** 
+     * 
+     * @var FullTextSearchCriteriaFactory
+     */
+    protected $fullTextSearchCriteriaFactory;
+    
+    /** 
+     * 
+     * @var FullTextSearchApi
+     */
+    protected $fullTextSearchApi;
+    
+    /**
+     *
+     * @var Magento\Search\Model\QueryFactory
+     */
+    protected $queryFactory;
+    
+    /**
+     *  @var Request
+     */
+    protected $request;
+    
+    /**
+     * @var SortOrderBuilder
+     */
+    protected $sortOrderBuilder;
 
     /**
      *
@@ -88,13 +123,23 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         \Styla\Connect2\Api\Data\StylaProductSearchResultsInterfaceFactory $stylaSearchResultsFactory,
         \Styla\Connect2\Model\Api\Converter\ConverterFactory $converterFactory,
         \Magento\Framework\Api\Search\FilterGroupBuilder $filterGroupBuilder,
-        \Magento\Catalog\Model\CategoryFactory $categoryFactory
+        \Magento\Catalog\Model\CategoryFactory $categoryFactory,
+        FullTextSearchCriteriaFactory $searchCriteriaFactory,
+        FullTextSearchApi $search,
+        \Magento\Search\Model\QueryFactory $queryFactory,
+        Request $request,
+        SortOrderBuilder $sortOrderBuilder
     )
     {
-        $this->stylaSearchResultsFactory = $stylaSearchResultsFactory;
-        $this->converterFactory          = $converterFactory;
-        $this->filterGroupBuilder        = $filterGroupBuilder;
-        $this->categoryFactory           = $categoryFactory;
+        $this->stylaSearchResultsFactory       = $stylaSearchResultsFactory;
+        $this->converterFactory                = $converterFactory;
+        $this->filterGroupBuilder              = $filterGroupBuilder;
+        $this->categoryFactory                 = $categoryFactory;
+        $this->fullTextSearchApi               = $search;
+        $this->fullTextSearchCriteriaFactory   = $searchCriteriaFactory;
+        $this->queryFactory                    = $queryFactory;
+        $this->request                         = $request;
+        $this->sortOrderBuilder                = $sortOrderBuilder;
 
         return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
     }
@@ -102,19 +147,101 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     /**
      * If no search criteria is provided in the request, use this as default
      *
-     * @return \Magento\Framework\Api\SearchCriteriaInterface
+     * @return SearchCriteria
      */
     protected function _getDefaultSearchCriteria()
     {
-        return $this->searchCriteriaBuilder->create()
+        $searchCriteria = $this->searchCriteriaBuilder->create()
             ->setPageSize(self::DEFAULT_PAGE_SIZE)
             ->setCurrentPage(0);
+        
+        $this->_setDefaultSortOrder($searchCriteria);
+        return $searchCriteria;
+    }
+    
+    /**
+     * If no other sort order is already applied on the criteria,
+     * add the default one (entity_id incremental)
+     * 
+     * @param SearchCriteria $searchCriteria
+     */
+    protected function _setDefaultSortOrder(SearchCriteria $searchCriteria)
+    {
+        if($searchCriteria->getSortOrders()) {
+            return;
+        }
+        
+        /** @var \Magento\Framework\Api\SortOrder $sortOrder */
+        $sortOrder = $this->sortOrderBuilder->create();
+        $sortOrder->setField('entity_id')->setDirection('asc');
+        $searchCriteria->setSortOrders([$sortOrder]);
+    }
+    
+    /**
+     * Perform full text search and find IDs of matching products.
+     *
+     * @return int[]
+     */
+    protected function _searchProductsFullText()
+    {
+        //the query factory will get the term from the "q" url param
+        $query = $this->queryFactory->get();
+        $term = $query->getQueryText();
+        
+        $fulltextSearchCriteria = $this->fullTextSearchCriteriaFactory->create();
+        $fulltextSearchCriteria->setRequestName('quick_search_container');
+        
+        $filter = $this->filterBuilder->setField('search_term')->setValue($term)->setConditionType('like')->create();
+        $filterGroup = $this->filterGroupBuilder->addFilter($filter)->create();
+        $fulltextSearchCriteria->setFilterGroups([$filterGroup]);
+        
+        //this returns all matching ids, in the score descending order. this result can't be paged.
+        $searchResults = $this->fullTextSearchApi->search($fulltextSearchCriteria);
+        $productIds = [];
+        foreach ($searchResults->getItems() as $searchDocument) {
+            $productIds[] = $searchDocument->getId();
+        }
+        
+        return $productIds;
+    }
+    
+    /**
+     * 
+     * @param SearchCriteria $searchCriteria
+     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function search(SearchCriteria $searchCriteria = null)
+    {
+        $searchCriteria = $this->_processSearchCriteria($searchCriteria);
+
+        $productIds = $this->_searchProductsFullText();
+        if(!$productIds) {
+            throw new \Magento\Framework\Exception\NoSuchEntityException();
+        }
+        
+        //get the usual list of products, using the ids we just received
+        $idFilter = $this->filterBuilder->setField('entity_id')
+            ->setValue($productIds)
+            ->setConditionType('in')
+            ->create();
+        
+        $idFilterGroup = $this->filterGroupBuilder->addFilter($idFilter)
+            ->create();
+        
+        $originalFilterGroups = $searchCriteria->getFilterGroups();
+        $originalFilterGroups[] = $idFilterGroup;
+        
+        $searchCriteria->setFilterGroups($originalFilterGroups);
+        
+        $searchResult = $this->getList($searchCriteria);
+        return $searchResult;
     }
 
     /**
      *
      * @param int $productId
-     * @return type
+     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
     public function getOne($productId)
     {
@@ -136,8 +263,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     }
 
     /**
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @return \Magento\Framework\Api\SearchCriteriaInterface
+     * @param SearchCriteria $searchCriteria
+     * @return SearchCriteria
      */
     protected function _processSearchCriteria($searchCriteria = null)
     {
@@ -146,6 +273,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
             $searchCriteria = $this->_getDefaultSearchCriteria();
             return $searchCriteria;
         }
+        
+        //if there's no other sort order applied, use the default one
+        $this->_setDefaultSortOrder($searchCriteria);
 
         //there's one specific thing to do for category id search criteria.
         //that is, if a product is assigned to any category, it should also show up
@@ -195,10 +325,10 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
 
     /**
      *
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteria $searchCriteria
      * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null)
+    public function getList(SearchCriteria $searchCriteria = null)
     {
         $searchCriteria = $this->_processSearchCriteria($searchCriteria);
 
@@ -249,9 +379,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     /**
      * Add styla data converters requirements to the product collection.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $collection
+     * @param ProductCollection $collection
      */
-    protected function _addConverterRequirementsToCollection($collection, $store)
+    protected function _addConverterRequirementsToCollection(ProductCollection $collection, $store)
     {
         $converterChain = $this->getConverters();
 
@@ -275,9 +405,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     /**
      * Do the data conversion to a format accepted by styla
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Collection $collection
+     * @param ProductCollection $collection
      */
-    protected function _doConvert($collection)
+    protected function _doConvert(ProductCollection $collection)
     {
         $this->getConverters()->doConversion($collection);
     }
