@@ -3,7 +3,7 @@
 As Magento 2 Supports composer based installations run
 the following commands from your magento root directory
  
-`composer require styla/magento2`
+`composer require styla/magento2-connect`
 
 After a successful installation you must enable the module with:
 

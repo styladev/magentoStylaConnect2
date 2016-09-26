@@ -1,5 +1,5 @@
 {
-    "name": "styla/connect2",
+    "name": "styla/magento2-connect",
     "description": "A Magento 2 Styla Magazine support",
     "type": "magento2-module",
     "version": "2.0.0.0",
