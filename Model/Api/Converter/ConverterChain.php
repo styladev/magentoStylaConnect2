@@ -4,14 +4,27 @@ namespace Styla\Connect2\Model\Api\Converter;
 use Styla\Connect2\Api\ConverterInterface as ConverterInterface;
 use Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection as Collection;
 use Magento\Store\Api\Data\StoreInterface as Store;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class ConverterChain
 {
+    const EVENT_CONVERT = 'styla_data_convert';
+    
     /**
      *
      * @var array
      */
     protected $_converters;
+    
+    /**
+     *
+     * @var EventManager
+     */
+    protected $eventManager;
+    
+    public function __construct(EventManager $eventManager) {
+        $this->eventManager = $eventManager;
+    }
 
     /**
      *
@@ -58,10 +71,20 @@ class ConverterChain
      */
     public function doConversion($collection)
     {
+        $this->eventManager->dispatch(self::EVENT_CONVERT . '_before', [
+            'collection' => $collection,
+            'converter_chain' => $this 
+        ]);
+        
         foreach ($collection as $item) {
             foreach ($this->getConverters() as $converter) {
                 $converter->convertItem($item);
             }
         }
+        
+        $this->eventManager->dispatch(self::EVENT_CONVERT . '_after', [
+            'collection' => $collection,
+            'converter_chain' => $this 
+        ]);
     }
 }

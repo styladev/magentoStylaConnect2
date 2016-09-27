@@ -5,6 +5,8 @@ use Magento\ConfigurableProduct\Model\ConfigurableAttributeData;
 use Magento\ConfigurableProduct\Helper\Data as ConfigurableHelper;
 use Magento\Catalog\Helper\Product as ProductHelper;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Event\ManagerInterface as EventManager;
+use Magento\Framework\DataObjectFactory;
 
 class Configurable
     extends \Styla\Connect2\Model\Product\Info\Renderer\DefaultRenderer
@@ -38,14 +40,16 @@ class Configurable
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Magento\Tax\Model\Calculation $taxCalculation,
         \Magento\Tax\Helper\Data $taxHelper,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper
+        \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        EventManager $eventManager,
+        DataObjectFactory $dataObjectFactory
     )
     {
         $this->configurableAttributeData = $configurableData;
         $this->helper                    = $helper;
         $this->catalogProduct            = $catalogProduct;
 
-        return parent::__construct($storeManager, $stockRegistry, $taxCalculation, $taxHelper, $priceHelper);
+        return parent::__construct($storeManager, $stockRegistry, $taxCalculation, $taxHelper, $priceHelper, $eventManager, $dataObjectFactory);
     }
 
     public function getProduct()

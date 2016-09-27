@@ -9,11 +9,14 @@ use Magento\Framework\Api\Search\SearchCriteriaFactory as FullTextSearchCriteria
 use Magento\Framework\Api\Search\SearchInterface as FullTextSearchApi;
 use Magento\Framework\App\Request\Http as Request;
 use Magento\Framework\Api\SortOrderBuilder;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     implements \Styla\Connect2\Api\ProductRepositoryInterface
 {
     const DEFAULT_PAGE_SIZE = 46; //if no limit provided, this will be used
+    
+    const EVENT_GET_PRODUCTS = 'styla_get_product_collection';
 
     /**
      *
@@ -72,6 +75,12 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * @var SortOrderBuilder
      */
     protected $sortOrderBuilder;
+    
+    /**
+     *
+     * @var EventManager
+     */
+    protected $eventManager;
 
     /**
      *
@@ -128,7 +137,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         FullTextSearchApi $search,
         \Magento\Search\Model\QueryFactory $queryFactory,
         Request $request,
-        SortOrderBuilder $sortOrderBuilder
+        SortOrderBuilder $sortOrderBuilder,
+        EventManager $eventManager
     )
     {
         $this->stylaSearchResultsFactory       = $stylaSearchResultsFactory;
@@ -140,6 +150,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $this->queryFactory                    = $queryFactory;
         $this->request                         = $request;
         $this->sortOrderBuilder                = $sortOrderBuilder;
+        $this->eventManager                    = $eventManager;
 
         return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
     }
@@ -372,6 +383,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
 
         $searchResult->setSearchCriteria($searchCriteria);
         $searchResult->setItems($collection->getItems());
+        
+        //dispatch the event
+        $this->eventManager->dispatch(self::EVENT_GET_PRODUCTS, ['collection' => $collection, 'searchCriteria' => $searchCriteria]);
 
         return $searchResult;
     }

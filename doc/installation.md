@@ -12,3 +12,6 @@ After a successful installation you must enable the module with:
 Finally make sure everything is up to date with:
 
 `php bin/magento setup:upgrade`
+
+*Now, before you can start using your magazine - you must run the "Connection Assistant", available in the Styla Connect section of Magento configuration page.*
+More information is available here: [Configuration](configuration.md)

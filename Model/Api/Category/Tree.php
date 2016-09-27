@@ -4,9 +4,12 @@ namespace Styla\Connect2\Model\Api\Category;
 use Magento\Catalog\Api\Data\CategoryTreeInterface;
 use Magento\Framework\Data\Tree\Node;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class Tree extends \Magento\Catalog\Model\Category\Tree
 {
+    const EVENT_GET_TREE = 'styla_category_get_tree';
+    
     //this is a list of additional attributes that will be available in the generated category tree
     //this could be refactored to a more extensible implementation, like the product data converters...
     protected $_extraAttributes = ['image'];
@@ -16,16 +19,24 @@ class Tree extends \Magento\Catalog\Model\Category\Tree
      * @var \Styla\Connect2\Api\Data\StylaCategoryTreeInterfaceFactory
      */
     protected $stylaTreeFactory;
+    
+    /**
+     *
+     * @var EventManager
+     */
+    protected $eventManager;
 
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Category\Tree $categoryTree,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         CategoryCollection $categoryCollection,
         \Magento\Catalog\Api\Data\CategoryTreeInterfaceFactory $treeFactory,
-        \Styla\Connect2\Api\Data\StylaCategoryTreeInterfaceFactory $stylaTreeFactory
+        \Styla\Connect2\Api\Data\StylaCategoryTreeInterfaceFactory $stylaTreeFactory,
+        EventManager $eventManager
     )
     {
         $this->stylaTreeFactory = $stylaTreeFactory;
+        $this->eventManager = $eventManager;
 
         return parent::__construct($categoryTree, $storeManager, $categoryCollection, $treeFactory);
     }
@@ -52,6 +63,9 @@ class Tree extends \Magento\Catalog\Model\Category\Tree
             ->setChildrenData($children);
 
         $this->_setExtraAttributes($tree, $node);
+        
+        //dispath the tree event
+        $this->eventManager->dispatch(self::EVENT_GET_TREE, ['tree' => $tree]);
 
         return $tree;
     }

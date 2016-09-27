@@ -7,10 +7,12 @@ use Magento\Tax\Model\Calculation as TaxCalculation;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Event\ManagerInterface as EventManager;
+use Magento\Framework\DataObjectFactory;
 
 class DefaultRenderer
 {
-    //const EVENT_COLLECT_ADDITIONAL_INFO = 'styla_connect_product_info_renderer_collect_additional';
+    const EVENT_COLLECT_ADDITIONAL_INFO = 'styla_product_info_renderer_collect_additional';
 
     protected $_store;
     protected $manufacturerAttribute;
@@ -20,6 +22,18 @@ class DefaultRenderer
      * @var StoreManagerInterface 
      */
     protected $_storeManager;
+    
+    /**
+     *
+     * @var EventManager
+     */
+    protected $eventManager;
+    
+    /**
+     *
+     * @var DataObjectFactory
+     */
+    protected $dataObjectFactory;
     
     /**
      *
@@ -58,7 +72,9 @@ class DefaultRenderer
         StockRegistryInterface $stockRegistry,
         TaxCalculation $taxCalculation,
         TaxHelper $taxHelper,
-        PriceHelper $priceHelper
+        PriceHelper $priceHelper,
+        EventManager $eventManager,
+        DataObjectFactory $dataObjectFactory
     )
     {
         $this->_storeManager  = $storeManager;
@@ -66,6 +82,8 @@ class DefaultRenderer
         $this->taxCalculation = $taxCalculation;
         $this->taxHelper      = $taxHelper;
         $this->priceHelper    = $priceHelper;
+        $this->eventManager   = $eventManager;
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -74,7 +92,7 @@ class DefaultRenderer
      * @var Product $product
      * @return array
      */
-    final public function render(Product $product)
+    public function render(Product $product)
     {
         $productInfo = $this->_collectProductInfo($product);
 
@@ -255,18 +273,14 @@ class DefaultRenderer
      */
     protected function _collectAdditionalProductInfo(Product $product, $productInfo)
     {
-        return $productInfo; //todo: fix this wih a magento2 event
-
-        //can be overridden and used in productType-specific classes to get more detailed attributes
-
         //allow for collecting additional data outside of the renderer
-        $transportObject = new Varien_Object();
+        $transportObject = $this->dataObjectFactory->create();
         $transportObject->setProductInfo($productInfo);
         $transportObject->setProduct($product);
-        Mage::dispatchEvent(self::EVENT_COLLECT_ADDITIONAL_INFO, ['transport_object' => $transportObject]);
+        
+        $this->eventManager->dispatch(self::EVENT_COLLECT_ADDITIONAL_INFO, ['transport_object' => $transportObject]);
 
         $productInfo = $transportObject->getProductInfo();
-
         return $productInfo;
     }
 
