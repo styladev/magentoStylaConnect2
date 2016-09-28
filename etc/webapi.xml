@@ -16,13 +16,6 @@
         </resources>
     </route>
     
-    <route url="/V1/styla_product/search" method="GET">
-        <service class="Styla\Connect2\Api\ProductRepositoryInterface" method="search"/>
-        <resources>
-            <resource ref="Magento_Catalog::products"/>
-        </resources>
-    </route>
-    
     <route url="/V1/styla_category/:rootCategoryId" method="GET">
         <service class="Styla\Connect2\Api\CategoryManagementInterface" method="getTree"/>
         <resources>

@@ -13,6 +13,8 @@ use Magento\Framework\Api\SortOrderBuilder;
 class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     implements \Styla\Connect2\Api\ProductRepositoryInterface
 {
+    const SEARCH_FILTER_QUERY = 'query';
+    
     const DEFAULT_PAGE_SIZE = 46; //if no limit provided, this will be used
 
     /**
@@ -206,36 +208,50 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     }
     
     /**
+     * Search for the fulltext search term, change the filter into a product_ids list
      * 
-     * @param SearchCriteria $searchCriteria
-     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
+     * @param \Magento\Framework\Api\Filter $filter
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function search(SearchCriteria $searchCriteria = null)
+    protected function _applyFulltextSearch(\Magento\Framework\Api\Filter $filter)
     {
-        $searchCriteria = $this->_processSearchCriteria($searchCriteria);
-
+        $queryValue = $filter->getValue();
+        if(!$queryValue) {
+            throw new \Magento\Framework\Exception\NoSuchEntityException();
+        }
+        
+        //a little hack. since magento will expect the query to be a get param of the request, we'll copy it there
+        $this->request->setParam('q', $queryValue);
+        
         $productIds = $this->_searchProductsFullText();
         if(!$productIds) {
             throw new \Magento\Framework\Exception\NoSuchEntityException();
         }
         
-        //get the usual list of products, using the ids we just received
-        $idFilter = $this->filterBuilder->setField('entity_id')
-            ->setValue($productIds)
-            ->setConditionType('in')
-            ->create();
+        //we no longer need our original query filter, we'll now turn it into the actual found product_ids filter, instead
+        $filter->setConditionType('in')->setField('entity_id')->setValue($productIds);
+    }
+    
+    /**
+     * The user may be searching for a specific text search term, as one of his searchCriterias, as in:
+     * V1/styla_product?searchCriteria[filter_groups][0][filters][0][field]=query&searchCriteria[filter_groups][0][filters][0][value]=THESEARCHTERM
+     * 
+     * We will process this here, and turn this request into a list of product_ids matching his search term.
+     * 
+     * @param SearchCriteria $searchCriteria
+     * @return SearchCriteria
+     */
+    protected function _processTextSearchCriteria(SearchCriteria $searchCriteria)
+    {
+        foreach ($searchCriteria->getFilterGroups() as $group) {
+            foreach ($group->getFilters() as $filter) {
+                if ($filter->getField() == self::SEARCH_FILTER_QUERY) {
+                    $this->_applyFulltextSearch($filter);
+                }
+            }
+        }
         
-        $idFilterGroup = $this->filterGroupBuilder->addFilter($idFilter)
-            ->create();
-        
-        $originalFilterGroups = $searchCriteria->getFilterGroups();
-        $originalFilterGroups[] = $idFilterGroup;
-        
-        $searchCriteria->setFilterGroups($originalFilterGroups);
-        
-        $searchResult = $this->getList($searchCriteria);
-        return $searchResult;
+        return $searchCriteria;
     }
 
     /**
@@ -330,7 +346,11 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      */
     public function getList(SearchCriteria $searchCriteria = null)
     {
+        //apply the default search criteria if none is defined, pre-process the filter values if needed
         $searchCriteria = $this->_processSearchCriteria($searchCriteria);
+        
+        //there may be a search query as one of the criterias. if it's there, apply the text search, first
+        $searchCriteria = $this->_processTextSearchCriteria($searchCriteria);
 
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $collection = $this->collectionFactory->create();
@@ -372,6 +392,10 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
 
         $searchResult->setSearchCriteria($searchCriteria);
         $searchResult->setItems($collection->getItems());
+        
+        if(!count($searchResult->getItems())) {
+            throw new \Magento\Framework\Exception\NoSuchEntityException();
+        }
 
         return $searchResult;
     }

@@ -43,5 +43,12 @@ interface StylaProductInterface
      * @return boolean
      */
     public function getShop();
+    
+    /**
+     * Get product type id - configurable/simple?
+     * 
+     * @return string
+     */
+    public function getTypeId();
 }
 
