@@ -9,6 +9,7 @@ use Magento\Framework\Api\Search\SearchCriteriaFactory as FullTextSearchCriteria
 use Magento\Framework\Api\Search\SearchInterface as FullTextSearchApi;
 use Magento\Framework\App\Request\Http as Request;
 use Magento\Framework\Api\SortOrderBuilder;
+use Magento\Framework\Webapi\Rest\Response as RestResponse;
 
 class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     implements \Styla\Connect2\Api\ProductRepositoryInterface
@@ -16,6 +17,12 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     const SEARCH_FILTER_QUERY = 'query';
     
     const DEFAULT_PAGE_SIZE = 46; //if no limit provided, this will be used
+    
+    /**
+     *
+     * @var RestResponse
+     */
+    protected $response;
 
     /**
      *
@@ -130,6 +137,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         FullTextSearchApi $search,
         \Magento\Search\Model\QueryFactory $queryFactory,
         Request $request,
+        RestResponse $response,
         SortOrderBuilder $sortOrderBuilder
     )
     {
@@ -141,6 +149,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $this->fullTextSearchCriteriaFactory   = $searchCriteriaFactory;
         $this->queryFactory                    = $queryFactory;
         $this->request                         = $request;
+        $this->response                        = $response;
         $this->sortOrderBuilder                = $sortOrderBuilder;
 
         return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
@@ -169,6 +178,11 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      */
     protected function _setDefaultSortOrder(SearchCriteria $searchCriteria)
     {
+        //if there's no other paging defined in the criteria, we'll apply the default page size
+        if(null === $searchCriteria->getPageSize()) {
+            $searchCriteria->setPageSize(self::DEFAULT_PAGE_SIZE);
+        }
+        
         if($searchCriteria->getSortOrders()) {
             return;
         }
@@ -377,6 +391,10 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         }
         $collection->setCurPage($searchCriteria->getCurrentPage());
         $collection->setPageSize($searchCriteria->getPageSize());
+        
+        //as our next step (loading and joinin additional data) will mess up magento's collection count,
+        //for easiness of implementation i'll be checking the page size and totals now:
+        $this->_setPagingHeaders($collection);
 
         //the data required by styla is different than what our collection returns,
         //so we run "converters" on the result. the converters may need additional joins on the collection, to work
@@ -398,6 +416,29 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         }
 
         return $searchResult;
+    }
+    
+    /**
+     * Set the paging response headers
+     * 
+     * @param ProductCollection $collection
+     */
+    protected function _setPagingHeaders(ProductCollection $collection)
+    {
+        $totalCount = $collection->getSize();
+        $pageSize = $collection->getPageSize();
+        $currentPage = $collection->getCurPage();
+        
+        $totalPageCount = $pageSize ? ceil($totalCount / $pageSize) : 1;
+        
+        if ($currentPage === null) {
+            $currentPage = 1;
+        }
+        
+        //add the calculated totals to the final rest response
+        $this->response->setHeader('X-Total-Count', $totalCount);
+        $this->response->setHeader('X-Total-Pages', $totalPageCount);
+        $this->response->setHeader('X-Current-Page', $currentPage);
     }
 
     /**
