@@ -71,10 +71,9 @@ class Page extends AbstractHelper
         $pageMeta   = $page->getBaseMetaData();
         $pageConfig = $pageResult->getConfig();
 
-        //this is commented-out, as it would display a nasty header above the catalog:
-        //if(isset($pageMeta['title'])) {
-        //    $pageConfig->getTitle()->set($pageMeta['title']);
-        //}
+        if(isset($pageMeta['title'])) {
+            $pageConfig->getTitle()->set($pageMeta['title']);
+        }
 
         if (isset($pageMeta['keywords'])) {
             $pageConfig->setKeywords($pageMeta['keywords']);
