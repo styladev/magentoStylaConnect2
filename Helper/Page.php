@@ -81,7 +81,7 @@ class Page extends AbstractHelper
         }
 
         if (isset($pageMeta['description'])) {
-            $pageConfig->setKeywords($pageMeta['description']);
+            $pageConfig->setDescription($pageMeta['description']);
         }
     }
 
