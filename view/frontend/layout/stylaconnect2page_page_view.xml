@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <!-- by defualt, Magento would display a heading element above the magazie, if this block is present: -->
+    <referenceBlock name="page.main.title" remove="true" />
+    
     <referenceBlock name="head.additional">
         <block 
                 template="Styla_Connect2::page/head/meta.phtml"

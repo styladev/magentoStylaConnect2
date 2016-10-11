@@ -1,14 +1,16 @@
 # Configuration
-* Login into your magento backend
-* Navigate to "Stores -> Configuration" and open the section "Styla Connect2"
-* On the top of this configuration section, you'll always see a link to the "initialize connection" Connect Assistant. Click on it to grant access to your Magento installation for Styla.
 
-## Connect Assistant
+* Access your admin panel (get URL by running `./bin/magento info:adminuri` from the Magento2 root folder)
+* Go to **Stores** -> **Configuration**
+* You should see the following:
 
-The Connect Assistant is *required* to run before you can use the magazine, as it will fill in some of the essential configuration settings. This action cannot be skipped and done manually.
+![ConfigScreen](http://i.imgur.com/lk6pNzq.png)
 
-The assistant will need your Styla email and password, and will automatically retrieve all the needed configuration data directly from Styla and create the configuration needed for accessing the magazine from within your Magento instance.
-The assistant will create a new Magento2 "Api Integration" for the future access to the REST Api. You can see it in the "System -> Integrations" section.
+* In order to complete the configuration click on `initialize connection` on top of the screen
+* Enter your Styla credentials (provided by your account manager) and click "Connect to Styla"
+* You should get redirected to the Magento Dashboard seeing the following message:
+
+![SuccessMsg](http://imgur.com/GZ71BGD.png)
 
 ## Configuration Values
 
@@ -99,4 +101,3 @@ footer.
 </table>
 
 ** Please do not modify these values. This configuration will be automatically set during the “Styla Connect” process from the previous step.
-
