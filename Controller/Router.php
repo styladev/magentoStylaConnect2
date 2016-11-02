@@ -82,13 +82,22 @@ class Router implements \Magento\Framework\App\RouterInterface
         $path = rtrim(str_replace($this->_getFrontendName(), '', $path), '/');
         
         //all the get params should be retained
-        $requestUri = $request->getRequestUri();
-        $params = '';
-        if(false !== ($paramsIndex = strpos($requestUri, "?"))) {
-            $params = substr($requestUri, $paramsIndex);
-        }
+        $requestParameters = $this->_getRequestParamsString($request);
 
-        return $path . $params;
+        $route = $path . ($requestParameters ? '?' . $requestParameters : '');
+        return $route;
+    }
+    
+    /**
+     * 
+     * @param \Magento\Framework\App\RequestInterface $request
+     * @return string
+     */
+    protected function _getRequestParamsString(\Magento\Framework\App\RequestInterface $request)
+    {
+        $allRequestParameters = $request->getQuery();
+        
+        return count($allRequestParameters) ? http_build_query($allRequestParameters) : '';
     }
 
     /**
