@@ -264,7 +264,7 @@ class Connector
 
     /**
      *
-     * @deprecated since version 2.0.0.0 the integration doesn't need an admin user
+     * @deprecated since version 2.0.0 the integration doesn't need an admin user
      */
     public function getAdminUser()
     {

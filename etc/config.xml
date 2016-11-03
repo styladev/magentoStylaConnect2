@@ -10,6 +10,7 @@
                 <menu_link_label>Magazine</menu_link_label>
                 <is_using_magento_layout>1</is_using_magento_layout>
                 <use_relative_product_url>0</use_relative_product_url>
+                <cache_lifetime>360</cache_lifetime>
             </general>
             
             <rest_data>
@@ -49,10 +50,9 @@
                         </arguments>
                     </image_small>
                     <caption>
-                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\Gallery</class>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\GalleryCaption</class>
                         <arguments>
-                            <identifier>gallery</identifier>
-                            <magento_field>main_image_caption</magento_field>
+                            <identifier>gallery</identifier> <!-- same as the gallery, so the collection requirements won't get loaded, again -->
                             <styla_field>caption</styla_field>
                         </arguments>
                     </caption>

@@ -9,11 +9,23 @@ use Magento\Framework\Api\Search\SearchCriteriaFactory as FullTextSearchCriteria
 use Magento\Framework\Api\Search\SearchInterface as FullTextSearchApi;
 use Magento\Framework\App\Request\Http as Request;
 use Magento\Framework\Api\SortOrderBuilder;
+use Magento\Framework\Event\ManagerInterface as EventManager;
+use Magento\Framework\Webapi\Rest\Response as RestResponse;
 
 class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     implements \Styla\Connect2\Api\ProductRepositoryInterface
 {
+    const SEARCH_FILTER_QUERY = 'query';
+    
     const DEFAULT_PAGE_SIZE = 46; //if no limit provided, this will be used
+    
+    const EVENT_GET_PRODUCTS = 'styla_get_product_collection';
+    
+    /**
+     *
+     * @var RestResponse
+     */
+    protected $response;
 
     /**
      *
@@ -72,6 +84,12 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * @var SortOrderBuilder
      */
     protected $sortOrderBuilder;
+    
+    /**
+     *
+     * @var EventManager
+     */
+    protected $eventManager;
 
     /**
      *
@@ -128,7 +146,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         FullTextSearchApi $search,
         \Magento\Search\Model\QueryFactory $queryFactory,
         Request $request,
-        SortOrderBuilder $sortOrderBuilder
+        SortOrderBuilder $sortOrderBuilder,
+        EventManager $eventManager,
+        RestResponse $response
     )
     {
         $this->stylaSearchResultsFactory       = $stylaSearchResultsFactory;
@@ -139,7 +159,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $this->fullTextSearchCriteriaFactory   = $searchCriteriaFactory;
         $this->queryFactory                    = $queryFactory;
         $this->request                         = $request;
+        $this->response                        = $response;
         $this->sortOrderBuilder                = $sortOrderBuilder;
+        $this->eventManager                    = $eventManager;
 
         return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
     }
@@ -167,6 +189,11 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      */
     protected function _setDefaultSortOrder(SearchCriteria $searchCriteria)
     {
+        //if there's no other paging defined in the criteria, we'll apply the default page size
+        if(null === $searchCriteria->getPageSize()) {
+            $searchCriteria->setPageSize(self::DEFAULT_PAGE_SIZE);
+        }
+        
         if($searchCriteria->getSortOrders()) {
             return;
         }
@@ -206,36 +233,50 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     }
     
     /**
+     * Search for the fulltext search term, change the filter into a product_ids list
      * 
-     * @param SearchCriteria $searchCriteria
-     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
+     * @param \Magento\Framework\Api\Filter $filter
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function search(SearchCriteria $searchCriteria = null)
+    protected function _applyFulltextSearch(\Magento\Framework\Api\Filter $filter)
     {
-        $searchCriteria = $this->_processSearchCriteria($searchCriteria);
-
+        $queryValue = $filter->getValue();
+        if(!$queryValue) {
+            throw new \Magento\Framework\Exception\NoSuchEntityException();
+        }
+        
+        //a little hack. since magento will expect the query to be a get param of the request, we'll copy it there
+        $this->request->setParam('q', $queryValue);
+        
         $productIds = $this->_searchProductsFullText();
         if(!$productIds) {
             throw new \Magento\Framework\Exception\NoSuchEntityException();
         }
         
-        //get the usual list of products, using the ids we just received
-        $idFilter = $this->filterBuilder->setField('entity_id')
-            ->setValue($productIds)
-            ->setConditionType('in')
-            ->create();
+        //we no longer need our original query filter, we'll now turn it into the actual found product_ids filter, instead
+        $filter->setConditionType('in')->setField('entity_id')->setValue($productIds);
+    }
+    
+    /**
+     * The user may be searching for a specific text search term, as one of his searchCriterias, as in:
+     * V1/styla_product?searchCriteria[filter_groups][0][filters][0][field]=query&searchCriteria[filter_groups][0][filters][0][value]=THESEARCHTERM
+     * 
+     * We will process this here, and turn this request into a list of product_ids matching his search term.
+     * 
+     * @param SearchCriteria $searchCriteria
+     * @return SearchCriteria
+     */
+    protected function _processTextSearchCriteria(SearchCriteria $searchCriteria)
+    {
+        foreach ($searchCriteria->getFilterGroups() as $group) {
+            foreach ($group->getFilters() as $filter) {
+                if ($filter->getField() == self::SEARCH_FILTER_QUERY) {
+                    $this->_applyFulltextSearch($filter);
+                }
+            }
+        }
         
-        $idFilterGroup = $this->filterGroupBuilder->addFilter($idFilter)
-            ->create();
-        
-        $originalFilterGroups = $searchCriteria->getFilterGroups();
-        $originalFilterGroups[] = $idFilterGroup;
-        
-        $searchCriteria->setFilterGroups($originalFilterGroups);
-        
-        $searchResult = $this->getList($searchCriteria);
-        return $searchResult;
+        return $searchCriteria;
     }
 
     /**
@@ -330,7 +371,11 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      */
     public function getList(SearchCriteria $searchCriteria = null)
     {
+        //apply the default search criteria if none is defined, pre-process the filter values if needed
         $searchCriteria = $this->_processSearchCriteria($searchCriteria);
+        
+        //there may be a search query as one of the criterias. if it's there, apply the text search, first
+        $searchCriteria = $this->_processTextSearchCriteria($searchCriteria);
 
         /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
         $collection = $this->collectionFactory->create();
@@ -357,6 +402,10 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         }
         $collection->setCurPage($searchCriteria->getCurrentPage());
         $collection->setPageSize($searchCriteria->getPageSize());
+        
+        //as our next step (loading and joinin additional data) will mess up magento's collection count,
+        //for easiness of implementation i'll be checking the page size and totals now:
+        $this->_setPagingHeaders($collection);
 
         //the data required by styla is different than what our collection returns,
         //so we run "converters" on the result. the converters may need additional joins on the collection, to work
@@ -372,8 +421,38 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
 
         $searchResult->setSearchCriteria($searchCriteria);
         $searchResult->setItems($collection->getItems());
+        
+        //dispatch the event
+        $this->eventManager->dispatch(self::EVENT_GET_PRODUCTS, ['collection' => $collection, 'searchCriteria' => $searchCriteria]);
+        
+        if(!count($searchResult->getItems())) {
+            throw new \Magento\Framework\Exception\NoSuchEntityException();
+        }
 
         return $searchResult;
+    }
+    
+    /**
+     * Set the paging response headers
+     * 
+     * @param ProductCollection $collection
+     */
+    protected function _setPagingHeaders(ProductCollection $collection)
+    {
+        $totalCount = $collection->getSize();
+        $pageSize = $collection->getPageSize();
+        $currentPage = $collection->getCurPage();
+        
+        $totalPageCount = $pageSize ? ceil($totalCount / $pageSize) : 1;
+        
+        if ($currentPage === null) {
+            $currentPage = 1;
+        }
+        
+        //add the calculated totals to the final rest response
+        $this->response->setHeader('X-Total-Count', $totalCount);
+        $this->response->setHeader('X-Total-Pages', $totalPageCount);
+        $this->response->setHeader('X-Current-Page', $currentPage);
     }
 
     /**

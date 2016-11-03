@@ -71,17 +71,18 @@ class Page extends AbstractHelper
         $pageMeta   = $page->getBaseMetaData();
         $pageConfig = $pageResult->getConfig();
 
-        //this is commented-out, as it would display a nasty header above the catalog:
-        //if(isset($pageMeta['title'])) {
-        //    $pageConfig->getTitle()->set($pageMeta['title']);
-        //}
+        //info: as adding a meta title by default also triggers a "page.main.title" block
+        //to display it, we're removing that block in the stylaconnect2page_page_view.xml layout file
+        if(isset($pageMeta['title'])) {
+            $pageConfig->getTitle()->set($pageMeta['title']);
+        }
 
         if (isset($pageMeta['keywords'])) {
             $pageConfig->setKeywords($pageMeta['keywords']);
         }
 
         if (isset($pageMeta['description'])) {
-            $pageConfig->setKeywords($pageMeta['description']);
+            $pageConfig->setDescription($pageMeta['description']);
         }
     }
 

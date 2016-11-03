@@ -22,12 +22,4 @@ interface ProductRepositoryInterface
      * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null);
-    
-    /**
-     * Search products by fulltext terms
-     *
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
-     */
-    public function search(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null);
 }

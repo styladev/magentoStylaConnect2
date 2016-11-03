@@ -4,9 +4,12 @@ namespace Styla\Connect2\Model\Api\Converter;
 use Magento\Framework\App\Config\ScopeConfigInterface as ScopeConfigInterface;
 use Styla\Connect2\Api\ConverterInterface as ConverterInterface;
 use Styla\Connect2\Model\Api\Converter\ConverterChain;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class ConverterFactory
 {
+    const EVENT_GET_CONVERTERS = 'styla_get_data_converters';
+    
     const TYPE_PRODUCT  = 'product';
     const TYPE_CATEGORY = 'category'; //currently none implemented
 
@@ -16,6 +19,12 @@ class ConverterFactory
      * @var \Magento\Framework\ObjectManagerInterface
      */
     protected $_objectManager;
+    
+    /**
+     *
+     * @var EventManager
+     */
+    protected $eventManager;
 
     /**
      *
@@ -34,11 +43,13 @@ class ConverterFactory
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Styla\Connect2\Model\Api\Converter\ConverterChainFactory $converterChainFactory
+        \Styla\Connect2\Model\Api\Converter\ConverterChainFactory $converterChainFactory,
+        EventManager $eventManager
     )
     {
         $this->converterChainFactory = $converterChainFactory;
         $this->_objectManager        = $objectManager;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -82,6 +93,8 @@ class ConverterFactory
 
             $converterChain->addConverter($converter);
         }
+        
+        $this->eventManager->dispatch(self::EVENT_GET_CONVERTERS, ['converter_chain' => $converterChain]);
 
         return $converterChain;
     }

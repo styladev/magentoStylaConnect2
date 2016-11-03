@@ -1,10 +1,12 @@
 <?php
 namespace Styla\Connect2\Model\Product\Info\Renderer;
 
-use Magento\ConfigurableProduct\Model\ConfigurableAttributeData;
+use Styla\Connect2\Model\Product\Configurable\ConfigurableAttributeData;
 use Magento\ConfigurableProduct\Helper\Data as ConfigurableHelper;
 use Magento\Catalog\Helper\Product as ProductHelper;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Event\ManagerInterface as EventManager;
+use Magento\Framework\DataObjectFactory;
 
 class Configurable
     extends \Styla\Connect2\Model\Product\Info\Renderer\DefaultRenderer
@@ -38,14 +40,16 @@ class Configurable
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Magento\Tax\Model\Calculation $taxCalculation,
         \Magento\Tax\Helper\Data $taxHelper,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper
+        \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        EventManager $eventManager,
+        DataObjectFactory $dataObjectFactory
     )
     {
         $this->configurableAttributeData = $configurableData;
         $this->helper                    = $helper;
         $this->catalogProduct            = $catalogProduct;
 
-        return parent::__construct($storeManager, $stockRegistry, $taxCalculation, $taxHelper, $priceHelper);
+        return parent::__construct($storeManager, $stockRegistry, $taxCalculation, $taxHelper, $priceHelper, $eventManager, $dataObjectFactory);
     }
 
     public function getProduct()
@@ -62,13 +66,11 @@ class Configurable
     {
         if (null === $this->_allowProducts) {
             $products          = [];
-            $skipSaleableCheck = $this->catalogProduct->getSkipSaleableCheck();
             $allProducts       = $this->getProduct()->getTypeInstance()->getUsedProducts($this->getProduct(), null);
-            foreach ($allProducts as $product) {
-                if ($product->isSaleable() || $skipSaleableCheck) {
-                    $products[] = $product;
-                }
+            foreach($allProducts as $product) {
+                $products[$product->getId()] = $product; //makes it simpler to reference, later
             }
+            
             $this->_allowProducts = $products;
         }
         return $this->_allowProducts;
@@ -100,8 +102,8 @@ class Configurable
         $finalPrice   = $this->_product->getPriceInfo()->getPrice('final_price');
 
         $options        = $this->helper->getOptions($this->_product, $this->getAllowProducts());
-        $attributesData = $this->configurableAttributeData->getAttributesData($this->_product, $options);
-
+        $attributesData = $this->configurableAttributeData->getAttributesDataExtended($this->_product, $options, $this->getAllowProducts());
+        
         $configurableInfo = [
             'attributes'   => $attributesData['attributes'],
             'template'     => str_replace('%s', '<%- data.price %>', $store->getCurrentCurrency()->getOutputFormat()),
@@ -134,7 +136,7 @@ class Configurable
         $productInfo = array_merge($productInfo, $configurableInfo);
         return $productInfo;
     }
-
+    
     /**
      * @return array
      */
