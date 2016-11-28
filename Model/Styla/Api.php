@@ -115,7 +115,7 @@ class Api
         //check if a no-response status was cached
         $cache = $this->getCache();
         if ($cache->load('styla_seo_unreachable')) {
-            return [];
+            //return [];
         }
 
         $seoRequest = $this->getRequest(StylaRequest\Type\Seo::class)
@@ -190,7 +190,12 @@ class Api
         $this->curl->setOptions($this->_apiConnectionOptions);
 
         //this will tell curl to omit headers in result, if false
-        $this->curl->setConfig(['header' => $addResultHeaders]);
+        $this->curl->setConfig(
+                [
+                    'header' => $addResultHeaders, 
+                    'timeout' => 5, //as some requests (seo) can take a bit longer to complete
+                ]
+            );
 
         return $this->curl;
     }
@@ -241,6 +246,7 @@ class Api
 
         $result = $service->read();
         if (!$result) {
+            var_dump($service->getErrno(), $service->getError());die();
             throw new \Exception("Couldn't get a result from the API.");
         }
 
