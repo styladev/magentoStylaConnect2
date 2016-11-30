@@ -94,7 +94,7 @@ class Config extends AbstractHelper
      */
     public function isEnabled()
     {
-        return $this->getScopeConfig()->getValue(self::XML_ENABLED);
+        return $this->getScopeConfig()->getValue(self::XML_ENABLED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
     
     /**
@@ -109,7 +109,7 @@ class Config extends AbstractHelper
 
     public function getFrontendName()
     {
-        return $this->getScopeConfig()->getValue(self::XML_FRONTEND_NAME);
+        return $this->getScopeConfig()->getValue(self::XML_FRONTEND_NAME, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -214,7 +214,7 @@ class Config extends AbstractHelper
         }
 
         $path = sprintf(self::XML_OVERRIDE_URL, $url);
-        $url  = $this->scopeConfig->getValue($path);
+        $url  = $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if ($url) {
             $url = rtrim($url, "/") . "/";
         }
@@ -230,7 +230,7 @@ class Config extends AbstractHelper
     public function isDeveloperMode()
     {
         if (null === $this->_isDeveloperMode) {
-            $this->_isDeveloperMode = (bool)$this->scopeConfig->getValue(self::XML_IS_DEVELOPER);
+            $this->_isDeveloperMode = (bool)$this->scopeConfig->getValue(self::XML_IS_DEVELOPER, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
         return $this->_isDeveloperMode;
     }
@@ -270,7 +270,7 @@ class Config extends AbstractHelper
      */
     public function getUsername()
     {
-        return $this->getScopeConfig()->getValue(self::XML_USERNAME);
+        return $this->getScopeConfig()->getValue(self::XML_USERNAME, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -284,7 +284,7 @@ class Config extends AbstractHelper
             return false;
         }
         
-        return (bool)$this->getScopeConfig()->getValue(self::XML_NAVIGATION_ENABLED);
+        return (bool)$this->getScopeConfig()->getValue(self::XML_NAVIGATION_ENABLED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -293,7 +293,7 @@ class Config extends AbstractHelper
      */
     public function getNavigationLinkLabel()
     {
-        return $this->getScopeConfig()->getValue(self::XML_NAVIGATION_LABEL);
+        return $this->getScopeConfig()->getValue(self::XML_NAVIGATION_LABEL, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -302,7 +302,7 @@ class Config extends AbstractHelper
      */
     public function getCacheLifetime()
     {
-        $cacheLifetime = $this->getScopeConfig()->getValue(self::XML_CACHE_LIFETIME);
+        $cacheLifetime = $this->getScopeConfig()->getValue(self::XML_CACHE_LIFETIME, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         return $cacheLifetime ? (int)$cacheLifetime : null;
     }
 
@@ -312,7 +312,7 @@ class Config extends AbstractHelper
      */
     public function isUsingMagentoLayout()
     {
-        return (bool)$this->getScopeConfig()->getValue(self::XML_USING_LAYOUT);
+        return (bool)$this->getScopeConfig()->getValue(self::XML_USING_LAYOUT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -334,7 +334,7 @@ class Config extends AbstractHelper
      */
     public function getLanguageCode()
     {
-        return $this->getScopeConfig()->getValue(self::XML_LANGUAGE_CODE);
+        return $this->getScopeConfig()->getValue(self::XML_LANGUAGE_CODE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
