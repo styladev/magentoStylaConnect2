@@ -2,7 +2,7 @@
 namespace Styla\Connect2\Controller\Adminhtml\Connector;
 
 use Magento\Backend\App\Action;
-use Magento\Framework\App\Action\Context;
+use \Magento\Backend\App\Action\Context;
 use Styla\Connect2\Model\Styla\Api\Connector;
 
 class Save extends Action

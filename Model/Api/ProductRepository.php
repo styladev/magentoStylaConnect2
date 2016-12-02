@@ -403,6 +403,16 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $collection->setCurPage($searchCriteria->getCurrentPage());
         $collection->setPageSize($searchCriteria->getPageSize());
         
+        //we should add a store filter to all the requests:
+        $store = $this->storeManager->getStore();
+        $collection->setStore($store);
+        $collection->setVisibility(array( //visibility must be set before the store filter. otherwise it won't be processed at all
+            \Magento\Catalog\Model\Product\Visibility::VISIBILITY_IN_CATALOG,
+            \Magento\Catalog\Model\Product\Visibility::VISIBILITY_IN_SEARCH,
+            \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH,
+        ));
+        $collection->addStoreFilter($store);
+        
         //as our next step (loading and joinin additional data) will mess up magento's collection count,
         //for easiness of implementation i'll be checking the page size and totals now:
         $this->_setPagingHeaders($collection);
