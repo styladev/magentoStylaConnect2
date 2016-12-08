@@ -190,7 +190,12 @@ class Api
         $this->curl->setOptions($this->_apiConnectionOptions);
 
         //this will tell curl to omit headers in result, if false
-        $this->curl->setConfig(['header' => $addResultHeaders]);
+        $this->curl->setConfig(
+                [
+                    'header' => $addResultHeaders, 
+                    'timeout' => 5, //as some requests (seo) can take a bit longer to complete
+                ]
+            );
 
         return $this->curl;
     }

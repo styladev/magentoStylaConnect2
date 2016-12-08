@@ -4,7 +4,7 @@ namespace Styla\Connect2\Controller\Adminhtml\Connector;
 use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\Page as ResultPage;
 use Magento\Framework\View\Result\PageFactory as PageFactory;
-use Magento\Framework\App\Action\Context;
+use Magento\Backend\App\Action\Context;
 
 class Connect extends Action
 {
