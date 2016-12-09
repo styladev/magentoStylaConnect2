@@ -12,7 +12,7 @@
 
 ![SuccessMsg](http://imgur.com/GZ71BGD.png)
 
-## Configuration Values
+## General
 
 <table>
 <tr>
@@ -89,9 +89,18 @@ footer.
 <td>How long results taken from Styla CDN are stored locally, in seconds.</td>
 <td>360</td>
 </tr>
+</table>  
   
+## Developer Mode (advanced)
+  
+<table>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Default</th>
+</tr>  
   <tr>
-<td>Developer  Mode*</td>
+<td>Use Developer Mode</td>
 <td>Allows you to override certain default values used for retrieving data from Styla. <br/><i>You generally won't ever need to use this, and it's recommended to leave this option disabled.</i></td>
 <td>no</td>
 </tr>
