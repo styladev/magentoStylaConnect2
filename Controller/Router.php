@@ -97,12 +97,7 @@ class Router implements \Magento\Framework\App\RouterInterface
     protected function _getRouteSettings($path, \Magento\Framework\App\RequestInterface $request)
     {
         //the path should not contain the trailing slash, the styla api is not expecting it
-        $path = rtrim($path, '/');
-        
-        //if the store is using the code in url
-        if($this->getStore()->isUseStoreInUrl()) {
-            $path = $this->getStore()->getCode() . '/' . $path;
-        }
+        $path = rtrim(str_replace($this->_getFrontendName(), '', $path), '/');
         
         //all the get params should be retained
         $requestParameters = $this->_getRequestParamsString($request);

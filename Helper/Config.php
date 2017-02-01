@@ -53,6 +53,11 @@ class Config extends AbstractHelper
     protected $stylaApi;
     
     /**
+     * @var \Magento\Framework\App\Request\Http
+     */
+    protected $request;
+    
+    /**
      *
      * @var StoreManagerInterface
      */
@@ -66,12 +71,14 @@ class Config extends AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         ResourceConfig $resourceConfig,
         StylaApi $stylaApi,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        \Magento\Framework\App\Request\Http $request
     )
     {
         $this->stylaApi       = $stylaApi;
         $this->resourceConfig = $resourceConfig;
         $this->storeManager   = $storeManager;
+        $this->request        = $request;
 
         return parent::__construct($context);
     }
@@ -246,6 +253,27 @@ class Config extends AbstractHelper
         $routeName = $this->getConfiguredRouteName();
 
         return trim($routeName, '/') . '/';
+    }
+    
+    /**
+     * Get the RootPath of the request.
+     * eg. /magazine/story/one
+     * 
+     * @return string
+     */
+    public function getRootPath()
+    {
+        $path = rtrim($this->request->getPathInfo(), '/');
+        $allRequestParameters = $this->request->getQuery();
+        
+        //if the store is using the code in url
+        if($this->storeManager->getStore()->isUseStoreInUrl() && !$this->storeManager->getStore()->isDefault()) {
+            $path = '/' . $this->storeManager->getStore()->getCode() . $path;
+        }
+        
+        $path = count($allRequestParameters) ? ($path . '?' . http_build_query($allRequestParameters)) : $path;
+        
+        return $path;
     }
 
     /**
