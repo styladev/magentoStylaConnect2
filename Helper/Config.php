@@ -264,14 +264,11 @@ class Config extends AbstractHelper
     public function getRootPath()
     {
         $path = rtrim($this->request->getPathInfo(), '/');
-        $allRequestParameters = $this->request->getQuery();
         
         //if the store is using the code in url
         if($this->storeManager->getStore()->isUseStoreInUrl() && !$this->storeManager->getStore()->isDefault()) {
             $path = '/' . $this->storeManager->getStore()->getCode() . $path;
         }
-        
-        $path = count($allRequestParameters) ? ($path . '?' . http_build_query($allRequestParameters)) : $path;
         
         return $path;
     }
