@@ -12,7 +12,7 @@
 
 ![SuccessMsg](http://imgur.com/GZ71BGD.png)
 
-## Configuration Values
+## General
 
 <table>
 <tr>
@@ -20,15 +20,10 @@
 <th>Description</th>
 <th>Default</th>
 </tr>
+
   
   <tr>
-    <td>Enable the Module</td>
-    <td>Allows you to completely disable the module, if you need to.</td>
-    <td>yes</td>
-  </tr>
-  
-  <tr>
-<td>Use Magento Layout</td>
+<td>Use Magento Layout on Magazine Pages</td>
 <td>Showing the current magento theme around the magazine:
 
 <ul>
@@ -56,11 +51,31 @@ footer.
     <td>If the "Add Magazine Link to Navigation" option is enabled, you can add a custom label for the magazine link, here.</td>
     <td>Magazine</td>
   </tr>
-  
+
+  <tr>
+    <td>Enable the Module</td>
+    <td>Allows you to completely disable the module, if you need to.</td>
+    <td>yes</td>
+  </tr>
+
+<tr>
+<td>Use Relative Product Urls</td>
+<td>Defines how product URLs for magazine front-end will be created:
+* yes - the product urls generated for the stories will be relative to store domain (ie: /product-name-SKU/)
+* no - no - full urls will be generated (ie: http://www.yourdomain.com/product-name-SKU/)</td>
+<td>No</td>
+</tr>
+
+<tr>
+<td>Label for the Magazine Menu Link</td>
+<td>The label used for the navigation menu link leading to the Magento page with your magazine embedded.</td>
+<td>Magazine</td>
+</tr>
+
 <tr>
 <td>Frontend Name (route)</td>
 <td>This is the public URL of your magazine, as in: http://yourstoreurl.com/{FRONTEND_NAME} <br/>This can be left empty, and will default to "magazin".</td>
-<td>/magazin</td>
+<td>/magazine</td>
 </tr>
 
 <tr>
@@ -74,9 +89,18 @@ footer.
 <td>How long results taken from Styla CDN are stored locally, in seconds.</td>
 <td>360</td>
 </tr>
+</table>  
   
+## Developer Mode (advanced)
+  
+<table>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Default</th>
+</tr>  
   <tr>
-<td>Developer  Mode*</td>
+<td>Use Developer Mode</td>
 <td>Allows you to override certain default values used for retrieving data from Styla. <br/><i>You generally won't ever need to use this, and it's recommended to leave this option disabled.</i></td>
 <td>no</td>
 </tr>

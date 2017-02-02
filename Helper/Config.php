@@ -53,6 +53,11 @@ class Config extends AbstractHelper
     protected $stylaApi;
     
     /**
+     * @var \Magento\Framework\App\Request\Http
+     */
+    protected $request;
+    
+    /**
      *
      * @var StoreManagerInterface
      */
@@ -61,17 +66,20 @@ class Config extends AbstractHelper
     protected $_apiVersion;
     protected $_configuredRouteName;
     protected $_isDeveloperMode;
+    protected $_rootPath;
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         ResourceConfig $resourceConfig,
         StylaApi $stylaApi,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        \Magento\Framework\App\Request\Http $request
     )
     {
         $this->stylaApi       = $stylaApi;
         $this->resourceConfig = $resourceConfig;
         $this->storeManager   = $storeManager;
+        $this->request        = $request;
 
         return parent::__construct($context);
     }
@@ -247,6 +255,22 @@ class Config extends AbstractHelper
 
         return trim($routeName, '/') . '/';
     }
+    
+    /**
+     * Get the RootPath of the request.
+     * eg. /magazine/story/one
+     * 
+     * @return string
+     */
+    public function getRootPath()
+    {
+        if(null === $this->_rootPath) {
+            $url = parse_url(str_replace('/index.php/', '/', $this->storeManager->getStore()->getUrl($this->getRouteName(), ['_type' => \Magento\Framework\UrlInterface::URL_TYPE_LINK])));
+            $this->_rootPath = isset($url['path']) ? $url['path'] : '';
+        }
+        
+        return $this->_rootPath;
+    }
 
     /**
      * Get the route to the magazine, as configured by the user.
@@ -342,7 +366,7 @@ class Config extends AbstractHelper
      */
     public function getPluginVersion()
     {
-        return "2.0.1";
+        return "2.0.2";
     }
 
     /**
