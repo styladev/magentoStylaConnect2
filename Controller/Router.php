@@ -1,7 +1,6 @@
 <?php
 
 namespace Styla\Connect2\Controller;
-use Magento\Store\Api\Data\StoreInterface as Store;
 
 class Router implements \Magento\Framework\App\RouterInterface
 {
@@ -23,12 +22,6 @@ class Router implements \Magento\Framework\App\RouterInterface
      * @var \Styla\Connect2\Helper\Config
      */
     protected $_configHelper;
-    
-    /**
-     *
-     * @var Store
-     */
-    protected $_storeNamager;
 
     /**
      * @param \Magento\Framework\App\ActionFactory     $actionFactory
@@ -37,23 +30,12 @@ class Router implements \Magento\Framework\App\RouterInterface
     public function __construct(
         \Magento\Framework\App\ActionFactory $actionFactory,
         \Magento\Framework\App\ResponseInterface $response,
-        \Styla\Connect2\Helper\Config $configHelper,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Styla\Connect2\Helper\Config $configHelper
     )
     {
         $this->actionFactory = $actionFactory;
         $this->_response     = $response;
         $this->_configHelper = $configHelper;
-        $this->_storeManager = $storeManager;
-    }
-    
-    /**
-     * 
-     * @return Store
-     */
-    public function getStore()
-    {
-        return $this->_storeManager->getStore();
     }
 
     /**

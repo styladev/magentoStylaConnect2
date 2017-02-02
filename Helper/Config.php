@@ -263,13 +263,23 @@ class Config extends AbstractHelper
      */
     public function getRootPath()
     {
-        $path = rtrim($this->request->getPathInfo(), '/');
-        
-        //if the store is using the code in url
-        if($this->storeManager->getStore()->isUseStoreInUrl() && !$this->storeManager->getStore()->isDefault()) {
-            $path = '/' . $this->storeManager->getStore()->getCode() . $path;
+        //this will consist of any sub-path being a part of the magento base path (example.com/magepath),
+        //minus the index.php if it's specifically given and the actual domain.
+        $baseUrl = parse_url($this->storeManager->getStore()->getBaseUrl());
+        $baseUrl = isset($baseUrl['path']) ? $baseUrl['path'] : '';
+        $baseUrl = str_replace('/index.php', '/', $baseUrl);
+        if($this->storeManager->getStore()->isUseStoreInUrl()) {
+            $baseUrl = str_replace('/' . $this->storeManager->getStore()->getCode() . '/', '', $baseUrl);
         }
         
+        //the rest of the actual request which we need to pass is actually all located in the request uri:
+        $uri = $this->request->getRequestUri();
+        $pos = strpos($uri, '?');
+        if($pos !== false) {
+            $uri = substr($uri, 0, $pos); //remove the query
+        }
+        
+        $path = rtrim($baseUrl, '/') . $uri;
         return $path;
     }
 
