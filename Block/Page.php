@@ -46,7 +46,7 @@ class Page extends Template
      */
     public function getRootPath()
     {
-        return $this->getConfigHelper()->getRouteName();
+        return $this->getConfigHelper()->getRootPath();
     }
 
     /**

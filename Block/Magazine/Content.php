@@ -21,7 +21,7 @@ class Content extends Magazine
      */
     public function getRootPath()
     {
-        return $this->getConfigHelper()->getRouteName();
+        return $this->getConfigHelper()->getRootPath();
     }
 
     /**
