@@ -94,12 +94,14 @@ footer.
 ## Developer Mode (advanced)
   
 <table>
+
 <tr>
 <th>Name</th>
 <th>Description</th>
 <th>Default</th>
 </tr>  
-  <tr>
+
+<tr>
 <td>Use Developer Mode</td>
 <td>Allows you to override certain default values used for retrieving data from Styla. <br/><i>You generally won't ever need to use this, and it's recommended to leave this option disabled.</i></td>
 <td>no</td>
@@ -108,16 +110,16 @@ footer.
 <tr>
 <td>Override Url for SEO Api (Developer Mode Only)</td>
 <td>Developer mode only. Allows you to enter a custom URL for the SEO data.</td>
-  <td><i>empty</i>, disabled</td>
+<td><i>empty</i>, disabled</td>
 </tr>
   
-  <tr>
+<tr>
 <td>Override Url for CDN/Assets (Developer Mode Only)</td>
 <td>Developer mode only. Allows you to enter a custom URL for the magazine content provider.</td>
 <td><i>empty</i>, disabled</td>
 </tr>
   
-    <tr>
+<tr>
 <td>Override Url for Styla Content Version API (Developer Mode Only)</td>
 <td>Developer mode only. Allows you to enter a custom URL for magazine content version provider.</td>
 <td><i>empty</i>, disabled</td>

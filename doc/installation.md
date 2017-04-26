@@ -15,3 +15,5 @@ Finally make sure everything is up to date with:
 
 *Now, before you can start using your magazine - you must run the "Connection Assistant", available in the Styla Connect section of Magento configuration page.*
 More information is available here: [Configuration](configuration.md)
+
+### Please do not create any subpages in your CMS or directories for your magazine. The plugin itself will take care of setting up the /magazine/ (or any other) page on which the magazine will appear and of the roouting as well. 
