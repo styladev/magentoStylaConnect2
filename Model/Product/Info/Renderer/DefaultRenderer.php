@@ -120,6 +120,7 @@ class DefaultRenderer
         //basic product info, same for every possible product type
         $productInfo = [
             'id'            => $product->getId(),
+            'sku'           => $product->getSku(),
             'type'          => $product->getTypeId(),
             'name'          => $product->getName(),
             'saleable'      => $product->getIsSalable(),
