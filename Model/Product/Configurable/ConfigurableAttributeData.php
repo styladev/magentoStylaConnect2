@@ -74,11 +74,16 @@ class ConfigurableAttributeData extends \Magento\ConfigurableProduct\Model\Confi
         //here we enter all the product data that might be useful later on.
         //for now, the id and saleability status
         $productData = [];
-        foreach($simpleProducts as $product) {
+        foreach ($simpleProducts as $productId) {
+            if (!isset($allowProducts[$productId])) {
+                continue;
+            }
+            $product       = $allowProducts[$productId];
             $productData[] = [
-                'id' => $product, 
-                'saleable' => isset($allowProducts[$product]) ? $allowProducts[$product]->getIsSalable() : false
-                ];
+                'id'       => $productId,
+                'sku'      => $product->getSku(),
+                'saleable' => $product->getIsSalable()
+            ];
         }
         
         return $productData;
