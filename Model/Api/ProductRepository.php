@@ -90,6 +90,12 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * @var EventManager
      */
     protected $eventManager;
+    
+    /**
+     *
+     * @var \Styla\Connect2\Helper\Converter
+     */
+    protected $converterHelper;
 
     /**
      *
@@ -148,7 +154,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         Request $request,
         SortOrderBuilder $sortOrderBuilder,
         EventManager $eventManager,
-        RestResponse $response
+        RestResponse $response,
+        \Styla\Connect2\Helper\Converter $converterHelper
     )
     {
         $this->stylaSearchResultsFactory       = $stylaSearchResultsFactory;
@@ -162,6 +169,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $this->response                        = $response;
         $this->sortOrderBuilder                = $sortOrderBuilder;
         $this->eventManager                    = $eventManager;
+        $this->converterHelper                 = $converterHelper;
 
         return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
     }
@@ -198,9 +206,11 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
             return;
         }
         
+        $entityIdField = $this->converterHelper->getProductEntityIdField();
+        
         /** @var \Magento\Framework\Api\SortOrder $sortOrder */
         $sortOrder = $this->sortOrderBuilder->create();
-        $sortOrder->setField('entity_id')->setDirection('asc');
+        $sortOrder->setField($entityIdField)->setDirection('asc');
         $searchCriteria->setSortOrders([$sortOrder]);
     }
     
@@ -254,7 +264,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         }
         
         //we no longer need our original query filter, we'll now turn it into the actual found product_ids filter, instead
-        $filter->setConditionType('in')->setField('entity_id')->setValue($productIds);
+        $entityIdField = $this->converterHelper->getProductEntityIdField();
+        $filter->setConditionType('in')->setField($entityIdField)->setValue($productIds);
     }
     
     /**
@@ -288,7 +299,8 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     {
         //we'll be loading the normal collection, but with a singled-out entity_id of the product
         //as i need to run the same data converters on the result, as i would have on the product list
-        $idFilter = $this->filterBuilder->setField('entity_id')
+        $entityIdField = $this->converterHelper->getProductEntityIdField();
+        $idFilter = $this->filterBuilder->setField($entityIdField)
             ->setValue($productId)
             ->setConditionType('eq')
             ->create();
@@ -385,8 +397,9 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         foreach ($this->metadataService->getList($this->searchCriteriaBuilder->create())->getItems() as $metadata) {
             $collection->addAttributeToSelect($metadata->getAttributeCode());
         }
-        $collection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
-        $collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
+        $entityIdField = $this->converterHelper->getProductEntityIdField();
+        $collection->joinAttribute('status', 'catalog_product/status', $entityIdField, null, 'inner');
+        $collection->joinAttribute('visibility', 'catalog_product/visibility', $entityIdField, null, 'inner');
 
         //Add filters from root filter group to the collection
         foreach ($searchCriteria->getFilterGroups() as $group) {

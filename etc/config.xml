@@ -20,9 +20,8 @@
                     -->
                 <product>
                     <shop_id>
-                        <class>\Styla\Connect2\Model\Api\Converter\Type\Simple</class>
+                        <class>\Styla\Connect2\Model\Api\Converter\Type\Product\Entity</class>
                         <arguments>
-                            <magento_field>entity_id</magento_field>
                             <styla_field>shop_id</styla_field>
                         </arguments>
                     </shop_id>
