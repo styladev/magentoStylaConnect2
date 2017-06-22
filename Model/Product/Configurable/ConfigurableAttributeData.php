@@ -48,11 +48,15 @@ class ConfigurableAttributeData extends \Magento\ConfigurableProduct\Model\Confi
         $attributeOptionsData = [];
         foreach ($attribute->getOptions() as $attributeOption) {
             $optionId = $attributeOption['value_index'];
-            $attributeOptionsData[] = [
-                'id' => $optionId,
-                'label' => $attributeOption['label'],
-                'products' => $this->_getSimpleProducts($attribute, $config, $optionId, $allowProducts)
-            ];
+            $productsarr = $this->_getSimpleProducts($attribute, $config, $optionId, $allowProducts);
+            if ($productsarr[0]['enabled']){
+                $attributeOptionsData[] = [
+                    'id' => $optionId,
+                    'label' => $attributeOption['label'],
+                    'products' => $productsarr
+                ];
+            }
+
         }
         return $attributeOptionsData;
     }
@@ -70,19 +74,21 @@ class ConfigurableAttributeData extends \Magento\ConfigurableProduct\Model\Confi
         $simpleProducts = ($config[$attribute->getAttributeId()][$optionId])
                     ? $config[$attribute->getAttributeId()][$optionId]
                     : [];
-        
         //here we enter all the product data that might be useful later on.
         //for now, the id and saleability status
         $productData = [];
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $stockState = $objectManager->get('\Magento\CatalogInventory\Api\StockStateInterface');
         foreach ($simpleProducts as $productId) {
             if (!isset($allowProducts[$productId])) {
                 continue;
             }
-            $product       = $allowProducts[$productId];
+            $product = $allowProducts[$productId];
             $productData[] = [
                 'id'       => $productId,
                 'sku'      => $product->getSku(),
-                'saleable' => $product->getIsSalable()
+                'enabled'  => $product->getIsSalable(),
+                'saleable' => ($stockState->getStockQty($productId) < 1 ? false : true)
             ];
         }
         

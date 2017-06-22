@@ -3,6 +3,7 @@ namespace Styla\Connect2\Helper;
 
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\Product\Media\Config as MediaConfig;
+use Magento\Framework\EntityManager\MetadataPool as MetadataPool;
 
 class Converter extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -29,6 +30,16 @@ class Converter extends \Magento\Framework\App\Helper\AbstractHelper
      * @var MediaConfig
      */
     protected $_catalogProductMediaConfig;
+    
+    /**
+     * @var \Magento\Framework\EntityManager\MetadataPool
+     */
+    private $metadataPool;
+    
+    /**
+     * @var string
+     */
+    protected $_productEntityIdField;
 
     /**
      *
@@ -37,11 +48,13 @@ class Converter extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function __construct(
         StoreManagerInterface $storeManager,
-        MediaConfig $catalogProductMediaConfig
+        MediaConfig $catalogProductMediaConfig,
+        MetadataPool $metadata
     )
     {
         $this->_storeManager              = $storeManager;
         $this->_catalogProductMediaConfig = $catalogProductMediaConfig;
+        $this->metadataPool = $metadata;
     }
 
     /**
@@ -87,5 +100,21 @@ class Converter extends \Magento\Framework\App\Helper\AbstractHelper
 
         $fullUrl = $this->_mediaUrl . $mediaPartPath . $mediaPath;
         return $fullUrl;
+    }
+    
+    /**
+     * Get the entity ID for products (entity_id|row_id)
+     * 
+     * @return string
+     */
+    public function getProductEntityIdField()
+    {
+        if(null === $this->_productEntityIdField) {
+            $this->_productEntityIdField = $this->metadataPool
+                ->getMetadata(\Magento\Catalog\Api\Data\ProductInterface::class)
+                ->getLinkField();
+        }
+        
+        return $this->_productEntityIdField;
     }
 }

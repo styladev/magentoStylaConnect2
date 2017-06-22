@@ -28,6 +28,8 @@ class Gallery extends ConverterType\AbstractType
      */
     protected function _addCollectionRequirements(Collection $collection, Store $store = null)
     {
+        $entityIdField = $this->converterHelper->getProductEntityIdField();
+        
         /** @var \Zend_Db_Select $select */
         $select = $collection->getSelect();
 
@@ -40,7 +42,7 @@ class Gallery extends ConverterType\AbstractType
         //add all the gallery values for this product
         $select->joinLeft(
             [self::GALLERY_KEY_VALUES => 'catalog_product_entity_media_gallery_value'],
-            self::GALLERY_KEY_VALUES . '.entity_id = e.entity_id' . ' AND ' . self::GALLERY_KEY_VALUES . '.store_id IN(' . implode(',', $storeIds) . ')',
+            self::GALLERY_KEY_VALUES . '.' . $entityIdField . ' = e.' . $entityIdField . ' AND ' . self::GALLERY_KEY_VALUES . '.store_id IN(' . implode(',', $storeIds) . ')',
             [
                 self::GALLERY_KEY_VALUES . '.label as ' . self::MAIN_IMAGE_CAPTION_KEY
             ]
@@ -58,8 +60,8 @@ class Gallery extends ConverterType\AbstractType
         //bugfix! if i apply the ->group on select, the page and offset will be broken. i need to save them, first
         $pageSize   = $collection->getPageSize();
         $pageOffset = $collection->getCurPage();
-
-        $select->group('e.entity_id');
+        
+        $select->group('e.' . $entityIdField);
         $select->limit($pageSize, $pageOffset);
     }
 
