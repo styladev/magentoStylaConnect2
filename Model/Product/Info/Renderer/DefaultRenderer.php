@@ -123,6 +123,8 @@ class DefaultRenderer
             'sku'           => $product->getSku(),
             'type'          => $product->getTypeId(),
             'name'          => $product->getName(),
+            'description'   => $product->getShortDescription(),
+            'categories'    => $product->getCategoryIds(),
             'saleable'      => $product->getIsSalable(),
             'price'         => $this->priceHelper->currency($product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue(), true, false),
             'priceTemplate' => $this->getPriceTemplate(),
