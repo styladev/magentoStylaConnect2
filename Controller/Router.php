@@ -50,9 +50,15 @@ class Router implements \Magento\Framework\App\RouterInterface
 
         $stylaFrontendName = $this->_getFrontendName();
         if (strpos($identifier, $stylaFrontendName) !== false) {
-
             $request->setModuleName('stylaconnect2page')->setControllerName('page')->setActionName('view');
-        } else {
+        } 
+        else if ($identifier == 'styla-plugin-version') {
+            $styla_version_arr = array();
+            $styla_version_arr['version'] = $this->_configHelper->getPluginVersion();
+            echo json_encode($styla_version_arr);
+            return true;
+        } 
+        else{
             //There is no match
             return false;
         }
