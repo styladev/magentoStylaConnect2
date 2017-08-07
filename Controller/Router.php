@@ -55,8 +55,9 @@ class Router implements \Magento\Framework\App\RouterInterface
         else if ($identifier == 'styla-plugin-version') {
             $styla_version_arr = array();
             $styla_version_arr['version'] = $this->_configHelper->getPluginVersion();
+            header('Content-Type: application/json');
             echo json_encode($styla_version_arr);
-            exit;
+            return true;
         } 
         else{
             //There is no match
