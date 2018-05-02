@@ -126,11 +126,11 @@ footer.
 </tr>
 </table>
 
-** The three following URLs should be used:
- `https://client-scripts.styla.com`   
- `http://seoapi.styla.com`   
- `https://client-scripts.styla.com`   
+** The three following URLs should be used:  
+ `https://client-scripts.styla.com`    
+ `http://seoapi.styla.com`    
+ `https://client-scripts.styla.com`     
 as shown on this screen shot:
 ![Styla New JS source](/doc/styla-plugin-client-scripts-magento2.png)  
-If not, please enter them, then switch Developer Mode dropdown to **OFF again** and click the **Save Config** button top-right in order to use them. 
+If different set, **please update them**, then switch Developer Mode dropdown to **OFF again** and click the **Save Config** button top-right in order to use them. 
 
