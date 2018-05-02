@@ -126,4 +126,11 @@ footer.
 </tr>
 </table>
 
-** Please do not modify these values. This configuration will be automatically set during the “Styla Connect” process from the previous step.
+** The three following URLs should be used:
+ `https://client-scripts.styla.com`   
+ `http://seoapi.styla.com`   
+ `https://client-scripts.styla.com`   
+as shown on this screen shot:
+![Styla New JS source](/doc/styla-plugin-client-scripts-magento2.png)  
+If not, please enter them, then switch Developer Mode dropdown to **OFF again** and click the **Save Config** button top-right in order to use them. 
+
