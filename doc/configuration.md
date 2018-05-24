@@ -134,3 +134,10 @@ as shown on this screen shot:
 ![Styla New JS source](/doc/styla-plugin-client-scripts-magento2.png)  
 If different set, **please update them**, then switch Developer Mode dropdown to **OFF again** and click the **Save Config** button top-right in order to use them. 
 
+## Turn off http password-protection on API endpoints
+
+Styla sources product data from Magento REST API which is protected by OAuth. Our application cannot access the endpoints if they are in addition password-protected, which is a common solution for protecting development and stage environments on which the plugin is first installed.
+
+If your stage environment is password protected, please turn it off for `http://yourdomain/rest/v1*` where the enddpoints are located. 
+
+Alternatively, turn password-protection on your stage altogether for the time Styla is using it. 
