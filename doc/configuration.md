@@ -138,6 +138,6 @@ If different set, **please update them**, then switch Developer Mode dropdown to
 
 Styla sources product data from Magento REST API which is protected by OAuth. Our application cannot access the endpoints if they are in addition password-protected, which is a common solution for protecting development and stage environments on which the plugin is first installed.
 
-If your stage environment is password protected, please turn it off for `http://yourdomain/rest/v1*` where the enddpoints are located. 
+If your stage environment is password protected, please turn it off for `http://yourdomain/rest/v1/*` where the enddpoints are located. 
 
 Alternatively, turn password-protection on your stage altogether for the time Styla is using it. 
