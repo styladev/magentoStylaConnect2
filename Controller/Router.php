@@ -46,6 +46,10 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     public function match(\Magento\Framework\App\RequestInterface $request)
     {
+        if(!$this->_configHelper->isConfiguredForThisStore()) {
+            return false; //module entirely disabled or magazine username not set.
+        }
+        
         $identifier = trim($request->getPathInfo(), '/');
 
         $stylaFrontendName = $this->_getFrontendName();
