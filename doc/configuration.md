@@ -126,4 +126,30 @@ footer.
 </tr>
 </table>
 
-** Please do not modify these values. This configuration will be automatically set during the “Styla Connect” process from the previous step.
+** The three following URLs should be used:  
+ `https://client-scripts.styla.com`    
+ `http://seoapi.styla.com`    
+ `https://client-scripts.styla.com`     
+as shown on this screen shot:
+![Styla New JS source](/doc/styla-plugin-client-scripts-magento2.png)  
+If different set, **please update them**, then switch Developer Mode dropdown to **OFF again** and click the **Save Config** button top-right in order to use them. 
+
+## Turn off http password-protection on API endpoints
+
+Styla sources product data from Magento REST API which is protected by OAuth. Our application cannot access the endpoints if they are in addition password-protected, which is a common solution for protecting development and stage environments on which the plugin is first installed.
+
+If your stage environment is password protected, please turn it off for `http://yourdomain/rest/v1/*` where the enddpoints are located. 
+
+Alternatively, turn password-protection on your stage altogether for the time Styla is using it. 
+
+## SEO Content from Styla's SEO API
+
+The module uses data from Styla's SEO API to:
+* generate tags like: meta tags including `<title>`, canonical link, og:tags, static content inserted into <body>, `robots` instructions
+* insert these tags accordingly into HTML of the template the page with Styla content uses
+  
+This is done to provide search engine bots with data to crawl and index all Styal URLs, which are in fact a Single-Page-Application.
+
+Once you install and configure the module, please open source of the page on which your Styla content is embedded and check if none of the tags mentioned below are duplicated. In case `robots`or `link rel="canonical"` or any other are in the HTML twice, make sure to remove the original ones coming from your default template. Otherwise search engine bots might not be able to crawl all the Styla content or crawl it incorrectly. 
+
+You can finde more information on the SEO API on [this page](https://styladocs.atlassian.net/wiki/spaces/CO/pages/9961486/SEO+API+and+Sitemaps+Integration)
