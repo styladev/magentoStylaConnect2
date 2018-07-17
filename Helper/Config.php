@@ -366,7 +366,7 @@ class Config extends AbstractHelper
      */
     public function getPluginVersion()
     {
-        return "2.0.5";
+        return "2.0.6";
     }
 
     /**
