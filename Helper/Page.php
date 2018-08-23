@@ -14,7 +14,7 @@ class Page extends AbstractHelper
      * @var StylaPageFactory
      */
     protected $_pageFactory;
-    
+
     /**
      *
      * @var Config
@@ -46,6 +46,7 @@ class Page extends AbstractHelper
         /** @var StylaPage $page */
         //load from styla
         $page = $this->_pageFactory->create()->loadByPath($currentPath);
+
         if (!$page->exist()) {
             return false;
         }
@@ -57,7 +58,29 @@ class Page extends AbstractHelper
     }
 
     /**
-     * 
+     * @param bool                                $path
+     * @return string
+     */
+    public function getStatusCode($path = false)
+    {
+        /** @var string $currentPath */
+        $currentPath = $this->getPath($path);
+
+        /** @var StylaPage $page */
+        //load from styla
+        $page = $this->_pageFactory->create()->loadByPath($currentPath);
+
+        $statusCode = $page->getSeoStatusCode();
+
+        if (!$statusCode){
+            $statusCode = "200";
+        }
+
+        return $statusCode;
+    }
+
+    /**
+     *
      * @param StylaPage $page
      * @param ResultPage $pageResult
      */
@@ -87,7 +110,7 @@ class Page extends AbstractHelper
     }
 
     /**
-     * 
+     *
      * @param string $path
      * @return string
      */

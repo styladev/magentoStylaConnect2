@@ -92,10 +92,8 @@ class Api
 
         try {
             $data = $this->getPageSeoData($requestPath);
-            if (isset($data['status']) && $data['status'] !== 200) {
-                return false;
-            }
-            unset($data['code'], $data['status']);
+
+            print_r($data);
 
             return $data;
         } catch (\Exception  $e) {
@@ -106,7 +104,7 @@ class Api
     }
 
     /**
-     * 
+     *
      * @param string $requestPath
      * @return mixed
      */
@@ -114,9 +112,9 @@ class Api
     {
         //check if a no-response status was cached
         $cache = $this->getCache();
-        if ($cache->load('styla_seo_unreachable')) {
-            return [];
-        }
+        // if ($cache->load('styla_seo_unreachable')) {
+        //     return [];
+        // }
 
         $seoRequest = $this->getRequest(StylaRequest\Type\Seo::class)
             ->initialize($requestPath);
@@ -192,7 +190,7 @@ class Api
         //this will tell curl to omit headers in result, if false
         $this->curl->setConfig(
                 [
-                    'header' => $addResultHeaders, 
+                    'header' => $addResultHeaders,
                     'timeout' => 5, //as some requests (seo) can take a bit longer to complete
                 ]
             );
