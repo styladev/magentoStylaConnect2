@@ -1,4 +1,4 @@
-# Styla Connect 2 (v 2.0.5)
+# Styla Connect 2 [![Latest Stable Version](https://poser.pugx.org/styla/magento2-connect/v/stable)](https://packagist.org/packages/styla/magento2-connect)
 ---
 
 Requires: 
