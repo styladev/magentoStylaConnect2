@@ -189,7 +189,7 @@ class Api
         $this->curl->setConfig(
                 [
                     'header' => $addResultHeaders,
-                    'timeout' => 5, //as some requests (seo) can take a bit longer to complete
+                    'timeout' => 10, //as some requests (seo) can take a bit longer to complete
                 ]
             );
 
