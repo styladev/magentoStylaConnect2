@@ -45,18 +45,18 @@ class Config extends AbstractHelper
      * @var ResourceConfig
      */
     protected $resourceConfig;
-    
+
     /**
      *
      * @var StylaApi
      */
     protected $stylaApi;
-    
+
     /**
      * @var \Magento\Framework\App\Request\Http
      */
     protected $request;
-    
+
     /**
      *
      * @var StoreManagerInterface
@@ -97,17 +97,17 @@ class Config extends AbstractHelper
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     public function isEnabled()
     {
         return $this->getScopeConfig()->getValue(self::XML_ENABLED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
-    
+
     /**
      * Is the module already configured (ready to work) in the current store
-     * 
+     *
      * @return bool
      */
     public function isConfiguredForThisStore()
@@ -135,7 +135,7 @@ class Config extends AbstractHelper
     }
 
     /**
-     * 
+     *
      * @return StylaApi
      */
     protected function _getApi()
@@ -255,11 +255,11 @@ class Config extends AbstractHelper
 
         return trim($routeName, '/') . '/';
     }
-    
+
     /**
      * Get the RootPath of the request.
      * eg. /magazine/story/one
-     * 
+     *
      * @return string
      */
     public function getRootPath()
@@ -268,7 +268,7 @@ class Config extends AbstractHelper
             $url = parse_url(str_replace('/index.php/', '/', $this->storeManager->getStore()->getUrl($this->getRouteName(), ['_type' => \Magento\Framework\UrlInterface::URL_TYPE_LINK])));
             $this->_rootPath = isset($url['path']) ? $url['path'] : '';
         }
-        
+
         return $this->_rootPath;
     }
 
@@ -307,7 +307,7 @@ class Config extends AbstractHelper
         if(!$this->isConfiguredForThisStore()) {
             return false;
         }
-        
+
         return (bool)$this->getScopeConfig()->getValue(self::XML_NAVIGATION_ENABLED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
@@ -366,7 +366,7 @@ class Config extends AbstractHelper
      */
     public function getPluginVersion()
     {
-        return "2.0.6";
+        return "2.0.7";
     }
 
     /**
