@@ -72,7 +72,7 @@ class Page
             if ($data['status']) {
                 $this->setData('statusCode', $data['status']);
             } else {
-                $this->setData('statusCode', "200");
+                $this->setData('statusCode', '200');
             }
         } else {
             $this->setData('exist', false);

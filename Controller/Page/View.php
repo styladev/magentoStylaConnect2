@@ -27,7 +27,6 @@ class View extends Action
      */
     protected $registry;
 
-
     /**
      * View constructor.
      * @param \Magento\Framework\App\Action\Context               $context
@@ -58,11 +57,13 @@ class View extends Action
         $page     = $this->resultPageFactory->create();
 
         $pageData = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getPage($page, $path);
-        $pageStatusCode = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getStatusCode($path);
+        $pageStatusCode = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getStatusCode();
+        $numberOfAttempts = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getNumberOfAttempts();
 
         $page->setHttpResponseCode($pageStatusCode);
 
-        if ($pageData === false) {
+        if ($pageData === false && $numberOfAttempts < 10) {
+            sleep(1); // sleeping for 1 second before trying again to avoid Magento Front Controller error
             $resultForward = $this->resultForwardFactory->create();
             return $resultForward->forward('noroute');
         }

@@ -93,8 +93,6 @@ class Api
         try {
             $data = $this->getPageSeoData($requestPath);
 
-            print_r($data);
-
             return $data;
         } catch (\Exception  $e) {
             //todo: log magento exception
@@ -112,9 +110,9 @@ class Api
     {
         //check if a no-response status was cached
         $cache = $this->getCache();
-        // if ($cache->load('styla_seo_unreachable')) {
-        //     return [];
-        // }
+        if ($cache->load('styla_seo_unreachable')) {
+            return [];
+        }
 
         $seoRequest = $this->getRequest(StylaRequest\Type\Seo::class)
             ->initialize($requestPath);
@@ -222,6 +220,7 @@ class Api
 
         //include the request timeout, if set
         $requestTimeoutOptions = $request->getConnectionTimeoutOptions();
+
         if ($requestTimeoutOptions) {
             $service->setOptions($requestTimeoutOptions);
         }
