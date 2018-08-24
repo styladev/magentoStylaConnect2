@@ -27,12 +27,6 @@ class Page extends AbstractHelper
      */
     protected $_seoApiStatusCode;
 
-    /**
-     *
-     * @var int
-     */
-    protected $_numberOfAttempts  = 0;
-
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         StylaPageFactory $pageFactory,
@@ -52,7 +46,6 @@ class Page extends AbstractHelper
      */
     public function getPage(ResultPage $pageResult, $path = false)
     {
-        $this->_numberOfAttempts++;
         /** @var string $currentPath */
         $currentPath = $this->getPath($path);
 
@@ -62,14 +55,12 @@ class Page extends AbstractHelper
 
         $statusCode = $page->getSeoStatusCode();
 
-        if (!$page->exist()) {
-            return false;
+        if ($page->exist()) {
+            $this->_seoApiStatusCode = $statusCode ? $statusCode : '200';
+
+            //set the proper page layout
+            $this->setPageLayout($page, $pageResult);
         }
-
-        $this->_seoApiStatusCode = $statusCode ? $statusCode : '200';
-
-        //set the proper page layout
-        $this->setPageLayout($page, $pageResult);
 
         return $page;
     }
@@ -80,14 +71,6 @@ class Page extends AbstractHelper
     public function getStatusCode()
     {
         return $this->_seoApiStatusCode;
-    }
-
-    /**
-     * @return int
-     */
-    public function getNumberOfAttempts()
-    {
-        return $this->_numberOfAttempts;
     }
 
     /**

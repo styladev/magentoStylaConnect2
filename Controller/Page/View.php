@@ -58,12 +58,10 @@ class View extends Action
 
         $pageData = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getPage($page, $path);
         $pageStatusCode = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getStatusCode();
-        $numberOfAttempts = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getNumberOfAttempts();
 
         $page->setHttpResponseCode($pageStatusCode);
 
-        if ($pageData === false && $numberOfAttempts < 10) {
-            sleep(1); // sleeping for 1 second before trying again to avoid Magento Front Controller error
+        if ($pageData === false) {
             $resultForward = $this->resultForwardFactory->create();
             return $resultForward->forward('noroute');
         }
