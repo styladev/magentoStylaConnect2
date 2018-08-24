@@ -1,7 +1,10 @@
 <?php /** @var $this \Styla\Connect2\Block\Magazine\Content */ ?>
 
-<?php $page = $this->getPage(); ?>
-<?php echo $page->getNoScript() ?>
+<?php $page = $this->getPage();
+if ($page->exist()) {
+    echo $page->getNoScript();
+}
+?>
 
 <div id="stylaMagazine"
     data-language="<?php echo $page->getLanguageCode() ?>"
