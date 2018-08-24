@@ -10,13 +10,13 @@ use Magento\Framework\Registry;
 class View extends Action
 {
     /**
-     * 
+     *
      * @var ForwardFactory
      */
     protected $resultForwardFactory;
 
     /**
-     * 
+     *
      * @var PageFactory
      */
     protected $resultPageFactory;
@@ -26,7 +26,6 @@ class View extends Action
      * @var Registry
      */
     protected $registry;
-
 
     /**
      * View constructor.
@@ -56,8 +55,12 @@ class View extends Action
 
         /** @var ResultPage $page */
         $page     = $this->resultPageFactory->create();
-        
+
         $pageData = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getPage($page, $path);
+        $pageStatusCode = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getStatusCode();
+
+        $page->setHttpResponseCode($pageStatusCode);
+
         if ($pageData === false) {
             $resultForward = $this->resultForwardFactory->create();
             return $resultForward->forward('noroute');

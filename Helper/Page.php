@@ -14,12 +14,18 @@ class Page extends AbstractHelper
      * @var StylaPageFactory
      */
     protected $_pageFactory;
-    
+
     /**
      *
      * @var Config
      */
     protected $_configHelper;
+
+    /**
+     *
+     * @var string
+     */
+    protected $_seoApiStatusCode;
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -46,18 +52,29 @@ class Page extends AbstractHelper
         /** @var StylaPage $page */
         //load from styla
         $page = $this->_pageFactory->create()->loadByPath($currentPath);
-        if (!$page->exist()) {
-            return false;
-        }
 
-        //set the proper page layout
-        $this->setPageLayout($page, $pageResult);
+        $statusCode = $page->getSeoStatusCode();
+
+        if ($page->exist()) {
+            $this->_seoApiStatusCode = $statusCode ? $statusCode : '200';
+
+            //set the proper page layout
+            $this->setPageLayout($page, $pageResult);
+        }
 
         return $page;
     }
 
     /**
-     * 
+     * @return string
+     */
+    public function getStatusCode()
+    {
+        return $this->_seoApiStatusCode;
+    }
+
+    /**
+     *
      * @param StylaPage $page
      * @param ResultPage $pageResult
      */
@@ -87,7 +104,7 @@ class Page extends AbstractHelper
     }
 
     /**
-     * 
+     *
      * @param string $path
      * @return string
      */

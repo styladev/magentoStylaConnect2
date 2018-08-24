@@ -65,14 +65,28 @@ class Page
         $data = $this->_getApi()
             ->requestPageData($path);
 
-        if ($data !== false) {
+        if ($data) {
             $this->setData($data);
             $this->setData('exist', true);
+
+            if ($data['status']) {
+                $this->setData('statusCode', $data['status']);
+            } else {
+                $this->setData('statusCode', '200');
+            }
         } else {
             $this->setData('exist', false);
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeoStatusCode()
+    {
+        return $this->getData('statusCode');
     }
 
     /**
@@ -148,7 +162,7 @@ class Page
     }
 
     /**
-     * 
+     *
      * @param string $name
      * @param array $data
      * @return \Styla\Connect2\Model\Page

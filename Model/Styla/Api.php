@@ -92,10 +92,6 @@ class Api
 
         try {
             $data = $this->getPageSeoData($requestPath);
-            if (isset($data['status']) && $data['status'] !== 200) {
-                return false;
-            }
-            unset($data['code'], $data['status']);
 
             return $data;
         } catch (\Exception  $e) {
@@ -106,7 +102,7 @@ class Api
     }
 
     /**
-     * 
+     *
      * @param string $requestPath
      * @return mixed
      */
@@ -192,8 +188,8 @@ class Api
         //this will tell curl to omit headers in result, if false
         $this->curl->setConfig(
                 [
-                    'header' => $addResultHeaders, 
-                    'timeout' => 5, //as some requests (seo) can take a bit longer to complete
+                    'header' => $addResultHeaders,
+                    'timeout' => 10, //as some requests (seo) can take a bit longer to complete
                 ]
             );
 
@@ -224,6 +220,7 @@ class Api
 
         //include the request timeout, if set
         $requestTimeoutOptions = $request->getConnectionTimeoutOptions();
+
         if ($requestTimeoutOptions) {
             $service->setOptions($requestTimeoutOptions);
         }
