@@ -10,8 +10,19 @@ namespace Styla\Connect2\Model\ResourceModel\Magazine;
 
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
+    /**
+     * @var string
+     */
     protected $_idFieldName = 'id';
+
+    /**
+     * @var string
+     */
     protected $_eventPrefix = 'styla_magazine_collection';
+
+    /**
+     * @var string
+     */
     protected $_eventObject = 'magazine_collection';
 
     /**
@@ -24,6 +35,9 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         $this->_init('Styla\Connect2\Model\Magazine', 'Styla\Connect2\Model\ResourceModel\Magazine');
     }
 
+    /**
+     * @return void
+     */
     public function joinStoreCode()
     {
         $this->getSelect()->joinLeft(
@@ -33,6 +47,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         );
     }
 
+    /**
+     * @param int $storeId
+     *
+     * @return $this
+     */
     public function addTopNavigationFilter($storeId = null)
     {
         $this->getSelect()
@@ -42,5 +61,4 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
         return $this;
     }
-
 }

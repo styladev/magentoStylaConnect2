@@ -11,19 +11,22 @@ namespace Styla\Connect2\Model\ResourceModel;
 
 class Magazine extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-
-    public function __construct(
-        \Magento\Framework\Model\ResourceModel\Db\Context $context
-    )
-    {
-        parent::__construct($context);
-    }
-
+    /**
+     * @return void
+     */
     protected function _construct()
     {
         $this->_init('styla_magazine', 'id');
     }
 
+    /**
+     * @param string $field
+     * @param int|string $value
+     * @param \Magento\Framework\Model\AbstractModel $object
+     *
+     * @return \Magento\Framework\DB\Select
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     protected function _getLoadSelect($field, $value, $object)
     {
         $fieldName = $field;
