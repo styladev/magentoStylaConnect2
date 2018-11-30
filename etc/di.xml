@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-
     <preference for="Styla\Connect2\Api\ProductRepositoryInterface" type="Styla\Connect2\Model\Api\ProductRepository" />
     <preference for="Styla\Connect2\Api\CategoryManagementInterface" type="Styla\Connect2\Model\Api\CategoryManagement" />
     <!--<preference for="Styla\Connect2\Api\Data\StylaProductInterface" type="Styla\Connect2\Model\Api\StylaProduct" />-->
     <preference for="Styla\Connect2\Api\Data\StylaProductSearchResultsInterface" type="Magento\Framework\Api\SearchResults" />
     <preference for="Styla\Connect2\Api\Data\StylaCategoryTreeInterface" type="Styla\Connect2\Model\Api\StylaCategory" />
-
+    <preference for="Styla\Connect2\Model\MagazineInterface" type="Styla\Connect2\Model\Magazine" />
 </config>

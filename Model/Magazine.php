@@ -8,12 +8,17 @@
 
 namespace Styla\Connect2\Model;
 
-class Magazine extends \Magento\Framework\Model\AbstractModel implements \Magento\Framework\DataObject\IdentityInterface
+use \Magento\Framework\Exception\LocalizedException;
+use \Styla\Connect2\Model\ResourceModel\Magazine as MagazineResourceModel;
+use \Magento\Framework\Model\AbstractModel;
+
+class Magazine extends AbstractModel implements MagazineInterface
 {
+
     /**
      * @var string
      */
-    const CACHE_TAG = 'styla_connect2_magazine';
+    public const CACHE_TAG = 'styla_connect2_magazine';
 
     /**
      * @var string
@@ -31,42 +36,56 @@ class Magazine extends \Magento\Framework\Model\AbstractModel implements \Magent
     protected $_eventObject = 'magazine';
 
     /**
+     * @var
+     */
+    protected $magazineResourceModel;
+
+    /**
+     * Magazine constructor.
+     *
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param MagazineResourceModel $magazine
+     *
+     * @return void
+     */
+    public function __construct(
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        MagazineResourceModel $magazine
+    ) {
+        parent::__construct($context, $registry);
+        $this->magazineResourceModel = $magazine;
+    }
+
+    /**
      * @return void
      */
     protected function _construct()
     {
-        $this->_init('Styla\Connect2\Model\ResourceModel\Magazine');
+        $this->_init(MagazineResourceModel::class);
     }
 
     /**
-     * @return array|string[]
-     */
-    public function getIdentities()
-    {
-        return [self::CACHE_TAG . '_' . $this->getId()];
-    }
-
-    /**
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return MagazineResourceModel
      */
     public function loadDefault()
     {
-        $this->_getResource()->load(1, 'is_default');
+        $this->magazineResourceModel->load($this, MagazineInterface::ACTIVE, MagazineInterface::IS_DEFAULT);
 
-        return $this;
+        return $this->magazineResourceModel;
     }
 
     /**
      * @param string $frontName
      *
-     * @return $this
+     * @return MagazineResourceModel
      */
     public function loadByFrontName($frontName)
     {
-        $this->load($frontName, 'front_name');
+        $this->magazineResourceModel->load($this, $frontName, MagazineInterface::FRONT_NAME);
 
-        return $this;
+        return $this->magazineResourceModel;
     }
 
     /**
@@ -74,7 +93,7 @@ class Magazine extends \Magento\Framework\Model\AbstractModel implements \Magent
      */
     public function isActive()
     {
-        return (int)$this->getData('is_active') === 1;
+        return (bool) $this->getData('is_active');
     }
 
     /**
@@ -82,7 +101,7 @@ class Magazine extends \Magento\Framework\Model\AbstractModel implements \Magent
      */
     public function isDefault()
     {
-        return (int)$this->getData('is_default') === 1;
+        return (bool) $this->getData('is_default');
     }
 
     /**
@@ -90,7 +109,7 @@ class Magazine extends \Magento\Framework\Model\AbstractModel implements \Magent
      */
     public function useMagentoLayout()
     {
-        return (int)$this->getData('use_magento_layout') === 1;
+        return (bool) $this->getData('use_magento_layout');
     }
 
     /**
@@ -98,6 +117,6 @@ class Magazine extends \Magento\Framework\Model\AbstractModel implements \Magent
      */
     public function includeInNavigation()
     {
-        return (int)$this->getData('include_in_navigation') === 1;
+        return (bool) $this->getData('include_in_navigation');
     }
 }

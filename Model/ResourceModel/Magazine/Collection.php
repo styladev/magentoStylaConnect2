@@ -6,9 +6,11 @@
  * @license See LICENSE_DIVANTE.txt for license details.
  */
 
-namespace Styla\Connect2\Model\ResourceModel\Magazine;
+namespace Styla\Connect2\Model;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+use \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+
+class Collection extends AbstractCollection
 {
     /**
      * @var string
@@ -32,22 +34,24 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     protected function _construct()
     {
-        $this->_init('Styla\Connect2\Model\Magazine', 'Styla\Connect2\Model\ResourceModel\Magazine');
+        $this->_init(Magazine::class, ResourceModel\Magazine::class);
     }
 
     /**
+     * todo: do skasowania?
      * @return void
      */
     public function joinStoreCode()
     {
         $this->getSelect()->joinLeft(
-            array('s' => $this->getTable('core/store')),
+            ['s' => $this->getTable('core/store')],
             'main_table.store_id = s.store_id',
-            array('store_code' => 's.code')
+            ['store_code' => 's.code']
         );
     }
 
     /**
+     * todo: do skasowania?
      * @param int $storeId
      *
      * @return $this
