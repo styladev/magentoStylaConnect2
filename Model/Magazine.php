@@ -11,14 +11,15 @@ namespace Styla\Connect2\Model;
 use \Magento\Framework\Exception\LocalizedException;
 use \Styla\Connect2\Model\ResourceModel\Magazine as MagazineResourceModel;
 use \Magento\Framework\Model\AbstractModel;
+use \Magento\Framework\Model\Context;
+use \Magento\Framework\Registry;
 
 class Magazine extends AbstractModel implements MagazineInterface
 {
-
     /**
      * @var string
      */
-    public const CACHE_TAG = 'styla_connect2_magazine';
+    const CACHE_TAG = 'styla_connect2_magazine';
 
     /**
      * @var string
@@ -50,8 +51,8 @@ class Magazine extends AbstractModel implements MagazineInterface
      * @return void
      */
     public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
+        Context $context,
+        Registry $registry,
         MagazineResourceModel $magazine
     ) {
         parent::__construct($context, $registry);

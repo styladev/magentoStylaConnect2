@@ -15,17 +15,17 @@ interface MagazineInterface
     /**
      * @var int
      */
-    public const ACTIVE = 1;
+    const ACTIVE = 1;
 
     /**
      * @var string
      */
-    public const IS_DEFAULT = 'is_default';
+    const IS_DEFAULT = 'is_default';
 
     /**
      * @var string
      */
-    public const FRONT_NAME = 'front_name';
+    const FRONT_NAME = 'front_name';
 
     /**
      * @return $this
