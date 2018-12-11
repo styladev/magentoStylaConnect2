@@ -11,6 +11,8 @@ namespace Styla\Connect2\Model\ResourceModel;
 use \Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use \Magento\Framework\Model\ResourceModel\Db\Context;
 use \Magento\Store\Model\StoreManagerInterface;
+use Styla\Connect2\Model\Collection;
+use \Styla\Connect2\Model\ResourceModel\Magazine\CollectionFactory;
 
 class Magazine extends AbstractDb
 {
@@ -18,7 +20,7 @@ class Magazine extends AbstractDb
      * @var StoreManagerInterface
      */
     protected $storeManager;
-
+protected $test;
     /**
      * Magazine constructor.
      *
@@ -27,8 +29,9 @@ class Magazine extends AbstractDb
      *
      * @return void
      */
-    public function __construct(Context $context, StoreManagerInterface $storeManager)
+    public function __construct(Context $context, StoreManagerInterface $storeManager, CollectionFactory $collectionFactory)
     {
+        $this->test = $collectionFactory;
         $this->storeManager = $storeManager;
         parent::__construct($context);
     }
@@ -52,6 +55,7 @@ class Magazine extends AbstractDb
     protected function _getLoadSelect($field, $value, $object)
     {
         $fieldName = $field;
+        #$tmp = $this->getSelect();
         $field     = $this->_getReadAdapter()->quoteIdentifier(sprintf('%s.%s', $this->getMainTable(), $field));
 
         $select = $this->_getReadAdapter()->select()

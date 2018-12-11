@@ -1,11 +1,10 @@
 <form action="<?php /* @escapeNotVerified */ echo $block->getConnectUrl() ?>" method="post" id="connect-form">
-    <?php echo $this->getChildHtml('store_switcher') ?>
     <?php echo $block->getBlockHtml('formkey')?>
+    <legend class="admin__legend">
+        <span><?php /* @escapeNotVerified */ echo __('Use this form to request access data from Styla.') ?></span>
+    </legend><br/>
     <div style="clear:both">
         <fieldset class="admin__fieldset">
-            <legend class="admin__legend">
-                <span><?php /* @escapeNotVerified */ echo __('Use this form to request access data from Styla.') ?></span>
-            </legend><br/>
             <div class="admin__field _required field-email">
                 <label for="username" class="admin__field-label">
                     <span><?php /* @escapeNotVerified */ echo __('Styla Account Email') ?></span>

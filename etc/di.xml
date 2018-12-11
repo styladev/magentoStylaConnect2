@@ -6,4 +6,19 @@
     <preference for="Styla\Connect2\Api\Data\StylaProductSearchResultsInterface" type="Magento\Framework\Api\SearchResults" />
     <preference for="Styla\Connect2\Api\Data\StylaCategoryTreeInterface" type="Styla\Connect2\Model\Api\StylaCategory" />
     <preference for="Styla\Connect2\Model\MagazineInterface" type="Styla\Connect2\Model\Magazine" />
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="styla_connect2_magazine_listing_data_source" xsi:type="string">Styla\Connect2\Model\ResourceModel\Magazine\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="Styla\Connect2\Model\ResourceModel\Magazine\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">styla_magazine</argument>
+            <argument name="resourceModel" xsi:type="string">Styla\Connect2\Model\ResourceModel\Magazine</argument>
+        </arguments>
+    </virtualType>
+
 </config>

@@ -30,7 +30,7 @@ class Magazine extends Template
         $this->_configHelper = $configHelper;
         $this->_registry     = $registry;
 
-        return parent::__construct($context, $data);
+        parent::__construct($context, $data);
     }
 
     /**
@@ -47,7 +47,7 @@ class Magazine extends Template
     }
 
     /**
-     *
+     * @deprecated
      * @return Config
      */
     public function getConfigHelper()

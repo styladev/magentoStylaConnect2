@@ -11,7 +11,6 @@ namespace Styla\Connect2\Setup;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\DB\Adapter\AdapterInterface;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
@@ -21,13 +20,117 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer->startSetup();
         if (version_compare($context->getVersion(), '2.0.0', '<')) {
             if (!$installer->tableExists('styla_magazine')) {
-                $table = $setup->getTable('styla_magazine');
-                $storeIndexName = $installer->getIdxName($table, 'store_id');
+                $table = $installer->getConnection()->newTable(
+                    $installer->getTable('styla_magazine')
+                    )
+                    ->addColumn(
+                        'id',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                        10,
+                        [
+                            'identity' => true,
+                            'nullable' => false,
+                            'primary' => true,
+                            'unsigned' => true,
+                        ],
+                        'Magazine ID'
+                    )
+                    ->addColumn(
+                        'store_id',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                        1,
+                        [
+                            'nullable' => true,
+                            'unsigned' => true,
+                        ],
+                        'Store ID'
+                    )
+                    ->addColumn(
+                        'is_active',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                        1,
+                        [
+                            'nullable' => true,
+                            'unsigned' => true,
+                        ],
+                        'Magazine active'
+                    )
+                    ->addColumn(
+                        'is_default',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                        1,
+                        [
+                            'nullable' => true,
+                            'unsigned' => true,
+                        ],
+                        'Default magazine'
+                    )
+                    ->addColumn(
+                        'use_magento_layout',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                        1,
+                        [
+                            'nullable' => true,
+                            'unsigned' => true,
+                        ],
+                        'Magento layout'
+                    )
+                    ->addColumn(
+                        'include_in_navigation',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                        1,
+                        [
+                            'nullable' => true,
+                            'unsigned' => true,
+                        ],
+                        'Include in navigation'
+                    )
+                    ->addColumn(
+                        'navigation_label',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                        255,
+                        ['nullable' => true],
+                        'Navigation label'
+                    )
+                    ->addColumn(
+                        'front_name',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                        255,
+                        ['nullable' => true],
+                        'Front name'
+                    )
+                    ->addColumn(
+                        'client_name',
+                        \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                        255,
+                        ['nullable' => true],
+                        'Client name'
+                    )
+                    ->setComment('Styla Magazines');
+
+                $installer->getConnection()->createTable($table);
+
                 $storeForeignKeyName = $installer->getFkName(
                     'styla_magazine',
                     'store_id',
                     'store',
                     'store_id'
+                );
+
+                $installer->run(
+                    "
+                    ALTER TABLE `styla_magazine`
+                    ADD CONSTRAINT `$storeForeignKeyName`
+                    FOREIGN KEY (`store_id`)
+                    REFERENCES `{$installer->getTable('store')}` (`store_id`)
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE;
+                ");
+
+                $storeIndexName = $installer->getIdxName(
+                    'styla_magazine',
+                    'store_id',
+                    \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
                 );
 
                 //set a unique index on store + front_name to prevent a having multiple magazines
@@ -38,36 +141,24 @@ class UpgradeSchema implements UpgradeSchemaInterface
                         'store_id',
                         'front_name',
                     ],
-                    AdapterInterface::INDEX_TYPE_UNIQUE
+                    \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
                 );
 
-                $installer->run(
-                    "CREATE TABLE `$table` (
-                        `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                        `store_id` SMALLINT(5) UNSIGNED NULL,
-                        `is_active` TINYINT(1) UNSIGNED NULL,
-                        `is_default` TINYINT(1) UNSIGNED NULL,
-                        `use_magento_layout` TINYINT(1) UNSIGNED NULL,
-                        `include_in_navigation` TINYINT(1) UNSIGNED NULL,
-                        `navigation_label` VARCHAR(255) NULL,
-                        `front_name` VARCHAR(255) NULL,
-                        `client_name` VARCHAR(255) NULL,
-                        PRIMARY KEY (`id`),
-                        INDEX `$storeIndexName` (`store_id` ASC),
-                        CONSTRAINT `$storeForeignKeyName`
-                            FOREIGN KEY (`store_id`)
-                            REFERENCES `{$installer->getTable('store')}` (`store_id`)
-                            ON DELETE CASCADE
-                            ON UPDATE CASCADE);"
+                $installer->getConnection()->addIndex(
+                    $installer->getTable('styla_magazine'),
+                    $storeIndexName,
+                    ['store_id']
                 );
 
-
-                $installer->run(
-                    "
-                    ALTER TABLE `$table`
-                    ADD INDEX `$storeFrontNameIndex` (`store_id` ASC, `front_name` ASC);
-                "
+                $installer->getConnection()->addIndex(
+                    $installer->getTable('styla_magazine'),
+                    $storeFrontNameIndex,
+                    [
+                        'store_id',
+                        'front_name',
+                    ]
                 );
+
             }
         }
         $installer->endSetup();
