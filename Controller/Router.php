@@ -3,6 +3,7 @@
 namespace Styla\Connect2\Controller;
 
 use Magento\Framework\Registry;
+use Magento\Framework\App\Action\Forward;
 
 class Router implements \Magento\Framework\App\RouterInterface
 {
@@ -19,12 +20,6 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     protected $_response;
 
-    /**
-     *
-     * @var \Styla\Connect2\Helper\Config
-     */
-    protected $_configHelper;
-
     protected $magazineFactory;
 
     protected $registry;
@@ -36,7 +31,6 @@ class Router implements \Magento\Framework\App\RouterInterface
     public function __construct(
         \Magento\Framework\App\ActionFactory $actionFactory,
         \Magento\Framework\App\ResponseInterface $response,
-        \Styla\Connect2\Helper\Config $configHelper,
         \Styla\Connect2\Model\MagazineFactory $magazineFactory,
         Registry $registry
     )
@@ -45,7 +39,6 @@ class Router implements \Magento\Framework\App\RouterInterface
         $this->magazineFactory = $magazineFactory;
         $this->actionFactory = $actionFactory;
         $this->_response     = $response;
-        $this->_configHelper = $configHelper;
     }
 
     /**
@@ -64,20 +57,26 @@ class Router implements \Magento\Framework\App\RouterInterface
         if (!$frontName) {
             return false;
         }
-        $magazine = $this->magazineFactory->create()->loadByFrontName($frontName);
+        $magazineModel = $this->magazineFactory->create();
+        $magazine = $magazineModel->loadByFrontName($frontName);
         if (!$magazine || !$magazine->isActive()) {
             return false;
         }
+        if ($this->registry->registry('current_magazine')) {
+            $this->registry->unregister('current_magazine');
+        }
+
         $this->registry->register('current_magazine', $magazine);
+
         $routeSettings = $this->_getRouteSettings($magazine, $path, $request);
         //setModule name is the front name
         $request
             ->setModuleName('styla')
             ->setControllerName('magazine')
             ->setActionName('index')
-            ->setParams('path', $routeSettings);
+            ->setParam('path', $routeSettings);
 
-        return true;
+        return $this->actionFactory->create(Forward::class);
     }
 
     /**
@@ -130,14 +129,5 @@ class Router implements \Magento\Framework\App\RouterInterface
         $allRequestParameters = $request->getQuery();
         
         return count($allRequestParameters) ? http_build_query($allRequestParameters) : '';
-    }
-
-    /**
-     *
-     * @return string
-     */
-    protected function _getFrontendName()
-    {
-        return $this->_configHelper->getFrontendName();
     }
 }

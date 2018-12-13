@@ -72,9 +72,10 @@ class Magazine extends AbstractModel implements MagazineInterface
      */
     public function loadDefault()
     {
-        $this->magazineResourceModel->load($this, MagazineInterface::ACTIVE, MagazineInterface::IS_DEFAULT);
+        //$this->magazineResourceModel->load($this, MagazineInterface::ACTIVE, MagazineInterface::IS_DEFAULT);
 
-        return $this->magazineResourceModel;
+        $this->load(MagazineInterface::ACTIVE, MagazineInterface::IS_DEFAULT);
+        return $this;
     }
 
     /**
@@ -84,9 +85,10 @@ class Magazine extends AbstractModel implements MagazineInterface
      */
     public function loadByFrontName($frontName)
     {
-        $this->magazineResourceModel->load($this, $frontName, MagazineInterface::FRONT_NAME);
+        //$tmp = $this->magazineResourceModel->load($this, $frontName, MagazineInterface::FRONT_NAME);
+        $this->load($frontName, MagazineInterface::FRONT_NAME);
 
-        return $this->magazineResourceModel;
+        return $this;
     }
 
     /**

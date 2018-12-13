@@ -270,4 +270,14 @@ class Data extends AbstractHelper
         return $this->stylaApi;
     }
 
+    /**
+     * Is the frontend navigation menu button enabled?
+     *
+     * @return bool
+     */
+    public function isNavigationLinkEnabled()
+    {
+        return (bool) $this->getCurrentMagazine()->getIncludeInNavigation();
+    }
+
 }

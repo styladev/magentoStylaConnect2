@@ -46,7 +46,7 @@ class Page extends Template
      */
     public function getRootPath()
     {
-        return $this->getConfigHelper()->getRootPath();
+        return $this->getConfigHelper()->getMagazineRootPath($this->getConfigHelper()->getCurrentMagazine());
     }
 
     /**

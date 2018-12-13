@@ -28,6 +28,7 @@ class Connector
     protected $integrationService;
     protected $request;
     protected $cacheTypeList;
+    protected $magazineFactory;
 
     //these are the resources that our Styla Integration will be able to use.
     //currently, we only need the products and categories
@@ -45,9 +46,11 @@ class Connector
         \Styla\Connect2\Helper\Config $configHelper,
         \Magento\Integration\Api\IntegrationServiceInterface $integrationService,
         \Magento\Framework\App\Request\Http $request,
-        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
+        \Styla\Connect2\Model\MagazineFactory $magazineFactory
     )
     {
+        $this->magazineFactory    = $magazineFactory;
         $this->messageManager     = $messageManager;
         $this->userFactory        = $userFactory;
         $this->oauthService       = $oauthService;
@@ -124,7 +127,7 @@ class Connector
         //we need an integration for styla
         $integration = $this->getIntegration();
 
-        $connectionScope = $this->_getConnectionScope($postData);
+        #$connectionScope = $this->_getConnectionScope($postData);
 
         //i need an oauth consumer
         $consumer = $this->getConsumer($integration);
@@ -137,14 +140,33 @@ class Connector
         $connectionData = $this->sendRegistrationRequest($this->getStylaLoginData(), $consumer, $token);
 
         //save the connection data i got from styla:
-        $this->configHelper->updateConnectionConfiguration($connectionData, $connectionScope);
-        
+        #$this->configHelper->updateConnectionConfiguration($connectionData, $connectionScope);
+
+        if (isset($this->connectionData['styla']['email'])) {
+            $this->createDefaultMagazine($this->connectionData['styla']['email'], 'magazine');
+        }
+
         //clear magento cache
         if(!$this->clearMagentoCache()) {
             $this->messageManager->addError('Failed automatically cleaning Magento cache. Please refresh the cache manually.');
         }
+
+        $this->messageManager->addSuccessMessage('Connection to Styla made successfully.');
     }
-    
+
+    protected function createDefaultMagazine($clientName, $frontName)
+    {
+        $magazineModel = $this->magazineFactory->create();
+        $magazine = $magazineModel->loadDefault();
+
+        $magazine
+            ->setClientName($clientName)
+            ->setFrontName($frontName)
+            ->setIsDefault(1);
+
+        $magazine->save();
+    }
+
     /**
      * Clear Magento caches that may be touched by our connection
      * 

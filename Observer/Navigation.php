@@ -7,15 +7,15 @@ use Magento\Framework\Event\ObserverInterface;
 
 class Navigation implements ObserverInterface
 {
-    protected $configHelper;
+    protected $stylaHelper;
     protected $request;
 
     public function __construct(
-        \Styla\Connect2\Helper\Config $configHelper,
+        \Styla\Connect2\Helper\Data $stylaHelper,
         \Magento\Framework\App\Request\Http $request
     )
     {
-        $this->configHelper = $configHelper;
+        $this->stylaHelper = $stylaHelper;
         $this->request      = $request;
     }
 
@@ -27,7 +27,7 @@ class Navigation implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        if (!$this->configHelper->isNavigationLinkEnabled()) {
+        if (!$this->stylaHelper->isNavigationLinkEnabled()) {
             return $this;
         }
 
@@ -35,9 +35,9 @@ class Navigation implements ObserverInterface
         $menu = $observer->getMenu();
 
         $tree        = $menu->getTree();
-        $magazineUrl = $this->configHelper->getFullMagazineUrl();
+        $magazineUrl = $this->stylaHelper->getAbsoluteMagazineUrl($this->stylaHelper->getCurrentMagazine());
         $data        = [
-            'name'      => $this->configHelper->getNavigationLinkLabel(),
+            'name'      => $this->stylaHelper->getCurrentMagazine()->getNavigationLabel(),
             'id'        => 'styla-magazine',
             'url'       => $magazineUrl,
             'is_active' => $this->request->getControllerModule() == "Styla_Connect2"

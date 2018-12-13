@@ -3,7 +3,7 @@ namespace Styla\Connect2\Block;
 
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
-use Styla\Connect2\Helper\Config;
+use Styla\Connect2\Helper\Data as StylaHelper;
 
 class Magazine extends Template
 {
@@ -25,7 +25,7 @@ class Magazine extends Template
      */
     protected $_configHelper;
 
-    public function __construct(Template\Context $context, Registry $registry, Config $configHelper, array $data = [])
+    public function __construct(Template\Context $context, Registry $registry, StylaHelper $configHelper, array $data = [])
     {
         $this->_configHelper = $configHelper;
         $this->_registry     = $registry;

@@ -23,16 +23,16 @@ abstract class AbstractType implements StylaRequestInterface
 
     /**
      *
-     * @var \Styla\Connect2\Helper\Config
+     * @var \Styla\Connect2\Helper\Data
      */
-    protected $configHelper;
+    protected $stylaHelper;
 
     public function __construct(
         \Styla\Connect2\Model\Styla\Api $stylaApi,
-        \Styla\Connect2\Helper\Config $configHelper
+        \Styla\Connect2\Helper\Data $stylaHelper
     )
     {
-        $this->configHelper = $configHelper;
+        $this->stylaHelper = $stylaHelper;
         $this->stylaApi     = $stylaApi;
     }
 
@@ -138,11 +138,11 @@ abstract class AbstractType implements StylaRequestInterface
 
     /**
      *
-     * @return \Styla\Connect2\Helper\Config
+     * @return \Styla\Connect2\Helper\Data
      */
     public function getConfigHelper()
     {
-        return $this->configHelper;
+        return $this->stylaHelper;
     }
 
     /**

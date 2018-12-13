@@ -20,7 +20,7 @@ class Magazine extends AbstractDb
      * @var StoreManagerInterface
      */
     protected $storeManager;
-protected $test;
+protected $collectionFactory;
     /**
      * Magazine constructor.
      *
@@ -29,9 +29,10 @@ protected $test;
      *
      * @return void
      */
-    public function __construct(Context $context, StoreManagerInterface $storeManager, CollectionFactory $collectionFactory)
+    public function __construct(Context $context, StoreManagerInterface $storeManager, CollectionFactory $collectionFactory,
+        \Magento\Framework\ObjectManagerInterface $objectManager)
     {
-        $this->test = $collectionFactory;
+        $this->collectionFactory = $collectionFactory;
         $this->storeManager = $storeManager;
         parent::__construct($context);
     }
@@ -52,10 +53,31 @@ protected $test;
      * @return \Magento\Framework\DB\Select
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getLoadSelect($field, $value, $object)
+    /*protected function _getLoadSelect($field, $value, $object)
     {
         $fieldName = $field;
-        #$tmp = $this->getSelect();
+
+        /*$filter = $this->objectManager->create('Magento\Framework\Api\Filter');
+        $filter->setData('field',$field);
+        $filter->setData('value',$value);
+        $filter->setData('condition_type','eq');
+
+        //add our filter(s) to a group
+        $filter_group = $this->objectManager->create('Magento\Framework\Api\Search\FilterGroup');
+        $filter_group->setData('filter', $filter);
+
+        //add the group(s) to the search criteria object
+        $search_criteria = $this->objectManager->create('Magento\Framework\Api\SearchCriteriaInterface');
+        $search_criteria->setFilterGroups([$filter_group]);
+
+        //query the repository for the object(s)
+        $repo = $this->objectManager->get('Styla\Connect2\Model\Api\ProductRepository');
+        $result = $repo->getList($search_criteria);
+        $products = $result->getItems();
+
+
+
+
         $field     = $this->_getReadAdapter()->quoteIdentifier(sprintf('%s.%s', $this->getMainTable(), $field));
 
         $select = $this->_getReadAdapter()->select()
@@ -71,5 +93,5 @@ protected $test;
         }
 
         return $select;
-    }
+    }*/
 }

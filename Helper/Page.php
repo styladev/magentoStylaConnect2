@@ -4,7 +4,7 @@ namespace Styla\Connect2\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Styla\Connect2\Model\PageFactory as StylaPageFactory;
 use Styla\Connect2\Model\Page as StylaPage;
-use Styla\Connect2\Helper\Config as Config;
+use Styla\Connect2\Helper\Data as StylaHelper;
 use Magento\Framework\View\Result\Page as ResultPage;
 
 class Page extends AbstractHelper
@@ -17,9 +17,9 @@ class Page extends AbstractHelper
 
     /**
      *
-     * @var Config
+     * @var StylaHelper
      */
-    protected $_configHelper;
+    protected $stylaHelper;
 
     /**
      *
@@ -30,11 +30,11 @@ class Page extends AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         StylaPageFactory $pageFactory,
-        Config $configHelper
+        StylaHelper $stylaHelper
     )
     {
         $this->_pageFactory  = $pageFactory;
-        $this->_configHelper = $configHelper;
+        $this->stylaHelper = $stylaHelper;
 
         return parent::__construct($context);
     }
@@ -80,7 +80,7 @@ class Page extends AbstractHelper
      */
     public function setPageLayout(StylaPage $page, ResultPage $pageResult)
     {
-        if (!$this->_configHelper->isUsingMagentoLayout()) {
+        if (!$this->stylaHelper->getCurrentMagazine()->getUseMagentoLayout()) {
             $pageResult->getConfig()->setPageLayout('empty');
         }
 
