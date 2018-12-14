@@ -327,7 +327,11 @@ class Data extends AbstractHelper
      */
     public function isNavigationLinkEnabled()
     {
-        return (bool) $this->getCurrentMagazine()->getIncludeInNavigation();
+        if (null !== $this->getCurrentMagazine()) {
+            return (bool) $this->getCurrentMagazine()->getIncludeInNavigation();
+        }
+
+        return false;
     }
 
 }
