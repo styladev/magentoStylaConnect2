@@ -27,54 +27,11 @@
                     </comment>
                 </field>
                 
-                <field id="frontend_name" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Frontend Name (route)</label>
-                    <comment>
-                        This is the public URL route that will be used for the magazine. Defaults to "magazin", as in "http://your-store-url.com/magazin"
-                    </comment>
-                </field>
-                
-                <field id="username" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Username</label>
-                    <comment>
-                        Your username. Should be automatically filled when you use the 'connect' link on the top of this page.
-                    </comment>
-                </field>
-
-                <field id="use_relative_product_url" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Use Relative Product Urls</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>
-                        yes - the product urls generated for the stories will be relative to store domain; no - full urls will be generated
-                    </comment>
-                </field>
-                
                 <field id="cache_lifetime" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Cache Lifetime</label>
                     <comment>
                         Advanced. You can leave this empty.
                     </comment>
-                </field>
-                
-                <field id="is_using_magento_layout" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Use Magento Layout on Magazine Pages</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>
-                        If enabled, your magazine will be embedded within the normal Magento layout. If disabled, just your Magazine will be visible (no Magento header).
-                    </comment>
-                </field>
-                
-                <field id="menu_link_enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Add Magazine Link to Navigation</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>
-                        If enabled, a "magazine" link will be added to the main (top) navigation menu.
-                    </comment>
-                </field>
-                
-                <field id="menu_link_label" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Label for the Magazine Menu Link</label>
-                    <comment>The label used for the navigation menu link.</comment>
                 </field>
             </group>
             

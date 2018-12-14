@@ -20,8 +20,14 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     protected $_response;
 
+    /**
+     * @var \Styla\Connect2\Model\MagazineFactory
+     */
     protected $magazineFactory;
 
+    /**
+     * @var Registry
+     */
     protected $registry;
 
     /**
@@ -95,6 +101,7 @@ class Router implements \Magento\Framework\App\RouterInterface
         $requestParameters = $this->_getRequestParamsString($request);
 
         $route = $path . ($requestParameters ? '?' . $requestParameters : '');
+
         return $route;
     }
 

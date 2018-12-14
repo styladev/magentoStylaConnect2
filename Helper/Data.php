@@ -24,18 +24,39 @@ class Data extends AbstractHelper
     /** @var Styla_Connect2_Model_Page */
     protected $_currentPage;
 
+    /**
+     * @var array
+     */
     protected $_rootPaths = [];
 
+    /**
+     * @var bool
+     */
     protected $_isDeveloperMode;
 
+    /**
+     * @var string
+     */
     protected $_apiVersion;
 
+    /**
+     * @var Registry
+     */
     protected $registry;
 
+    /**
+     * @var ModuleListInterface
+     */
     protected $moduleList;
 
+    /**
+     * @var StoreManagerInterface
+     */
     protected $storeManager;
 
+    /**
+     * @var Api
+     */
     protected $stylaApi;
 
     const MODULE_NAME = 'styla_connect2';
@@ -58,6 +79,15 @@ class Data extends AbstractHelper
 
     const ASSET_TYPE_CSS = 'css';
 
+    /**
+     * Data constructor.
+     *
+     * @param Context $context
+     * @param Registry $registry
+     * @param ModuleListInterface $moduleList
+     * @param StoreManagerInterface $storeManager
+     * @param Api $stylaApi
+     */
     public function __construct(
         Context $context,
         Registry $registry,
@@ -140,11 +170,22 @@ class Data extends AbstractHelper
         return $url;
     }
 
+    /**
+     * @param Styla_Connect_Model_Magazine $magazine
+     *
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getAbsoluteMagazineUrl(Styla_Connect_Model_Magazine $magazine)
     {
         return $this->storeManager->getStore()->getBaseUrl() . $magazine->getFrontName();
     }
 
+    /**
+     * @param Styla_Connect_Model_Magazine $magazine
+     *
+     * @return array
+     */
     public function getMagazineRootPath(Styla_Connect_Model_Magazine $magazine)
     {
         if (!isset($this->_rootPaths[$magazine->getId()])) {
@@ -221,6 +262,9 @@ class Data extends AbstractHelper
         return $versionUrl;
     }
 
+    /**
+     * @return string
+     */
     public function getClientName()
     {
         return $this
@@ -252,11 +296,17 @@ class Data extends AbstractHelper
         return $this->scopeConfig->getValue('general/locale/code');
     }
 
+    /**
+     * @return string
+     */
     public function getCacheLifetime()
     {
         return $this->scopeConfig->getValue('styla_connect/basic/cache_lifetime');
     }
 
+    /**
+     * @return bool
+     */
     public function isUsingRelativeProductUrls()
     {
         return $this->scopeConfig->isSetFlag('styla_connect/basic/use_relative_product_url');

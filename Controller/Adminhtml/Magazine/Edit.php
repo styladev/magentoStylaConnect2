@@ -28,11 +28,21 @@ class Edit extends Action
      */
     protected $magazineFactory;
 
+    /**
+     * @var ManagerInterface
+     */
     protected $messageManager;
 
+    /**
+     * @var ResultFactory
+     */
     protected $resultFactory;
 
+    /**
+     * @var Registry
+     */
     protected $coreRegistry;
+
     /**
      * Add constructor.
      *
@@ -77,6 +87,11 @@ class Edit extends Action
         return $this->resultFactory->create(ResultFactory::TYPE_PAGE);
     }
 
+    /**
+     * @param $magazineData
+     *
+     * @return array
+     */
     private function filterSaveData(&$magazineData)
     {
         if (isset($magazineData['form_key'])) {

@@ -7,7 +7,14 @@ use Magento\Framework\Event\ObserverInterface;
 
 class Navigation implements ObserverInterface
 {
+    /**
+     * @var \Styla\Connect2\Helper\Data
+     */
     protected $stylaHelper;
+
+    /**
+     * @var \Magento\Framework\App\Request\Http
+     */
     protected $request;
 
     public function __construct(

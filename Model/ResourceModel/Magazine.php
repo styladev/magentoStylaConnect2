@@ -20,7 +20,12 @@ class Magazine extends AbstractDb
      * @var StoreManagerInterface
      */
     protected $storeManager;
-protected $collectionFactory;
+
+    /**
+     * @var CollectionFactory
+     */
+    protected $collectionFactory;
+
     /**
      * Magazine constructor.
      *
