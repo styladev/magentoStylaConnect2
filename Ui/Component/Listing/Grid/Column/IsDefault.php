@@ -20,7 +20,7 @@ class IsDefault extends Column
     public function prepareDataSource(array $dataSource)
     {
         foreach ($dataSource['data']['items'] as &$item) {
-            $item['is_default'] = (int) $item['is_active'] === 1 ? 'Yes' : 'No';
+            $item['is_default'] = (int) $item['is_default'] === 1 ? 'Yes' : 'No';
         }
 
         return $dataSource;
