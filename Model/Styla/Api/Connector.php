@@ -43,7 +43,7 @@ class Connector
         ConsumerFactory $consumerFactory,
         TokenFactory $tokenFactory,
         \Styla\Connect2\Model\Styla\Api $stylaApi,
-        \Styla\Connect2\Helper\Config $configHelper,
+        \Styla\Connect2\Helper\Data $configHelper,
         \Magento\Integration\Api\IntegrationServiceInterface $integrationService,
         \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
