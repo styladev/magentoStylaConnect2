@@ -2,8 +2,9 @@
 
 namespace Styla\Connect2\Controller;
 
-use Magento\Framework\Registry;
 use Magento\Framework\App\Action\Forward;
+use Magento\Framework\Registry;
+use Magento\Framework\App\Action\Redirect;
 
 class Router implements \Magento\Framework\App\RouterInterface
 {
@@ -77,12 +78,12 @@ class Router implements \Magento\Framework\App\RouterInterface
         $routeSettings = $this->_getRouteSettings($magazine, $path, $request);
         //setModule name is the front name
         $request
-            ->setModuleName('styla')
-            ->setControllerName('magazine')
-            ->setActionName('index')
+            ->setModuleName('stylaconnect2page')
+            ->setControllerName('page')
+            ->setActionName('view')
             ->setParam('path', $routeSettings);
 
-        return $this->actionFactory->create(Forward::class);
+        return $this->actionFactory->create( 'Magento\Framework\App\Action\Forward', ['request' => $request]);
     }
 
     /**

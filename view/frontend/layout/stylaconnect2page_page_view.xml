@@ -8,7 +8,8 @@
                 template="Styla_Connect2::page/head/meta.phtml"
                 class="Styla\Connect2\Block\Magazine\Head"
                 name="connect2_magazine_meta"
-        ></block>
+        >
+        </block>
     </referenceBlock>
     
     <referenceBlock name="content">

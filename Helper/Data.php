@@ -120,7 +120,7 @@ class Data extends AbstractHelper
     public function getCurrentMagazine()
     {
         if (!$this->_currentMagazine) {
-            $this->_currentMagazine = $this->registry->registry('magazine');
+            $this->_currentMagazine = $this->registry->registry('current_magazine');
         }
 
         return $this->_currentMagazine;
@@ -176,8 +176,12 @@ class Data extends AbstractHelper
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getAbsoluteMagazineUrl(Styla_Connect_Model_Magazine $magazine)
+    public function getAbsoluteMagazineUrl($magazine)
     {
+        if (null === $magazine) {
+            return '';
+        }
+
         return $this->storeManager->getStore()->getBaseUrl() . $magazine->getFrontName();
     }
 
@@ -186,7 +190,7 @@ class Data extends AbstractHelper
      *
      * @return array
      */
-    public function getMagazineRootPath(Styla_Connect_Model_Magazine $magazine)
+    public function getMagazineRootPath($magazine)
     {
         if (!isset($this->_rootPaths[$magazine->getId()])) {
             $frontName = $magazine->getFrontName();
@@ -263,13 +267,17 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return string
+     * @return bool|string
      */
     public function getClientName()
     {
-        return $this
-            ->getCurrentMagazine()
-            ->getClientName();
+        if (null !== $this->getCurrentMagazine()) {
+            return $this
+                ->getCurrentMagazine()
+                ->getClientName();
+        }
+
+        return false;
     }
 
     /**
@@ -301,7 +309,7 @@ class Data extends AbstractHelper
      */
     public function getCacheLifetime()
     {
-        return $this->scopeConfig->getValue('styla_connect/basic/cache_lifetime');
+        return $this->scopeConfig->getValue('styla_connect2/basic/cache_lifetime');
     }
 
     /**
@@ -309,7 +317,7 @@ class Data extends AbstractHelper
      */
     public function isUsingRelativeProductUrls()
     {
-        return $this->scopeConfig->isSetFlag('styla_connect/basic/use_relative_product_url');
+        return $this->scopeConfig->isSetFlag('styla_connect2/basic/use_relative_product_url');
     }
 
     /**
@@ -321,17 +329,15 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Is the frontend navigation menu button enabled?
+     * @param $magazine
      *
      * @return bool
      */
-    public function isNavigationLinkEnabled()
+    public function isMagazineIncludedInNavigation($magazine)
     {
-        if (null !== $this->getCurrentMagazine()) {
-            return (bool) $this->getCurrentMagazine()->getIncludeInNavigation();
-        }
-
-        return false;
+        return (null !== $magazine->getIncludeInNavigation() &&
+            (bool) $magazine->getIsActive() &&
+            null !== $magazine->getNavigationLabel()
+        );
     }
-
 }

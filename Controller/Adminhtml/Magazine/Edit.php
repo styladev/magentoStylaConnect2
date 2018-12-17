@@ -102,6 +102,9 @@ class Edit extends Action
             unset($magazineData['id_field_name']);
         }
 
+        $magazineData['front_name'] = preg_replace('!\s+!', ' ', $magazineData['front_name']);
+        $magazineData['front_name'] = str_replace(' ', '-', $magazineData['front_name']);
+
         return $magazineData;
     }
 }

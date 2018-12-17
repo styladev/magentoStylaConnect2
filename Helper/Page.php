@@ -82,6 +82,8 @@ class Page extends AbstractHelper
     {
         if (!$this->stylaHelper->getCurrentMagazine()->getUseMagentoLayout()) {
             $pageResult->getConfig()->setPageLayout('empty');
+
+            return;
         }
 
         //fill the head metadata with our page's meta

@@ -1,4 +1,5 @@
 <?php
+
 namespace Styla\Connect2\Observer;
 
 use Magento\Framework\Event\Observer as EventObserver;
@@ -17,41 +18,48 @@ class Navigation implements ObserverInterface
      */
     protected $request;
 
+    protected $magazineFactory;
+
     public function __construct(
         \Styla\Connect2\Helper\Data $stylaHelper,
-        \Magento\Framework\App\Request\Http $request
-    )
-    {
+        \Magento\Framework\App\Request\Http $request,
+        \Styla\Connect2\Model\ResourceModel\Magazine\CollectionFactory $magazineFactory
+    ) {
+        $this->magazineFactory = $magazineFactory;
         $this->stylaHelper = $stylaHelper;
-        $this->request      = $request;
+        $this->request = $request;
     }
 
     /**
      * This will add a navigation link for the styla magazine in the main navigation tree.
      *
      * @param EventObserver $observer
+     *
      * @return $this
      */
     public function execute(EventObserver $observer)
     {
-        if (!$this->stylaHelper->isNavigationLinkEnabled()) {
-            return $this;
-        }
+        $magazines = $this->magazineFactory->create();
 
         /** @var \Magento\Framework\Data\Tree\Node $menu */
         $menu = $observer->getMenu();
 
-        $tree        = $menu->getTree();
-        $magazineUrl = $this->stylaHelper->getAbsoluteMagazineUrl($this->stylaHelper->getCurrentMagazine());
-        $data        = [
-            'name'      => $this->stylaHelper->getCurrentMagazine()->getNavigationLabel(),
-            'id'        => 'styla-magazine',
-            'url'       => $magazineUrl,
-            'is_active' => $this->request->getControllerModule() == "Styla_Connect2"
-        ];
+        $tree = $menu->getTree();
 
-        $node = new Node($data, 'id', $tree, $menu);
-        $menu->addChild($node);
+        foreach ($magazines as $magazine) {
+            if (false === (bool) $this->stylaHelper->isMagazineIncludedInNavigation($magazine)) {
+                continue;
+            }
+            $data = [
+                'name' => $magazine->getNavigationLabel(),
+                'id' => 'styla-magazine-' . $magazine->getId(),
+                'url' => $this->stylaHelper->getAbsoluteMagazineUrl($magazine),
+                'is_active' => (string) $this->request->getControllerModule() === 'stylaconnect2page',
+            ];
+
+            $node = new Node($data, 'id', $tree, $menu);
+            $menu->addChild($node);
+        }
 
         return $this;
     }

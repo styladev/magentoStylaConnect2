@@ -20,7 +20,7 @@ class Content extends Magazine
         array $data = []
     ) {
         $this->helper = $helper;
-        parent::__construct($context, $registry ,$configHelper, $data);
+        parent::__construct($context, $registry ,$helper, $data);
     }
 
     /**

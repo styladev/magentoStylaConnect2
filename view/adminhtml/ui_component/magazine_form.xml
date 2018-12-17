@@ -122,8 +122,45 @@
                 <item name="validation" xsi:type="array">
                     <item name="required-entry" xsi:type="boolean">true</item>
                 </item>
+                <item name="switcherConfig" xsi:type="array">
+                    <item name="enabled" xsi:type="boolean">true</item>
+                    <item name="rules" xsi:type="array">
+                        <item name="0" xsi:type="array">
+                            <item name="value" xsi:type="number">0</item>
+                            <item name="actions" xsi:type="array">
+                                <item name="0" xsi:type="array">
+                                    <item name="target" xsi:type="string">magazine_form.magazine_form.magazine.navigation_label</item>
+                                    <item name="callback" xsi:type="string">hide</item>
+                                </item>
+                            </item>
+                        </item>
+                        <item name="1" xsi:type="array">
+                            <item name="value" xsi:type="number">1</item>
+                            <item name="actions" xsi:type="array">
+                                <item name="0" xsi:type="array">
+                                    <item name="target" xsi:type="string">magazine_form.magazine_form.magazine.navigation_label</item>
+                                    <item name="callback" xsi:type="string">show</item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </item>
             </item>
         </argument>
-    </field>
+        </field>
+        <field name="navigation_label">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Navigation label</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">magazine</item>
+                    <item name="dataScope" xsi:type="string">navigation_label</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+        </field>
     </fieldset>
 </form>
