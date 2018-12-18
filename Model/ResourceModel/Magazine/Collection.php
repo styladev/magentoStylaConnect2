@@ -9,6 +9,8 @@
 namespace Styla\Connect2\Model\ResourceModel\Magazine;
 
 use \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Styla\Connect2\Model\Magazine as MagazineModel;
+use Styla\Connect2\Model\ResourceModel\Magazine as MagazineResourceModel;
 
 class Collection extends AbstractCollection
 {
@@ -34,7 +36,7 @@ class Collection extends AbstractCollection
      */
     protected function _construct()
     {
-        $this->_init(Magazine::class, ResourceModel\Magazine::class);
+        $this->_init(MagazineModel::class, MagazineResourceModel::class);
     }
 
     /**

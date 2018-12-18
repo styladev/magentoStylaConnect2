@@ -6,7 +6,6 @@ use Styla\Connect2\Block\Magazine;
 use Styla\Connect2\Helper\Data;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
-use Styla\Connect2\Helper\Config;
 use Magento\Store\Model\StoreManagerInterface;
 
 class Content extends Magazine
@@ -20,7 +19,6 @@ class Content extends Magazine
     public function __construct(
         Template\Context $context,
         Registry $registry,
-        Config $configHelper,
         Data $helper,
         StoreManagerInterface $storeManager,
         array $data = []

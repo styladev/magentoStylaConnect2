@@ -10,19 +10,16 @@ use Magento\Framework\View\Result\Page as ResultPage;
 class Page extends AbstractHelper
 {
     /**
-     *
      * @var StylaPageFactory
      */
     protected $_pageFactory;
 
     /**
-     *
      * @var StylaHelper
      */
     protected $stylaHelper;
 
     /**
-     *
      * @var string
      */
     protected $_seoApiStatusCode;
@@ -36,12 +33,12 @@ class Page extends AbstractHelper
         $this->_pageFactory  = $pageFactory;
         $this->stylaHelper = $stylaHelper;
 
-        return parent::__construct($context);
+        parent::__construct($context);
     }
 
     /**
      * @param ResultPage $pageResult
-     * @param bool                                $path
+     * @param bool $path
      * @return bool|Page
      */
     public function getPage(ResultPage $pageResult, $path = false)
@@ -56,7 +53,7 @@ class Page extends AbstractHelper
         $statusCode = $page->getSeoStatusCode();
 
         if ($page->exist()) {
-            $this->_seoApiStatusCode = $statusCode ? $statusCode : '200';
+            $this->_seoApiStatusCode = $statusCode ?: '200';
 
             //set the proper page layout
             $this->setPageLayout($page, $pageResult);
@@ -82,8 +79,6 @@ class Page extends AbstractHelper
     {
         if (!$this->stylaHelper->getCurrentMagazine()->getUseMagentoLayout()) {
             $pageResult->getConfig()->setPageLayout('empty');
-
-            return;
         }
 
         //fill the head metadata with our page's meta
@@ -106,8 +101,8 @@ class Page extends AbstractHelper
     }
 
     /**
-     *
      * @param string $path
+     *
      * @return string
      */
     public function getPath($path = false)

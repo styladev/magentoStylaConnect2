@@ -63,6 +63,7 @@ class View extends Action
 
         if ($pageData === false) {
             $resultForward = $this->resultForwardFactory->create();
+
             return $resultForward->forward('noroute');
         }
 

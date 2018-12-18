@@ -15,13 +15,15 @@ use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Styla\Connect2\Model\Styla\Api;
+use Styla\Connect2\Model\Magazine;
+use Styla\Connect2\Model\Page;
 
 class Data extends AbstractHelper
 {
-    /** @var Styla_Connect_Model_Magazine */
+    /** @var Magazine */
     protected $_currentMagazine;
 
-    /** @var Styla_Connect2_Model_Page */
+    /** @var Page */
     protected $_currentPage;
 
     /**
@@ -103,7 +105,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return Styla_Connect_Model_Page|null
+     * @return Page|null
      */
     public function getCurrentPage()
     {
@@ -115,7 +117,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return Styla_Connect_Model_Magazine|null
+     * @return Magazine|null
      */
     public function getCurrentMagazine()
     {
@@ -171,7 +173,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param Styla_Connect_Model_Magazine $magazine
+     * @param Magazine $magazine
      *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -186,7 +188,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param Styla_Connect_Model_Magazine $magazine
+     * @param Magazine $magazine
      *
      * @return array
      */
@@ -321,7 +323,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return Styla_Connect_Model_Styla_Api
+     * @return Api
      */
     protected function _getApi()
     {
@@ -329,7 +331,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $magazine
+     * @param Magazine $magazine
      *
      * @return bool
      */

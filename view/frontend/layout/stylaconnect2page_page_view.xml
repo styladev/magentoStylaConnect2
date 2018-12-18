@@ -4,20 +4,16 @@
     <referenceBlock name="page.main.title" remove="true" />
     
     <referenceBlock name="head.additional">
-        <block 
-                template="Styla_Connect2::page/head/meta.phtml"
+        <block template="Styla_Connect2::page/head/meta.phtml"
                 class="Styla\Connect2\Block\Magazine\Head"
                 name="connect2_magazine_meta"
-        >
-        </block>
+                cacheable="false" />
     </referenceBlock>
     
     <referenceBlock name="content">
-        <block 
-                template="Styla_Connect2::page/content.phtml"
+        <block template="Styla_Connect2::page/content.phtml"
                 class="Styla\Connect2\Block\Magazine\Content"
                 name="connect2_magazine"
-            >
-        </block>
+                cacheable="false" />
     </referenceBlock>
 </page>
