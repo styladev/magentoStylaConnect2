@@ -337,7 +337,8 @@ class Data extends AbstractHelper
     {
         return (null !== $magazine->getIncludeInNavigation() &&
             (bool) $magazine->getIsActive() &&
-            null !== $magazine->getNavigationLabel()
+            null !== $magazine->getNavigationLabel() &&
+            (int) $this->storeManager->getStore()->getId() === (int) $magazine->getStoreId()
         );
     }
 }

@@ -6,7 +6,7 @@
  * @license See LICENSE_DIVANTE.txt for license details.
  */
 
-namespace Styla\Connect2\Model;
+namespace Styla\Connect2\Model\ResourceModel\Magazine;
 
 use \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 

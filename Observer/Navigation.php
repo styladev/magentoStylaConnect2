@@ -5,25 +5,31 @@ namespace Styla\Connect2\Observer;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Data\Tree\Node;
 use Magento\Framework\Event\ObserverInterface;
+use Styla\Connect2\Model\ResourceModel\Magazine\CollectionFactory;
+use Magento\Framework\App\Request\Http;
+use Styla\Connect2\Helper\Data;
 
 class Navigation implements ObserverInterface
 {
     /**
-     * @var \Styla\Connect2\Helper\Data
+     * @var Data
      */
     protected $stylaHelper;
 
     /**
-     * @var \Magento\Framework\App\Request\Http
+     * @var Http
      */
     protected $request;
 
+    /**
+     * @var CollectionFactory
+     */
     protected $magazineFactory;
 
     public function __construct(
-        \Styla\Connect2\Helper\Data $stylaHelper,
-        \Magento\Framework\App\Request\Http $request,
-        \Styla\Connect2\Model\ResourceModel\Magazine\CollectionFactory $magazineFactory
+        Data $stylaHelper,
+        Http $request,
+        CollectionFactory $magazineFactory
     ) {
         $this->magazineFactory = $magazineFactory;
         $this->stylaHelper = $stylaHelper;
@@ -41,9 +47,8 @@ class Navigation implements ObserverInterface
     {
         $magazines = $this->magazineFactory->create();
 
-        /** @var \Magento\Framework\Data\Tree\Node $menu */
+        /** @var Node $menu */
         $menu = $observer->getMenu();
-
         $tree = $menu->getTree();
 
         foreach ($magazines as $magazine) {
