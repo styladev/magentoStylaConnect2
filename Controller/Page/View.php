@@ -38,9 +38,11 @@ class View extends Action
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\ForwardFactory $resultForwardFactory,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        Registry $registry
+        Registry $registry,
+        \Magento\Framework\App\Cache\TypeListInterface $cache
     )
     {
+        $cache->cleanType('layout');
         $this->resultPageFactory    = $resultPageFactory;
         $this->resultForwardFactory = $resultForwardFactory;
         $this->registry             = $registry;
@@ -54,7 +56,7 @@ class View extends Action
         $path = $this->getRequest()->getParam('path', false);
 
         /** @var ResultPage $page */
-        $page     = $this->resultPageFactory->create();
+        $page = $this->resultPageFactory->create();
 
         $pageData = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getPage($page, $path);
         $pageStatusCode = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getStatusCode();

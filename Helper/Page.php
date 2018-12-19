@@ -87,7 +87,7 @@ class Page extends AbstractHelper
 
         //info: as adding a meta title by default also triggers a "page.main.title" block
         //to display it, we're removing that block in the stylaconnect2page_page_view.xml layout file
-        if(isset($pageMeta['title'])) {
+        if (isset($pageMeta['title'])) {
             $pageConfig->getTitle()->set($pageMeta['title']);
         }
 

@@ -38,33 +38,4 @@ class Collection extends AbstractCollection
     {
         $this->_init(MagazineModel::class, MagazineResourceModel::class);
     }
-
-    /**
-     * todo: do skasowania?
-     * @return void
-     */
-    public function joinStoreCode()
-    {
-        $this->getSelect()->joinLeft(
-            ['s' => $this->getTable('core/store')],
-            'main_table.store_id = s.store_id',
-            ['store_code' => 's.code']
-        );
-    }
-
-    /**
-     * todo: do skasowania?
-     * @param int $storeId
-     *
-     * @return $this
-     */
-    public function addTopNavigationFilter($storeId = null)
-    {
-        $this->getSelect()
-            ->where('main_table.store_id = ? OR is_default = 1', $storeId)
-            ->where('include_in_navigation = 1')
-            ->where('is_active = 1');
-
-        return $this;
-    }
 }

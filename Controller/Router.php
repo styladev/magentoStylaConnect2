@@ -69,9 +69,6 @@ class Router implements \Magento\Framework\App\RouterInterface
         if (!$magazine || !$magazine->isActive()) {
             return false;
         }
-        if ($this->registry->registry('current_magazine')) {
-            $this->registry->unregister('current_magazine');
-        }
 
         $this->registry->register('current_magazine', $magazine);
 

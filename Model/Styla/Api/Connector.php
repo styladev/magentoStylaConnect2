@@ -29,6 +29,7 @@ class Connector
     protected $request;
     protected $cacheTypeList;
     protected $magazineFactory;
+    protected $storeManager;
 
     //these are the resources that our Styla Integration will be able to use.
     //currently, we only need the products and categories
@@ -47,9 +48,11 @@ class Connector
         \Magento\Integration\Api\IntegrationServiceInterface $integrationService,
         \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Styla\Connect2\Model\MagazineFactory $magazineFactory
+        \Styla\Connect2\Model\MagazineFactory $magazineFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     )
     {
+        $this->storeManager       = $storeManager;
         $this->magazineFactory    = $magazineFactory;
         $this->messageManager     = $messageManager;
         $this->userFactory        = $userFactory;
@@ -142,8 +145,9 @@ class Connector
         //save the connection data i got from styla:
         #$this->configHelper->updateConnectionConfiguration($connectionData, $connectionScope);
 
-        if (isset($this->connectionData['styla']['email'])) {
-            $this->createDefaultMagazine($this->connectionData['styla']['email'], 'magazine');
+        $clientName = explode('@', $this->connectionData['styla']['email'])[0];
+        if (null !== $clientName) {
+            $this->createDefaultMagazine($clientName, 'magazine');
         }
 
         //clear magento cache
@@ -162,7 +166,8 @@ class Connector
         $magazine
             ->setClientName($clientName)
             ->setFrontName($frontName)
-            ->setIsDefault(1);
+            ->setIsDefault(1)
+            ->setStoreId($this->storeManager->getStore()->getId());
 
         $magazine->save();
     }
