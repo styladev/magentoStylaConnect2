@@ -163,7 +163,7 @@ class Data extends AbstractHelper
         if (!$this->isDeveloperMode()) {
             return false;
         }
-        $path = sprintf('styla_connect/developer/override_%s_url', $url);
+        $path = sprintf('styla_connect2/developer/override_%s_url', $url);
         $url = $this->scopeConfig->getValue($path);
         if ($url) {
             $url = rtrim($url, '/') . '/';
@@ -311,7 +311,7 @@ class Data extends AbstractHelper
      */
     public function getCacheLifetime()
     {
-        return $this->scopeConfig->getValue('styla_connect2/basic/cache_lifetime');
+        return $this->scopeConfig->getValue('styla_connect2/general/cache_lifetime');
     }
 
     /**
@@ -319,7 +319,7 @@ class Data extends AbstractHelper
      */
     public function isUsingRelativeProductUrls()
     {
-        return $this->scopeConfig->isSetFlag('styla_connect2/basic/use_relative_product_url');
+        return $this->scopeConfig->isSetFlag('styla_connect2/general/use_relative_product_url');
     }
 
     /**

@@ -26,6 +26,20 @@
                         You can shutdown the whole module, here.
                     </comment>
                 </field>
+
+                <field id="username" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Username</label>
+                        <comment>
+                            Your username. Should be automatically filled when you use the 'connect' link on the top of this page.
+                        </comment>
+                    </field>
+                <field id="use_relative_product_url" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Relative Product Urls</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>
+                        yes - the product urls generated for the stories will be relative to store domain; no - full urls will be generated
+                    </comment>
+                </field>
                 
                 <field id="cache_lifetime" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Cache Lifetime</label>
