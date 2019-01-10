@@ -2,7 +2,7 @@
 namespace Styla\Connect2\Model;
 
 use Magento\Framework\Model\AbstractModel;
-use Styla\Connect2\Helper\Config as ConfigHelper;
+use Styla\Connect2\Helper\Data as StylaHelper;
 
 class Page
     extends \Magento\Framework\DataObject
@@ -30,16 +30,16 @@ class Page
     protected $_apiVersion;
 
     protected $stylaApi;
-    protected $configHelper;
+    protected $stylaHelper;
 
     public function __construct(
         \Styla\Connect2\Model\Styla\Api $stylaApi,
-        ConfigHelper $configHelper,
+        StylaHelper $stylaHelper,
         array $data = []
     )
     {
         $this->stylaApi     = $stylaApi;
-        $this->configHelper = $configHelper;
+        $this->stylaHelper = $stylaHelper;
 
         return parent::__construct($data);
     }
@@ -263,7 +263,7 @@ class Page
      */
     public function getLanguageCode()
     {
-        return $this->getConfigHelper()->getLanguageCode();
+        return $this->getStylaHelper()->getLanguageCode();
     }
 
     /**
@@ -272,7 +272,7 @@ class Page
      */
     public function getCssUrl()
     {
-        $cssUrl = $this->getConfigHelper()->getAssetsUrl(ConfigHelper::ASSET_TYPE_CSS);
+        $cssUrl = $this->getStylaHelper()->getAssetsUrl(StylaHelper::ASSET_TYPE_CSS);
         return $cssUrl;
     }
 
@@ -284,7 +284,9 @@ class Page
     public function getUsername()
     {
         if (null === $this->_username) {
-            $this->_username = $this->getConfigHelper()->getUsername();
+            $this->_username = $this->getStylaHelper()
+                ->getCurrentMagazine()
+                ->getClientName();
         }
 
         return $this->_username;
@@ -297,17 +299,17 @@ class Page
      */
     public function getScriptUrl()
     {
-        $scriptUrl = $this->getConfigHelper()->getAssetsUrl(ConfigHelper::ASSET_TYPE_JS);
+        $scriptUrl = $this->getStylaHelper()->getAssetsUrl(StylaHelper::ASSET_TYPE_JS);
         return $scriptUrl;
     }
 
     /**
      *
-     * @return \Styla\Connect2\Helper\Config
+     * @return \Styla\Connect2\Helper\Data
      */
-    public function getConfigHelper()
+    public function getStylaHelper()
     {
-        return $this->configHelper;
+        return $this->stylaHelper;
     }
 
     /**

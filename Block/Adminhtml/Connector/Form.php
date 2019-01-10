@@ -2,18 +2,18 @@
 namespace Styla\Connect2\Block\Adminhtml\Connector;
 
 use Magento\Framework\View\Element\Template;
-use Styla\Connect2\Helper\Config;
+use Styla\Connect2\Helper\Data as StylaHelper;
 
 class Form extends Template
 {
     /**
      *
-     * @var Config
+     * @var StylaHelper
      */
     protected $configHelper;
 
     public function __construct(
-        Config $configHelper,
+        StylaHelper $configHelper,
         Template\Context $context, array $data = [])
     {
         $this->configHelper = $configHelper;

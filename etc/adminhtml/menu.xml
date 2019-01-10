@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add
+            id="Styla_Connect2::magazine"
+            title="Styla magazines"
+            module="Styla_Connect2"
+            sortOrder="999"
+            parent="Magento_Backend::content"
+            resource="Magento_Backend::content"
+            action="styla_connect2/magazine/index"
+        />
+    </menu>
+</config>

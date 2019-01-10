@@ -4,25 +4,22 @@ namespace Styla\Connect2\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Styla\Connect2\Model\PageFactory as StylaPageFactory;
 use Styla\Connect2\Model\Page as StylaPage;
-use Styla\Connect2\Helper\Config as Config;
+use Styla\Connect2\Helper\Data as StylaHelper;
 use Magento\Framework\View\Result\Page as ResultPage;
 
 class Page extends AbstractHelper
 {
     /**
-     *
      * @var StylaPageFactory
      */
     protected $_pageFactory;
 
     /**
-     *
-     * @var Config
+     * @var StylaHelper
      */
-    protected $_configHelper;
+    protected $stylaHelper;
 
     /**
-     *
      * @var string
      */
     protected $_seoApiStatusCode;
@@ -30,18 +27,18 @@ class Page extends AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         StylaPageFactory $pageFactory,
-        Config $configHelper
+        StylaHelper $stylaHelper
     )
     {
         $this->_pageFactory  = $pageFactory;
-        $this->_configHelper = $configHelper;
+        $this->stylaHelper = $stylaHelper;
 
-        return parent::__construct($context);
+        parent::__construct($context);
     }
 
     /**
      * @param ResultPage $pageResult
-     * @param bool                                $path
+     * @param bool $path
      * @return bool|Page
      */
     public function getPage(ResultPage $pageResult, $path = false)
@@ -56,7 +53,7 @@ class Page extends AbstractHelper
         $statusCode = $page->getSeoStatusCode();
 
         if ($page->exist()) {
-            $this->_seoApiStatusCode = $statusCode ? $statusCode : '200';
+            $this->_seoApiStatusCode = $statusCode ?: '200';
 
             //set the proper page layout
             $this->setPageLayout($page, $pageResult);
@@ -80,7 +77,7 @@ class Page extends AbstractHelper
      */
     public function setPageLayout(StylaPage $page, ResultPage $pageResult)
     {
-        if (!$this->_configHelper->isUsingMagentoLayout()) {
+        if (!$this->stylaHelper->getCurrentMagazine()->getUseMagentoLayout()) {
             $pageResult->getConfig()->setPageLayout('empty');
         }
 
@@ -90,7 +87,7 @@ class Page extends AbstractHelper
 
         //info: as adding a meta title by default also triggers a "page.main.title" block
         //to display it, we're removing that block in the stylaconnect2page_page_view.xml layout file
-        if(isset($pageMeta['title'])) {
+        if (isset($pageMeta['title'])) {
             $pageConfig->getTitle()->set($pageMeta['title']);
         }
 
@@ -104,8 +101,8 @@ class Page extends AbstractHelper
     }
 
     /**
-     *
      * @param string $path
+     *
      * @return string
      */
     public function getPath($path = false)
