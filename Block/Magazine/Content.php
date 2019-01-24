@@ -10,20 +10,22 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class Content extends Magazine
 {
+    /** @var Data */
     protected $helper;
 
+    /** @var string */
     protected $rootPath;
 
+    /** @var StoreManagerInterface  */
     protected $storeManager;
 
     public function __construct(
         Template\Context $context,
         Registry $registry,
         Data $helper,
-        StoreManagerInterface $storeManager,
         array $data = []
     ) {
-        $this->storeManager = $storeManager;
+        $this->storeManager = $context->getStoreManager();
         $this->helper = $helper;
         parent::__construct($context, $registry, $helper, $data);
     }
