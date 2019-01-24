@@ -12,7 +12,6 @@ use \Magento\Backend\App\Action;
 use \Magento\Backend\App\Action\Context;
 use \Magento\Framework\View\Result\PageFactory;
 use \Styla\Connect2\Model\MagazineFactory;
-use \Magento\Framework\Message\ManagerInterface;
 use \Magento\Framework\Controller\ResultFactory;
 use \Magento\Framework\Registry;
 
@@ -27,16 +26,6 @@ class Edit extends Action
      * @var MagazineFactory
      */
     protected $magazineFactory;
-
-    /**
-     * @var ManagerInterface
-     */
-    protected $messageManager;
-
-    /**
-     * @var ResultFactory
-     */
-    protected $resultFactory;
 
     /**
      * @var Registry
@@ -56,16 +45,14 @@ class Edit extends Action
         Context $context,
         PageFactory $resultPageFactory,
         MagazineFactory $magazineFactory,
-        ManagerInterface $messageManager,
-        ResultFactory $resultFactory,
         Registry $coreRegistry
     )
     {
         parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
         $this->magazineFactory = $magazineFactory;
-        $this->messageManager = $messageManager;
-        $this->resultFactory = $resultFactory;
+        $this->messageManager = $context->getMessageManager();
+        $this->resultFactory = $context->getResultFactory();
         $this->coreRegistry = $coreRegistry;
     }
 
