@@ -16,14 +16,14 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Styla\Connect2\Model\Styla\Api;
 use Styla\Connect2\Model\Magazine;
-use Styla\Connect2\Model\Page;
+use Styla\Connect2\Model\Page as StylaPage;
 
 class Data extends AbstractHelper
 {
     /** @var Magazine */
     protected $_currentMagazine;
 
-    /** @var Page */
+    /** @var StylaPage */
     protected $_currentPage;
 
     /**
@@ -105,7 +105,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return Page|null
+     * @return StylaPage|null
      */
     public function getCurrentPage()
     {
