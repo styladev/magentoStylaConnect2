@@ -67,7 +67,7 @@ class Data extends AbstractHelper
 
     const URL_SEO_PROD = 'http://seo.styla.com/';
 
-    const URL_ASSETS_PROD = '//cdn.styla.com/';
+    const URL_ASSETS_PROD = '//client-scripts.styla.com/';
 
     const URL_PART_JS = 'scripts/clients/%s.js?v=%s';
 

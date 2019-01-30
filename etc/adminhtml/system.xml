@@ -4,21 +4,21 @@
         <tab id="styla" translate="label" sortOrder="10">
             <label>Styla Connect</label>
         </tab>
- 
+
         <section id="styla_connect2" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Styla Connect2</label>
             <tab>styla</tab>
             <resource>Styla_Connect2::styla_connect2</resource>
-            
+
             <group id="informational" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Styla Connect2</label>
                 <attribute type="expanded">1</attribute>
                 <frontend_model>Styla\Connect2\Block\Adminhtml\Connector\Config\Hint</frontend_model>
             </group>
-            
+
             <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General</label>
-                
+
                 <field id="enable" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable the Module</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -40,7 +40,7 @@
                         yes - the product urls generated for the stories will be relative to store domain; no - full urls will be generated
                     </comment>
                 </field>
-                
+
                 <field id="cache_lifetime" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Cache Lifetime</label>
                     <comment>
@@ -48,10 +48,10 @@
                     </comment>
                 </field>
             </group>
-            
+
             <group id="developer" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Developer Mode (advanced)</label>
-                
+
                 <field id="is_developer_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Use developer mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -59,7 +59,7 @@
                         Advanced. Do not enable this if you don't know what it does.
                     </comment>
                 </field>
-                
+
                 <field id="override_seo_url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Override Url for SEO Api</label>
                     <comment>If filled, use this url instead of the automatically-acquired one. Eg. http://seo.styla.com/</comment>
@@ -67,15 +67,15 @@
                         <field id="is_developer_mode">1</field>
                     </depends>
                 </field>
-                
+
                 <field id="override_cdn_url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Override Url for CDN/Assets</label>
-                    <comment>If filled, use this url instead of the automatically-acquired one. Eg. http://cdn.styla.com/</comment>
+                    <comment>If filled, use this url instead of the automatically-acquired one. Eg. //client-scripts.styla.com/</comment>
                     <depends>
                         <field id="is_developer_mode">1</field>
                     </depends>
                 </field>
-                
+
                 <field id="override_api_url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Override Url for Styla Content Version API</label>
                     <comment>If filled, use this url instead of the automatically-acquired one. Eg. http://live.styla.com/</comment>
@@ -85,6 +85,6 @@
                 </field>
             </group>
         </section>
- 
+
     </system>
 </config>

@@ -11,7 +11,7 @@ class Config extends AbstractHelper
 {
     const DEFAULT_ROUTE_NAME = 'magazin';
 
-    const URL_ASSETS_PROD = 'http://cdn.styla.com/';
+    const URL_ASSETS_PROD = '//client-scripts.styla.com/';
     const URL_PART_JS     = 'scripts/clients/%s.js?v=%s';
     const URL_PART_CSS    = 'styles/clients/%s.css?v=%s';
 
