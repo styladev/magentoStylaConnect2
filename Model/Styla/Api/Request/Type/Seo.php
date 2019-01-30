@@ -24,7 +24,7 @@ class Seo extends AbstractType
         $apiUrl = self::API_URL_SEO;
 
         $apiBaseUrl  = $this->getConfigHelper()->getApiSeoUrl();
-        $clientName  = $this->getConfigHelper()->getUsername();
+        $clientName  = $this->getConfigHelper()->getClientName();
         $requestPath = $this->getRequestPath();
 
         if (strlen($requestPath) > 1) {
@@ -43,5 +43,10 @@ class Seo extends AbstractType
     public function getResponseType()
     {
         return \Styla\Connect2\Model\Styla\Api\Response\Type\Seo::class;
+    }
+
+    public function getStylaHelper()
+    {
+        return $this->stylaHelper;
     }
 }

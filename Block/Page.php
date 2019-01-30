@@ -29,7 +29,7 @@ class Page extends Template
 
     /**
      * 
-     * @return Styla\Connect2\Model\Page
+     * @return \Styla\Connect2\Model\Page
      */
     public function getPage()
     {
@@ -46,7 +46,7 @@ class Page extends Template
      */
     public function getRootPath()
     {
-        return $this->getConfigHelper()->getRootPath();
+        return $this->getConfigHelper()->getMagazineRootPath($this->getConfigHelper()->getCurrentMagazine());
     }
 
     /**
@@ -58,4 +58,3 @@ class Page extends Template
         return $this->getConfigHelper()->getPluginVersion();
     }
 }
-

@@ -21,8 +21,9 @@ class Save extends Action
     {
         $this->connector = $connector;
 
-        return parent::__construct($context);
+        parent::__construct($context);
     }
+
 
     public function execute()
     {

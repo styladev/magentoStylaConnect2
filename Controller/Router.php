@@ -2,6 +2,10 @@
 
 namespace Styla\Connect2\Controller;
 
+use Magento\Framework\App\Action\Forward;
+use Magento\Framework\Registry;
+use Magento\Framework\App\Action\Redirect;
+
 class Router implements \Magento\Framework\App\RouterInterface
 {
 
@@ -18,10 +22,14 @@ class Router implements \Magento\Framework\App\RouterInterface
     protected $_response;
 
     /**
-     *
-     * @var \Styla\Connect2\Helper\Config
+     * @var \Styla\Connect2\Model\MagazineFactory
      */
-    protected $_configHelper;
+    protected $magazineFactory;
+
+    /**
+     * @var Registry
+     */
+    protected $registry;
 
     /**
      * @param \Magento\Framework\App\ActionFactory     $actionFactory
@@ -30,12 +38,14 @@ class Router implements \Magento\Framework\App\RouterInterface
     public function __construct(
         \Magento\Framework\App\ActionFactory $actionFactory,
         \Magento\Framework\App\ResponseInterface $response,
-        \Styla\Connect2\Helper\Config $configHelper
+        \Styla\Connect2\Model\MagazineFactory $magazineFactory,
+        Registry $registry
     )
     {
+        $this->registry = $registry;
+        $this->magazineFactory = $magazineFactory;
         $this->actionFactory = $actionFactory;
         $this->_response     = $response;
-        $this->_configHelper = $configHelper;
     }
 
     /**
@@ -46,37 +56,31 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     public function match(\Magento\Framework\App\RequestInterface $request)
     {
-        if(!$this->_configHelper->isConfiguredForThisStore()) {
-            return false; //module entirely disabled or magazine username not set.
+        $path = $this->_getRequestPath($request);
+        if ($path === false) {
+            return false;
         }
-        
-        $identifier = trim($request->getPathInfo(), '/');
-
-        $stylaFrontendName = $this->_getFrontendName();
-        if (strpos($identifier, $stylaFrontendName) !== false) {
-            $request->setModuleName('stylaconnect2page')->setControllerName('page')->setActionName('view');
-        } 
-        else if ($identifier == 'styla-plugin-version') {
-            $styla_version_arr = array();
-            $styla_version_arr['version'] = $this->_configHelper->getPluginVersion();
-            echo json_encode($styla_version_arr);
-            return true;
-        } 
-        else{
-            //There is no match
+        $frontName = $this->_getFrontName($path);
+        if (!$frontName) {
+            return false;
+        }
+        $magazineModel = $this->magazineFactory->create();
+        $magazine = $magazineModel->loadByFrontName($frontName);
+        if (!$magazine || !$magazine->isActive()) {
             return false;
         }
 
-        //we want the part after the initial magazine uri, as it may point us to the user's intention
-        $route = $this->_getRouteSettings($identifier, $request);
-        $request->setParam('path', $route);
+        $this->registry->register('current_magazine', $magazine);
 
-        /*
-         * We have match and now we will forward action
-         */
-        return $this->actionFactory->create(
-            'Magento\Framework\App\Action\Forward', ['request' => $request]
-        );
+        $routeSettings = $this->_getRouteSettings($magazine, $path, $request);
+        //setModule name is the front name
+        $request
+            ->setModuleName('stylaconnect2page')
+            ->setControllerName('page')
+            ->setActionName('view')
+            ->setParam('path', $routeSettings);
+
+        return $this->actionFactory->create( 'Magento\Framework\App\Action\Forward', ['request' => $request]);
     }
 
     /**
@@ -86,18 +90,40 @@ class Router implements \Magento\Framework\App\RouterInterface
      * 
      * @return string
      */
-    protected function _getRouteSettings($path, \Magento\Framework\App\RequestInterface $request)
+    protected function _getRouteSettings($magazine, $path, \Magento\Framework\App\RequestInterface $request)
     {
         //the path should not contain the trailing slash, the styla api is not expecting it
-        $path = rtrim(str_replace($this->_getFrontendName(), '', $path), '/');
+        $path = rtrim(str_replace($magazine->getFrontName(), '', $path), '/');
         
         //all the get params should be retained
         $requestParameters = $this->_getRequestParamsString($request);
 
         $route = $path . ($requestParameters ? '?' . $requestParameters : '');
+
         return $route;
     }
-    
+
+    protected function _getRequestPath(\Magento\Framework\App\RequestInterface $request)
+    {
+        return  trim($request->getRequestString(), '/');
+    }
+
+    /**
+     * Can this request's path be processed by this router?
+     *
+     * @param string $path
+     * @return string|boolean
+     */
+    protected function _getFrontName($path)
+    {
+        //we expect the magazine's frontend name to be the first element in the path_info
+        $path     = trim($path, '/') . '/';
+        $elements = explode('/', $path, 2);
+        $frontendName = reset($elements);
+
+        return trim($frontendName, '/');
+    }
+
     /**
      * 
      * @param \Magento\Framework\App\RequestInterface $request
@@ -108,14 +134,5 @@ class Router implements \Magento\Framework\App\RouterInterface
         $allRequestParameters = $request->getQuery();
         
         return count($allRequestParameters) ? http_build_query($allRequestParameters) : '';
-    }
-
-    /**
-     *
-     * @return string
-     */
-    protected function _getFrontendName()
-    {
-        return $this->_configHelper->getFrontendName();
     }
 }

@@ -16,7 +16,7 @@ class Register extends AbstractType
 
     public function __construct(
         StylaApi $stylaApi,
-        \Styla\Connect2\Helper\Config $configHelper,
+        \Styla\Connect2\Helper\Data $configHelper,
         Connector $connector
     )
     {
