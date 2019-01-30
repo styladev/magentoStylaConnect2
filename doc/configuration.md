@@ -131,14 +131,17 @@ footer.
 <td><i>empty</i>, disabled</td>
 </tr>
 </table>
+
 * Moved to a separate Content > Styla magazines menu in the 2.0.9 version 
+
 ** For pre-2.0.9 versions, the three following URLs should be used:  
  `https://client-scripts.styla.com`    
  `http://seoapi.styla.com`    
- `https://client-scripts.styla.com`     
+ `https://client-scripts.styla.com` 
+ 
 as shown on this screen shot:
 ![Styla New JS source](/doc/styla-plugin-client-scripts-magento2.png)  
-If different set, **please update them**, then switch Developer Mode dropdown to **OFF again** and click the **Save Config** button top-right in order to use them. 
+If different set, **please update them**, then switch Developer Mode dropdown to **OFF again** and click the **Save Config** button top-right in order to use them. Only Styla JS sourced from `https://client-scripts.styla.com` can render Styla Landing Pages.
 
 ## Setting up Styla Magazines and Pages
 
