@@ -14,6 +14,7 @@ use \Magento\Framework\View\Result\PageFactory;
 use \Styla\Connect2\Model\MagazineFactory;
 use \Magento\Framework\Controller\ResultFactory;
 use \Magento\Framework\Registry;
+use \Magento\Framework\App\Cache\Manager;
 
 class Edit extends Action
 {
@@ -33,11 +34,18 @@ class Edit extends Action
     protected $coreRegistry;
 
     /**
+     * @var Manager
+     */
+    protected $cacheManager;
+
+    /**
      * Add constructor.
      *
      * @param Context $context
      * @param PageFactory $resultPageFactory
      * @param MagazineFactory $magazineFactory
+     * @param Registry $coreRegistry
+     * @param Manager $cacheManager
      *
      * @return void
      */
@@ -45,7 +53,8 @@ class Edit extends Action
         Context $context,
         PageFactory $resultPageFactory,
         MagazineFactory $magazineFactory,
-        Registry $coreRegistry
+        Registry $coreRegistry,
+        Manager $cacheManager
     )
     {
         parent::__construct($context);
@@ -54,6 +63,7 @@ class Edit extends Action
         $this->messageManager = $context->getMessageManager();
         $this->resultFactory = $context->getResultFactory();
         $this->coreRegistry = $coreRegistry;
+        $this->cacheManager = $cacheManager;
     }
 
     /**
@@ -67,6 +77,8 @@ class Edit extends Action
             $magazine = $this->magazineFactory->create();
             $magazine->setData($magazineData)->save();
             $resultRedirect = $this->resultRedirectFactory->create();
+
+            $this->cacheManager->clean(['layout', 'block_html', 'full_page']);
 
             return $resultRedirect->setPath('*/*/index');
         }
