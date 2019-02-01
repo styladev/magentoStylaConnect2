@@ -15,8 +15,11 @@ use Magento\Framework\UrlInterface;
 
 class Action extends Column
 {
-    /** Url path */
+    /** @var string */
     const ROW_EDIT_URL = 'styla_connect2/magazine/edit';
+
+    /** @var string */
+    const ROW_DELETE_URL = 'styla_connect2/magazine/delete';
 
     /**
      * @var UrlInterface
@@ -29,12 +32,18 @@ class Action extends Column
     private $_editUrl;
 
     /**
+     * @var string
+     */
+    private $deleteUrl;
+
+    /**
      * @param ContextInterface   $context
      * @param UiComponentFactory $uiComponentFactory
      * @param UrlInterface       $urlBuilder
      * @param array              $components
      * @param array              $data
      * @param string             $editUrl
+     * @param string             $deleteUrl
      */
     public function __construct(
         ContextInterface $context,
@@ -42,11 +51,13 @@ class Action extends Column
         UrlInterface $urlBuilder,
         array $components = [],
         array $data = [],
-        $editUrl = self::ROW_EDIT_URL
+        $editUrl = self::ROW_EDIT_URL,
+        $deleteUrl = self::ROW_DELETE_URL
     )
     {
         $this->_urlBuilder = $urlBuilder;
         $this->_editUrl = $editUrl;
+        $this->deleteUrl = $deleteUrl;
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
 
@@ -69,6 +80,21 @@ class Action extends Column
                             ['id' => $item['id']]
                         ),
                         'label' => __('Edit'),
+                    ];
+                    $item[$name]['delete'] = [
+                        'href' => $this->_urlBuilder->getUrl(
+                            $this->deleteUrl,
+                            ['id' => $item['id']]
+                        ),
+                        'label' => __('Delete'),
+                        'confirm' => [
+                            'title' => __('Confirm deletion'),
+                            'message' => __('Are you sure you want to remove this entry? '.
+                                'Once you do this, the Styla content will no longer be visible. '.
+                                'This action cannot be reverted. '.
+                                'You can simply deactivate the entry without removing it.'
+                                )
+                        ],
                     ];
                 }
             }
