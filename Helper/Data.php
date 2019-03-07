@@ -337,7 +337,7 @@ class Data extends AbstractHelper
      */
     public function isMagazineIncludedInNavigation($magazine)
     {
-        return (null !== $magazine->getIncludeInNavigation() &&
+        return (false !== (bool) $magazine->getIncludeInNavigation() &&
             (bool) $magazine->getIsActive() &&
             null !== $magazine->getNavigationLabel() &&
             (int) $this->storeManager->getStore()->getId() === (int) $magazine->getStoreId()
