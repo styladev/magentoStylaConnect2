@@ -69,7 +69,7 @@ class Connector
 
     /**
      * Get the URL used for sending the connection data to Styla
-     * 
+     *
      * @return string
      * @throws \Exception
      */
@@ -174,13 +174,13 @@ class Connector
 
     /**
      * Clear Magento caches that may be touched by our connection
-     * 
-     * 
+     *
+     *
      */
     public function clearMagentoCache()
     {
         $types = ['config','layout','block_html','reflection','config_integration','config_integration_api','full_page','translate'];
-        
+
         try {
             foreach($types as $type) {
                 $this->cacheTypeList->cleanType($type);
@@ -190,12 +190,12 @@ class Connector
         } catch (\Exception $e) {
             return false;
         }
-        
+
         return true;
     }
 
     /**
-     * 
+     *
      * @return Integration
      */
     public function getIntegration()
@@ -269,7 +269,8 @@ class Connector
         if (!$apiResponse->isOk()) {
             throw new \Exception(
                 "Couldn't connect to Styla API. Error result: " . $apiResponse->getHttpStatus()
-                . ($apiResponse->getError() ? ' - ' . $apiResponse->getError() : '')
+                . ($apiResponse->getError() ? ' - ' . $apiResponse->getError() : '') .
+                ". Please check the Email and password used and try connecting one more time. In case still no success, contact Styla."
             );
         }
 
