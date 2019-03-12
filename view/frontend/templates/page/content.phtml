@@ -1,14 +1,14 @@
 <?php /** @var $this \Styla\Connect2\Block\Magazine\Content */ ?>
 
-<?php $page = $this->getPage();
-if ($page->exist()) {
-    echo $page->getNoScript();
-}
-?>
+<?php $page = $this->getPage(); ?>
 
 <div id="stylaMagazine"
     data-language="<?php echo $page->getLanguageCode() ?>"
     data-rootpath="<?php echo $this->getRootPath()?>"
-    data-pluginversion="<?php echo $this->getPluginVersion()?>"></div>
+    data-pluginversion="<?php echo $this->getPluginVersion()?>">
+    <?php if ($page->exist()) {
+        echo $page->getNoScript();
+    } ?>
+</div>
 <script src="<?php echo $page->getScriptUrl()?>" async></script>
 <link rel="stylesheet" type="text/css" href="<?php echo $page->getCssUrl() ?>">
