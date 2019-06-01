@@ -79,14 +79,19 @@ class Magazine extends AbstractModel implements MagazineInterface
     }
 
     /**
-     * @param string $frontName
-     *
-     * @return MagazineResourceModel
+     * {@inheritDoc}
      */
-    public function loadByFrontName($frontName)
+    public function loadByFrontName($frontName, $storeId)
     {
-        //$tmp = $this->magazineResourceModel->load($this, $frontName, MagazineInterface::FRONT_NAME);
-        $this->load($frontName, MagazineInterface::FRONT_NAME);
+        $collection = $this->getCollection();
+
+        $page = $collection
+            ->addFieldToFilter(MagazineInterface::FRONT_NAME, $frontName)
+            ->addFieldToFilter('store_id', $storeId)
+            ->setPageSize(1)
+            ->getFirstItem();
+
+        $this->setData($page->getData());
 
         return $this;
     }
