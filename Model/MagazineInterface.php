@@ -1,9 +1,9 @@
 <?php
 /**
- * @package Styla/Connect2
- * @author Oskar Wolanin <owolanin@divante.co>
+ * @package   Styla/Connect2
+ * @author    Oskar Wolanin <owolanin@divante.co>
  * @copyright 2018 Divante Sp. z o.o.
- * @license See LICENSE_DIVANTE.txt for license details.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 
 namespace Styla\Connect2\Model;
@@ -35,10 +35,11 @@ interface MagazineInterface
 
     /**
      * @param string $frontName
+     * @param int    $storeId
      *
      * @return $this
      */
-    public function loadByFrontName($frontName);
+    public function loadByFrontName($frontName, $storeId);
 
     /**
      * @return bool
