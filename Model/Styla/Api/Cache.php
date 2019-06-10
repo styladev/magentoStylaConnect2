@@ -1,4 +1,5 @@
 <?php
+
 namespace Styla\Connect2\Model\Styla\Api;
 
 use Magento\Webapi\Model\Cache\Type\Webapi as WebapiCache;
@@ -24,24 +25,30 @@ class Cache
      * @var Config
      */
     protected $_configHelper;
-    
+
     /**
      *
      * @var StylaApi
      */
     protected $_api;
-    
+
     protected $_cacheLifetime;
+
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $storeManager;
 
     public function __construct(
         WebapiCache $cache,
         StylaApi $api,
-        Config $configHelper
-    )
-    {
+        Config $configHelper,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
+    ) {
         $this->_cache        = $cache;
         $this->_api          = $api;
         $this->_configHelper = $configHelper;
+        $this->storeManager  = $storeManager;
     }
 
     /**
@@ -67,6 +74,7 @@ class Cache
     /**
      * @param            $id
      * @param bool|false $doNotTestCacheValidity
+     *
      * @return false|mixed
      */
     public function load($id, $doNotTestCacheValidity = false)
@@ -78,6 +86,7 @@ class Cache
         }
 
         $data = $this->_cache->load($id);
+
         return $data ? $data : false;
     }
 
@@ -117,6 +126,7 @@ class Cache
         if (null === $this->_cacheLifetime) {
             $this->_cacheLifetime = $this->_configHelper->getCacheLifetime();
         }
+
         return $this->_cacheLifetime;
     }
 
@@ -132,11 +142,17 @@ class Cache
     /**
      *
      * @param  $request
+     *
      * @return string
      */
     public function getCacheKey(RequestInterface $request)
     {
-        $key = $request->getRequestType() . $request->getRequestPath() . "_" . $this->getApiVersion();
+        $key = '';
+
+        try {
+            $key = $request->getRequestType().$request->getRequestPath().'_'.$this->storeManager->getStore()->getCode().'_'.$this->getApiVersion();
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+        }
 
         return $key;
     }
@@ -145,6 +161,7 @@ class Cache
      * If possible, load a cached response
      *
      * @param RequestInterface $request
+     *
      * @return boolean|ResponseInterface
      */
     public function getCachedApiResponse(RequestInterface $request)
