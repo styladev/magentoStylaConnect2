@@ -11,19 +11,19 @@ class Info extends \Magento\Framework\App\Action\Action
 {
     /**
      *
-     * @var ProductRepositoryInterface 
+     * @var ProductRepositoryInterface
      */
     protected $productRepository;
-    
+
     /**
      *
-     * @var ProductInfo 
+     * @var ProductInfo
      */
     protected $productInfo;
-    
+
     /**
      *
-     * @var JsonFactory 
+     * @var JsonFactory
      */
     protected $resultJsonFactory;
 
@@ -89,7 +89,7 @@ class Info extends \Magento\Framework\App\Action\Action
             $product = false;
 
             if ($sku = $this->getRequest()->getParam('sku')) {
-                $product = $this->productRepository->getBySku($sku, false, $storeId);
+                $product = $this->productRepository->get($sku, false, $storeId);
             } elseif ($id = (int)$this->getRequest()->getParam('product', $this->getRequest()->getParam('id', false))) {
                 $product = $this->productRepository->getById($id, false, $storeId);
             }
