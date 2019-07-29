@@ -41,14 +41,11 @@ class Page extends AbstractHelper
      * @param bool $path
      * @return bool|Page
      */
-    public function getPage(ResultPage $pageResult, $path = false)
+    public function getPage(ResultPage $pageResult)
     {
-        /** @var string $currentPath */
-        $currentPath = $this->getPath($path);
-
         /** @var StylaPage $page */
         //load from styla
-        $page = $this->_pageFactory->create()->loadByPath($currentPath);
+        $page = $this->_pageFactory->create()->loadStylaSEO();
 
         $statusCode = $page->getSeoStatusCode();
 

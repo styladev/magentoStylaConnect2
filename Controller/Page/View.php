@@ -52,13 +52,10 @@ class View extends Action
 
     public function execute()
     {
-        /** @var string|bool $path */
-        $path = $this->getRequest()->getParam('path', false);
-
         /** @var ResultPage $page */
         $page = $this->resultPageFactory->create();
 
-        $pageData = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getPage($page, $path);
+        $pageData = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getPage($page);
         $pageStatusCode = $this->_objectManager->get('Styla\Connect2\Helper\Page')->getStatusCode();
 
         $page->setHttpResponseCode($pageStatusCode);

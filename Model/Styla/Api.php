@@ -81,17 +81,12 @@ class Api
 
     /**
      *
-     * @param string $requestPath
      * @return boolean|array
      */
-    public function requestPageData($requestPath = '/')
+    public function requestPageData()
     {
-        if (!$requestPath) {
-            $requestPath = '/';
-        }
-
         try {
-            $data = $this->getPageSeoData($requestPath);
+            $data = $this->getPageSeoData();
 
             return $data;
         } catch (\Exception  $e) {
@@ -103,11 +98,13 @@ class Api
 
     /**
      *
-     * @param string $requestPath
      * @return mixed
      */
-    public function getPageSeoData($requestPath)
+    public function getPageSeoData()
     {
+        $arr = parse_url($_SERVER['REQUEST_URI']);
+        $requestPath = $arr['path'];
+
         //check if a no-response status was cached
         $cache = $this->getCache();
         if ($cache->load('styla_seo_unreachable')) {

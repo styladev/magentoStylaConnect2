@@ -55,15 +55,13 @@ class Page
     }
 
     /**
-     * Load the page from styla, using it's path
+     * Load the page from styla.
      *
-     * @param string $path
      * @return \Styla\Connect2\Model\Page
      */
-    public function loadByPath($path)
+    public function loadStylaSEO()
     {
-        $data = $this->_getApi()
-            ->requestPageData($path);
+        $data = $this->_getApi()->requestPageData();
 
         if ($data) {
             $this->setData($data);
