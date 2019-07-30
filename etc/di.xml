@@ -10,11 +10,11 @@
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="styla_connect2_magazine_listing_data_source" xsi:type="string">Styla\Connect2\Model\ResourceModel\Magazine\Collection</item>
+                <item name="styla_connect2_magazine_listing_data_source" xsi:type="string">Styla\Connect2\Model\ResourceModel\Magazine\CollectionResult</item>
             </argument>
         </arguments>
     </type>
-    <virtualType name="Styla\Connect2\Model\ResourceModel\Magazine\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Styla\Connect2\Model\ResourceModel\Magazine\CollectionResult" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">styla_magazine</argument>
             <argument name="resourceModel" xsi:type="string">Styla\Connect2\Model\ResourceModel\Magazine</argument>
