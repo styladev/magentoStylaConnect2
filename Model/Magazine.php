@@ -85,8 +85,13 @@ class Magazine extends AbstractModel implements MagazineInterface
     {
         $collection = $this->getCollection();
 
+        if ($frontName === null) {
+            $collection->addFieldToFilter(MagazineInterface::FRONT_NAME, ['null' => true]);
+        } else {
+            $collection->addFieldToFilter(MagazineInterface::FRONT_NAME, $frontName);
+        }
+
         $page = $collection
-            ->addFieldToFilter(MagazineInterface::FRONT_NAME, $frontName)
             ->addFieldToFilter('store_id', $storeId)
             ->setPageSize(1)
             ->getFirstItem();

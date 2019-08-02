@@ -1,9 +1,9 @@
 <?php
 /**
- * @package Styla/Connect2
- * @author Oskar Wolanin <owolanin@divante.co>
+ * @package   Styla/Connect2
+ * @author    Oskar Wolanin <owolanin@divante.co>
  * @copyright 2018 Divante Sp. z o.o.
- * @license See LICENSE_DIVANTE.txt for license details.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 
 namespace Styla\Connect2\Setup;
@@ -22,91 +22,91 @@ class UpgradeSchema implements UpgradeSchemaInterface
             if (!$installer->tableExists('styla_magazine')) {
                 $table = $installer->getConnection()->newTable(
                     $installer->getTable('styla_magazine')
-                    )
-                    ->addColumn(
-                        'id',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                        10,
-                        [
-                            'identity' => true,
-                            'nullable' => false,
-                            'primary' => true,
-                            'unsigned' => true,
-                        ],
-                        'Magazine ID'
-                    )
-                    ->addColumn(
-                        'store_id',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                        1,
-                        [
-                            'nullable' => true,
-                            'unsigned' => true,
-                        ],
-                        'Store ID'
-                    )
-                    ->addColumn(
-                        'is_active',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                        1,
-                        [
-                            'nullable' => true,
-                            'unsigned' => true,
-                        ],
-                        'Magazine active'
-                    )
-                    ->addColumn(
-                        'is_default',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                        1,
-                        [
-                            'nullable' => true,
-                            'unsigned' => true,
-                        ],
-                        'Default magazine'
-                    )
-                    ->addColumn(
-                        'use_magento_layout',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                        1,
-                        [
-                            'nullable' => true,
-                            'unsigned' => true,
-                        ],
-                        'Magento layout'
-                    )
-                    ->addColumn(
-                        'include_in_navigation',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-                        1,
-                        [
-                            'nullable' => true,
-                            'unsigned' => true,
-                        ],
-                        'Include in navigation'
-                    )
-                    ->addColumn(
-                        'navigation_label',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                        255,
-                        ['nullable' => true],
-                        'Navigation label'
-                    )
-                    ->addColumn(
-                        'front_name',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                        255,
-                        ['nullable' => true],
-                        'Front name'
-                    )
-                    ->addColumn(
-                        'client_name',
-                        \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                        255,
-                        ['nullable' => true],
-                        'Client name'
-                    )
-                    ->setComment('Styla Magazines');
+                )
+                                   ->addColumn(
+                                       'id',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                                       10,
+                                       [
+                                           'identity' => true,
+                                           'nullable' => false,
+                                           'primary'  => true,
+                                           'unsigned' => true,
+                                       ],
+                                       'Magazine ID'
+                                   )
+                                   ->addColumn(
+                                       'store_id',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                                       1,
+                                       [
+                                           'nullable' => true,
+                                           'unsigned' => true,
+                                       ],
+                                       'Store ID'
+                                   )
+                                   ->addColumn(
+                                       'is_active',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                                       1,
+                                       [
+                                           'nullable' => true,
+                                           'unsigned' => true,
+                                       ],
+                                       'Magazine active'
+                                   )
+                                   ->addColumn(
+                                       'is_default',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                                       1,
+                                       [
+                                           'nullable' => true,
+                                           'unsigned' => true,
+                                       ],
+                                       'Default magazine'
+                                   )
+                                   ->addColumn(
+                                       'use_magento_layout',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                                       1,
+                                       [
+                                           'nullable' => true,
+                                           'unsigned' => true,
+                                       ],
+                                       'Magento layout'
+                                   )
+                                   ->addColumn(
+                                       'include_in_navigation',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                                       1,
+                                       [
+                                           'nullable' => true,
+                                           'unsigned' => true,
+                                       ],
+                                       'Include in navigation'
+                                   )
+                                   ->addColumn(
+                                       'navigation_label',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                                       255,
+                                       ['nullable' => true],
+                                       'Navigation label'
+                                   )
+                                   ->addColumn(
+                                       'front_name',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                                       255,
+                                       ['nullable' => true],
+                                       'Front name'
+                                   )
+                                   ->addColumn(
+                                       'client_name',
+                                       \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                                       255,
+                                       ['nullable' => true],
+                                       'Client name'
+                                   )
+                                   ->setComment('Styla Magazines');
 
                 $installer->getConnection()->createTable($table);
 
@@ -158,9 +158,34 @@ class UpgradeSchema implements UpgradeSchemaInterface
                         'front_name',
                     ]
                 );
-
             }
         }
+
+        if (version_compare($context->getVersion(), '2.2.0', '<')) {
+            //set a unique index on store + front_name to prevent a having multiple magazines
+            //on the same store with the same url
+            $storeFrontNameIndex = $installer->getIdxName(
+                'styla_magazine',
+                [
+                    'store_id',
+                    'front_name',
+                ],
+                \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
+            );
+
+            $installer->getConnection()->dropIndex($installer->getTable('styla_magazine'), $storeFrontNameIndex);
+
+            $installer->getConnection()->addIndex(
+                $installer->getTable('styla_magazine'),
+                $storeFrontNameIndex,
+                [
+                    'store_id',
+                    'front_name',
+                ],
+                \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
+            );
+        }
+
         $installer->endSetup();
     }
 }
