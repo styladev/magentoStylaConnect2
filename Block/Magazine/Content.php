@@ -73,4 +73,14 @@ class Content extends Magazine
     {
         return $this->helper->getPluginVersion();
     }
+
+    /**
+     * Returns magazine
+     *
+     * @return \Styla\Connect2\Model\Magazine|null
+     */
+    public function getMagazine()
+    {
+        return $this->helper->getCurrentMagazine();
+    }
 }

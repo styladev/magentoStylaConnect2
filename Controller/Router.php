@@ -8,7 +8,6 @@ use Magento\Framework\App\Action\Redirect;
 
 class Router implements \Magento\Framework\App\RouterInterface
 {
-
     /**
      * @var \Magento\Framework\App\ActionFactory
      */
@@ -58,25 +57,25 @@ class Router implements \Magento\Framework\App\RouterInterface
     }
 
     /**
-     * Validate and Match
-     *
-     * @param \Magento\Framework\App\RequestInterface $request
-     *
-     * @return bool
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * {@inheritDoc}
      */
     public function match(\Magento\Framework\App\RequestInterface $request)
     {
-        $path = $this->_getRequestPath($request);
+        // this route is running before the standard MVC router, so forwarding must be omitted second time
+        if ($request->getModuleName() === 'stylaconnect2page') {
+            return false;
+        }
+
+        $path      = $this->_getRequestPath($request);
+        $frontName = $this->_getFrontName($path) === '' ? null : $this->_getFrontName($path);
+
         if ($path === false) {
             return false;
         }
-        $frontName = $this->_getFrontName($path);
-        if (!$frontName) {
-            return false;
-        }
+
         $magazineModel = $this->magazineFactory->create();
         $magazine      = $magazineModel->loadByFrontName($frontName, $this->storeManager->getStore()->getId());
+
         if (!$magazine || !$magazine->isActive()) {
             return false;
         }
@@ -91,7 +90,7 @@ class Router implements \Magento\Framework\App\RouterInterface
             ->setActionName('view')
             ->setParam('path', $routeSettings);
 
-        return $this->actionFactory->create('Magento\Framework\App\Action\Forward', ['request' => $request]);
+        return $this->actionFactory->create(\Magento\Framework\App\Action\Forward::class);
     }
 
     /**

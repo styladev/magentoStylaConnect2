@@ -89,9 +89,7 @@
                     <item name="formElement" xsi:type="string">input</item>
                     <item name="source" xsi:type="string">magazine</item>
                     <item name="dataScope" xsi:type="string">front_name</item>
-                    <item name="validation" xsi:type="array">
-                        <item name="required-entry" xsi:type="boolean">true</item>
-                    </item>
+                    <item name="notice" xsi:type="string" translate="true">Leave empty to override the home page content.</item>
                 </item>
             </argument>
         </field>
