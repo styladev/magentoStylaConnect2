@@ -24,3 +24,5 @@ The process of setting up your Content Hub(s) usually goes as follows:
 6. Make sure your content is ready to go live
 7. Styla conducts final User Acceptance Tests before the go-live
 8. Go-live (you link to the Content Hub embedded on your production)
+
+**Important: When updating from any previous version to 2.1.0 or higher, please let Styla know beforehand. Your settings need to be updated so that everything works fine.**
