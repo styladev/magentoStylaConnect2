@@ -6,7 +6,7 @@ use Styla\Connect2\Api\Data\StylaCategoryTreeInterface;
 
 class StylaCategory extends Category implements StylaCategoryTreeInterface
 {
-    public function getChildren()
+    public function getChildren($recursive = false, $isActive = true, $sortByPosition = false)
     {
         /**
          * TODO: todo and a warning: this method is needed by the styla api to be used for getting the children recursively,
@@ -26,4 +26,15 @@ class StylaCategory extends Category implements StylaCategoryTreeInterface
     {
         return $this->getData('image');
     }
+
+    public function getId()
+    {
+        // TODO: Implement getId() method.
+    }
+
+    public function getName()
+    {
+        // TODO: Implement getName() method.
+    }
+
 }
