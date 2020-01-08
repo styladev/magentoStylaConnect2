@@ -115,7 +115,7 @@ class Router implements \Magento\Framework\App\RouterInterface
 
     protected function _getRequestPath(\Magento\Framework\App\RequestInterface $request)
     {
-        return trim($request->getRequestString(), '/');
+        return trim($request->getPathInfo(), '/');
     }
 
     /**
