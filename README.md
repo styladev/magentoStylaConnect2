@@ -3,10 +3,10 @@
 
 Requires: 
 * PHP >= 5.4
-* Magento 2, for our Magento 1 plugin check this https://github.com/styladev/magentoStylaConnect2
+* Magento 2, for our Magento 1 plugin check this https://github.com/styladev/magentoStylaConnect
 * Magento REST API activated to share product information http://devdocs.magento.com/guides/v2.0/rest/bk-rest.html
 
-Styla Connect is a module to connect your Magento 2 Store with [Styla](http://www.styla.com/). The first diagram on [this page](https://styladocs.atlassian.net/wiki/spaces/CO/pages/9961481/Technical+Integration) should provide you an overview of what the plugin does and how it exchanges data with Styla. 
+Styla Connect is a module to connect your Magento 2 Store with [Styla](http://www.styla.com/) by embedding Styla content on a specific path and providing a source of product data. [This documentation page](https://docs.styla.com/) should provide you an overview of how Styla works in general. 
 
 * [Installation](doc/installation.md)
 * [Configuration](doc/configuration.md)
@@ -24,3 +24,5 @@ The process of setting up your Content Hub(s) usually goes as follows:
 6. Make sure your content is ready to go live
 7. Styla conducts final User Acceptance Tests before the go-live
 8. Go-live (you link to the Content Hub embedded on your production)
+
+**Important: When updating from any previous version to 2.1.0 or higher, please let Styla know beforehand. Your settings need to be updated so that everything works fine.**

@@ -153,6 +153,18 @@ You can add more entries on the list using different Styla user names to source 
 
 Using the settings for each of the entries you can also deactivate it completely or keep it activated but switch off link to it in your Magento menu. 
 
+### Styla on your homepage
+
+You can have a specific Styla Page you create in Styla CMS at https://editor.styla.com embedded by the plugin on your homepage of a specific store view, so on the `/` path. In order to do this, please:
+
+1. Publish the page with blank "Page URL Path" field, like this: 
+![Styla Page set up to be displayed on home](/doc/styla-home-plugin.png) 
+
+2. Create a new page in the in the **Content > Styla magazines** menu in Magento Backend and leave the "Front Name" field blank accordingly:
+![The matching page in the Editor](/doc/styla-home-editor.png) 
+
+The styla Page will now fill your main container on the home page, between the header and the footer. It will also have server-side rendered tags from Styla's SEO API in page source. 
+
 ## Turn off http password-protection on API endpoints
 
 Styla sources product data from Magento REST API which is protected by OAuth. Our application cannot access the endpoints if they are in addition password-protected, which is a common solution for protecting development and stage environments on which the plugin is first installed.
