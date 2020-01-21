@@ -16,11 +16,11 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     implements \Styla\Connect2\Api\ProductRepositoryInterface
 {
     const SEARCH_FILTER_QUERY = 'query';
-    
+
     const DEFAULT_PAGE_SIZE = 46; //if no limit provided, this will be used
-    
+
     const EVENT_GET_PRODUCTS = 'styla_get_product_collection';
-    
+
     /**
      *
      * @var RestResponse
@@ -56,41 +56,41 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * @var \Magento\Catalog\Model\CategoryFactory
      */
     protected $categoryFactory;
-    
-    /** 
-     * 
+
+    /**
+     *
      * @var FullTextSearchCriteriaFactory
      */
     protected $fullTextSearchCriteriaFactory;
-    
-    /** 
-     * 
+
+    /**
+     *
      * @var FullTextSearchApi
      */
     protected $fullTextSearchApi;
-    
+
     /**
      *
      * @var Magento\Search\Model\QueryFactory
      */
     protected $queryFactory;
-    
+
     /**
      *  @var Request
      */
     protected $request;
-    
+
     /**
      * @var SortOrderBuilder
      */
     protected $sortOrderBuilder;
-    
+
     /**
      *
      * @var EventManager
      */
     protected $eventManager;
-    
+
     /**
      *
      * @var \Styla\Connect2\Helper\Converter
@@ -184,15 +184,15 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $searchCriteria = $this->searchCriteriaBuilder->create()
             ->setPageSize(self::DEFAULT_PAGE_SIZE)
             ->setCurrentPage(0);
-        
+
         $this->_setDefaultSortOrder($searchCriteria);
         return $searchCriteria;
     }
-    
+
     /**
      * If no other sort order is already applied on the criteria,
      * add the default one (entity_id incremental)
-     * 
+     *
      * @param SearchCriteria $searchCriteria
      */
     protected function _setDefaultSortOrder(SearchCriteria $searchCriteria)
@@ -201,19 +201,19 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         if(null === $searchCriteria->getPageSize()) {
             $searchCriteria->setPageSize(self::DEFAULT_PAGE_SIZE);
         }
-        
+
         if($searchCriteria->getSortOrders()) {
             return;
         }
-        
+
         $entityIdField = $this->converterHelper->getProductEntityIdField();
-        
+
         /** @var \Magento\Framework\Api\SortOrder $sortOrder */
         $sortOrder = $this->sortOrderBuilder->create();
-        $sortOrder->setField($entityIdField)->setDirection('asc');
+        $sortOrder->setField($entityIdField)->setDirection('desc');
         $searchCriteria->setSortOrders([$sortOrder]);
     }
-    
+
     /**
      * Perform full text search and find IDs of matching products.
      *
@@ -224,27 +224,27 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         //the query factory will get the term from the "q" url param
         $query = $this->queryFactory->get();
         $term = $query->getQueryText();
-        
+
         $fulltextSearchCriteria = $this->fullTextSearchCriteriaFactory->create();
         $fulltextSearchCriteria->setRequestName('quick_search_container');
-        
+
         $filter = $this->filterBuilder->setField('search_term')->setValue($term)->setConditionType('like')->create();
         $filterGroup = $this->filterGroupBuilder->addFilter($filter)->create();
         $fulltextSearchCriteria->setFilterGroups([$filterGroup]);
-        
+
         //this returns all matching ids, in the score descending order. this result can't be paged.
         $searchResults = $this->fullTextSearchApi->search($fulltextSearchCriteria);
         $productIds = [];
         foreach ($searchResults->getItems() as $searchDocument) {
             $productIds[] = $searchDocument->getId();
         }
-        
+
         return $productIds;
     }
-    
+
     /**
      * Search for the fulltext search term, change the filter into a product_ids list
-     * 
+     *
      * @param \Magento\Framework\Api\Filter $filter
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -254,26 +254,26 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         if(!$queryValue) {
             throw new \Magento\Framework\Exception\NoSuchEntityException();
         }
-        
+
         //a little hack. since magento will expect the query to be a get param of the request, we'll copy it there
         $this->request->setParam('q', $queryValue);
-        
+
         $productIds = $this->_searchProductsFullText();
         if(!$productIds) {
             throw new \Magento\Framework\Exception\NoSuchEntityException();
         }
-        
+
         //we no longer need our original query filter, we'll now turn it into the actual found product_ids filter, instead
         $entityIdField = $this->converterHelper->getProductEntityIdField();
         $filter->setConditionType('in')->setField($entityIdField)->setValue($productIds);
     }
-    
+
     /**
      * The user may be searching for a specific text search term, as one of his searchCriterias, as in:
      * V1/styla_product?searchCriteria[filter_groups][0][filters][0][field]=query&searchCriteria[filter_groups][0][filters][0][value]=THESEARCHTERM
-     * 
+     *
      * We will process this here, and turn this request into a list of product_ids matching his search term.
-     * 
+     *
      * @param SearchCriteria $searchCriteria
      * @return SearchCriteria
      */
@@ -286,7 +286,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
                 }
             }
         }
-        
+
         return $searchCriteria;
     }
 
@@ -326,7 +326,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
             $searchCriteria = $this->_getDefaultSearchCriteria();
             return $searchCriteria;
         }
-        
+
         //if there's no other sort order applied, use the default one
         $this->_setDefaultSortOrder($searchCriteria);
 
@@ -385,7 +385,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     {
         //apply the default search criteria if none is defined, pre-process the filter values if needed
         $searchCriteria = $this->_processSearchCriteria($searchCriteria);
-        
+
         //there may be a search query as one of the criterias. if it's there, apply the text search, first
         $searchCriteria = $this->_processTextSearchCriteria($searchCriteria);
 
@@ -415,7 +415,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         }
         $collection->setCurPage($searchCriteria->getCurrentPage());
         $collection->setPageSize($searchCriteria->getPageSize());
-        
+
         //we should add a store filter to all the requests:
         $store = $this->storeManager->getStore();
         $collection->setStore($store);
@@ -425,7 +425,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
             \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH,
         ));
         $collection->addStoreFilter($store);
-        
+
         //as our next step (loading and joinin additional data) will mess up magento's collection count,
         //for easiness of implementation i'll be checking the page size and totals now:
         $this->_setPagingHeaders($collection);
@@ -444,20 +444,20 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
 
         $searchResult->setSearchCriteria($searchCriteria);
         $searchResult->setItems($collection->getItems());
-        
+
         //dispatch the event
         $this->eventManager->dispatch(self::EVENT_GET_PRODUCTS, ['collection' => $collection, 'searchCriteria' => $searchCriteria]);
-        
+
         if(!count($searchResult->getItems())) {
             throw new \Magento\Framework\Exception\NoSuchEntityException();
         }
 
         return $searchResult;
     }
-    
+
     /**
      * Set the paging response headers
-     * 
+     *
      * @param ProductCollection $collection
      */
     protected function _setPagingHeaders(ProductCollection $collection)
@@ -465,13 +465,13 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $totalCount = $collection->getSize();
         $pageSize = $collection->getPageSize();
         $currentPage = $collection->getCurPage();
-        
+
         $totalPageCount = $pageSize ? ceil($totalCount / $pageSize) : 1;
-        
+
         if ($currentPage === null) {
             $currentPage = 1;
         }
-        
+
         //add the calculated totals to the final rest response
         $this->response->setHeader('X-Total-Count', $totalCount);
         $this->response->setHeader('X-Total-Pages', $totalPageCount);
