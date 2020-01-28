@@ -2,7 +2,7 @@
     "name": "styla/magento2-connect",
     "description": "A Magento 2 Styla Magazine support",
     "type": "magento2-module",
-    "version": "2.1.4",
+    "version": "2.1.5",
     "require": {
         "php": ">=5.5"
     },
