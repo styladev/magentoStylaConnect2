@@ -27,14 +27,4 @@ class StylaCategory extends Category implements StylaCategoryTreeInterface
         return $this->getData('image');
     }
 
-    public function getId()
-    {
-        // TODO: Implement getId() method.
-    }
-
-    public function getName()
-    {
-        // TODO: Implement getName() method.
-    }
-
 }
