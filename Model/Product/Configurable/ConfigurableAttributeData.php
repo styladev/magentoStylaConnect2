@@ -49,6 +49,9 @@ class ConfigurableAttributeData extends \Magento\ConfigurableProduct\Model\Confi
         foreach ($attribute->getOptions() as $attributeOption) {
             $optionId = $attributeOption['value_index'];
             $productsarr = $this->_getSimpleProducts($attribute, $config, $optionId, $allowProducts);
+            if (empty($productsarr)){
+                continue;
+            }
             if ($productsarr[0]['enabled']){
                 $attributeOptionsData[] = [
                     'id' => $optionId,
@@ -71,9 +74,9 @@ class ConfigurableAttributeData extends \Magento\ConfigurableProduct\Model\Confi
      */
     protected function _getSimpleProducts($attribute, $config, $optionId, $allowProducts)
     {
-        $simpleProducts = ($config[$attribute->getAttributeId()][$optionId])
-                    ? $config[$attribute->getAttributeId()][$optionId]
-                    : [];
+        $simpleProducts = isset($config[$attribute->getAttributeId()][$optionId])
+            ? $config[$attribute->getAttributeId()][$optionId]
+            : [];
         //here we enter all the product data that might be useful later on.
         //for now, the id and saleability status
         $productData = [];
