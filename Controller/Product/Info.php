@@ -85,26 +85,45 @@ class Info extends \Magento\Framework\App\Action\Action
     protected function _initProduct()
     {
         $storeId = $this->_objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
-        try {
-            $product = false;
+        $product = false;
 
-            if ($sku = $this->getRequest()->getParam('sku')) {
-                $product = $this->productRepository->get($sku, false, $storeId);
-            } elseif ($id = (int)$this->getRequest()->getParam('product', $this->getRequest()->getParam('id', false))) {
-                $product = $this->productRepository->getById($id, false, $storeId);
-            }
+        $id = $sku = $this->getRequest()->getParam('sku', false);
+        if (!$id) {
+            $id = $this->getRequest()->getParam('product', $this->getRequest()->getParam('id', false));
+        }
 
-            if (!$product->getId()) {
-                throw new \Exception('Invalid product.');
-            }
+        $product = $this->getProductBySku($storeId, $id);
 
-            if (!$product->getIsSalable()) {
-                throw new \Exception('Product is unavailable.');
-            }
+        if (!$product) {
+            $product = $this->getProductById($storeId, (int) $id);
+        }
 
-            return $product;
-        } catch (NoSuchEntityException $e) {
+        if (!$product || !$product->getId()) {
             throw new \Exception('Invalid product.');
         }
+
+        if (!$product->getIsSalable()) {
+            throw new \Exception('Product is unavailable.');
+        }
+
+        return $product;
     }
+
+    private function getProductById($storeId, $id)
+	{
+        try {
+            return $this->productRepository->getById($id, false, $storeId);
+        } catch (NoSuchEntityException $e) {
+            return false;
+        }
+	}
+	
+	private function getProductBySku($storeId, $sku)
+	{
+        try {
+            return $this->productRepository->get($sku, false, $storeId);
+        } catch (NoSuchEntityException $e) {
+            return false;
+        }	
+	}
 }
