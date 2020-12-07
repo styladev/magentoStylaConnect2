@@ -110,20 +110,20 @@ class Info extends \Magento\Framework\App\Action\Action
     }
 
     private function getProductById($storeId, $id)
-	{
+    {
         try {
             return $this->productRepository->getById($id, false, $storeId);
         } catch (NoSuchEntityException $e) {
             return false;
         }
-	}
+    }
 	
-	private function getProductBySku($storeId, $sku)
-	{
+    private function getProductBySku($storeId, $sku)
+    {
         try {
             return $this->productRepository->get($sku, false, $storeId);
         } catch (NoSuchEntityException $e) {
             return false;
         }	
-	}
+    }
 }
