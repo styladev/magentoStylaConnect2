@@ -61,7 +61,7 @@ class Data extends AbstractHelper
      */
     protected $stylaApi;
 
-    const MODULE_NAME = 'styla_connect2';
+    const MODULE_NAME = 'Styla_Connect2';
 
     const IS_DEVELOPER_MODE_PATH = 'styla_connect2/developer/is_developer_mode';
 
