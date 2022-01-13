@@ -25,4 +25,6 @@ The process of setting up your Content Hub(s) usually goes as follows:
 7. Styla conducts final User Acceptance Tests before the go-live
 8. Go-live (you link to the Content Hub embedded on your production)
 
-**Important: When updating from any previous version to 2.1.0 or higher, please let Styla know beforehand. Your settings need to be updated so that everything works fine.**
+**Important notes**: 
+* When updating from any previous version to 2.1.0 or higher, please let Styla know beforehand. Your settings need to be updated so that everything works fine.
+* Version 2.2.0 fixes a problem happening on Magento 2.4 and above. If you are switching to this plugin version from any older than 2.1.0 please also let Styla know beforehand and make sure to test Styla content on a stage environment vefore releasing the updates to your production.
