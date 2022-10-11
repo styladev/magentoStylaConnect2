@@ -47,7 +47,6 @@ class Api
      */
     protected $_apiConnectionOptions = [
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_HTTPHEADER,
         [
             'Accept: application/json',
         ],
