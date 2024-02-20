@@ -7,13 +7,13 @@
         <block template="Styla_Connect2::page/head/meta.phtml"
                 class="Styla\Connect2\Block\Magazine\Head"
                 name="connect2_magazine_meta"
-                cacheable="false" />
+                ttl="3306" />
     </referenceBlock>
     
     <referenceBlock name="content">
         <block template="Styla_Connect2::page/content.phtml"
                 class="Styla\Connect2\Block\Magazine\Content"
                 name="connect2_magazine"
-                cacheable="false" />
+                ttl="3306"  />
     </referenceBlock>
 </page>
