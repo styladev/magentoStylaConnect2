@@ -13,6 +13,9 @@ use \Magento\Ui\DataProvider\AbstractDataProvider;
 
 class DataProvider extends AbstractDataProvider
 {
+    // Declare the property explicitly with proper visibility
+    private $loadedData = [];
+
     /**
      * @param string $name
      * @param string $primaryFieldName

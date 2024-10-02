@@ -47,7 +47,7 @@ class Api
      */
     protected $_apiConnectionOptions = [
         CURLOPT_RETURNTRANSFER => 1,
-        [
+        CURLOPT_HTTPHEADER => [
             'Accept: application/json',
         ],
     ];
@@ -225,7 +225,7 @@ class Api
         $requestMethod = $request->getConnectionType();
         $requestBody   = '';
 
-        if ($requestMethod == \Zend\Http\Request::METHOD_POST) {
+        if ($requestMethod == \Laminas\Http\Request::METHOD_POST) {
             $requestBody = $request->getParams();
         }
 

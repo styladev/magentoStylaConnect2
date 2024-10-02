@@ -100,7 +100,6 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
     /**
      *
      * @param \Magento\Catalog\Model\ProductFactory                               $productFactory
-     * @param \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper $initializationHelper
      * @param \Magento\Catalog\Api\Data\ProductSearchResultsInterfaceFactory      $searchResultsFactory
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory      $collectionFactory
      * @param \Magento\Framework\Api\SearchCriteriaBuilder                        $searchCriteriaBuilder
@@ -125,7 +124,6 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      */
     public function __construct(
         \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Catalog\Controller\Adminhtml\Product\Initialization\Helper $initializationHelper,
         \Magento\Catalog\Api\Data\ProductSearchResultsInterfaceFactory $searchResultsFactory,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -171,7 +169,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $this->eventManager                    = $eventManager;
         $this->converterHelper                 = $converterHelper;
 
-        return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
+        return parent::__construct($productFactory, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
     }
 
     /**
