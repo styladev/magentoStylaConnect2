@@ -28,5 +28,3 @@ The process of setting up your Content Hub(s) usually goes as follows:
 **Important notes**: 
 * When updating from any previous version to 2.1.0 or higher, please let Styla know beforehand. Your settings need to be updated so that everything works fine.
 * Version 2.2.0 fixes a problem happening on Magento 2.4 and above. If you are switching to this plugin version from any older than 2.1.0 please also let Styla know beforehand and make sure to test Styla content on a stage environment vefore releasing the updates to your production.
-
-[Magento docker documentation](https://github.com/bitnami/containers/tree/69196dec4ecde62d1712ea5b543de7509f49db0e/bitnami/magento#step-1-log-into-the-container-shell-as-root)
