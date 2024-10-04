@@ -6,7 +6,7 @@ Requires:
 * Magento 2, for our Magento 1 plugin check this https://github.com/styladev/magentoStylaConnect
 * Magento REST API activated to share product information http://devdocs.magento.com/guides/v2.0/rest/bk-rest.html
 
-Styla Connect is a module to connect your Magento 2 Store with [Styla](http://www.styla.com/) by embedding Styla content on a specific path and providing a source of product data. [This documentation page](https://docs.styla.com/) should provide you an overview of how Styla works in general. 
+Styla Connect is a module to connect your Magento 2 Store with [Styla](https://www.styla.com/) by embedding Styla content on a specific path and providing a source of product data. [This documentation page](https://docs.styla.com/) should provide you an overview of how Styla works in general. 
 
 * [Installation](doc/installation.md)
 * [Configuration](doc/configuration.md)

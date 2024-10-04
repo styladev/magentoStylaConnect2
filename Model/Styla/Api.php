@@ -50,6 +50,7 @@ class Api
         CURLOPT_HTTPHEADER => [
             'Accept: application/json',
         ],
+        CURLOPT_FOLLOWLOCATION => 1,
     ];
 
     public function __construct(
@@ -85,9 +86,7 @@ class Api
     public function requestPageData()
     {
         try {
-            $data = $this->getPageSeoData();
-
-            return $data;
+            return $this->getPageSeoData();
         } catch (\Exception  $e) {
             //todo: log magento exception
 
@@ -116,9 +115,9 @@ class Api
         try {
             $response = $this->callService($seoRequest, true, true);
         } catch (\Exception $e) {
-            //in case of the SEO request, we don't mind if the connection was failed. we'll just save this failed status for 5 minutes
-            //and not return anything.
-            $cache->save("1", 'styla_seo_unreachable', 5 * 60); //save for 5 minutes
+            //in case of the SEO request, we don't mind if the connection was failed.
+            //we'll just save this failed status temporarily and not return anything.
+            $cache->save("1", 'styla_seo_unreachable', 3 * 60); //save for 3 minutes
 
             return [];
         }
@@ -270,6 +269,7 @@ class Api
 
     /**
      * Parse a http response, containing both the headers and content and return it as array
+     * handle potential redirections
      *
      * @param string $response
      * @return array
@@ -281,13 +281,18 @@ class Api
             return ['headers' => [], 'body' => $response];
         }
 
-        list($headerContent, $bodyContent) = explode("\r\n\r\n", $response, 2);
+        // Split the response by double CRLF to separate headers and body
+        $responseParts = explode("\r\n\r\n", $response);
 
+        $bodyContent = array_pop($responseParts);
+        $headerContent = array_pop($responseParts);
+
+        // Parse headers into a key-value array
         foreach (explode("\r\n", $headerContent) as $i => $header) {
             if ($i === 0) {
                 $headers['http_code'] = $header;
             } else {
-                list($headerName, $value) = explode(': ', $header);
+                list($headerName, $value) = explode(': ', $header, 2);
                 $headers[$headerName] = $value;
             }
         }

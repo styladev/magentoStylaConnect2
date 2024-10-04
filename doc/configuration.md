@@ -136,8 +136,8 @@ footer.
 
 ** For pre-2.0.9 versions, the three following URLs should be used:  
  `https://client-scripts.styla.com`    
- `http://seoapi.styla.com`    
- `https://client-scripts.styla.com` 
+ `https://seoapi.styla.com`    
+ `https://preview.styla.com`
  
 as shown on this screen shot:
 ![Styla New JS source](/doc/styla-plugin-client-scripts-magento2.png)  

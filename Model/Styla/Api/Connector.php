@@ -10,7 +10,7 @@ use Magento\Integration\Model\Oauth\TokenFactory;
 
 class Connector
 {
-    const STYLA_API_CONNECTOR_URL_PRODUCTION = 'http://live.styla.com/api/magento';
+    const STYLA_API_CONNECTOR_URL_PRODUCTION = 'https://live.styla.com/api/magento';
 
     const ADMIN_USERNAME      = 'StylaConnect2AdminUser';
     const ADMIN_EMAIL_PREPEND = 'styla_connect2_';
@@ -145,9 +145,11 @@ class Connector
         //save the connection data i got from styla:
         #$this->configHelper->updateConnectionConfiguration($connectionData, $connectionScope);
 
-        $clientName = explode('@', $this->connectionData['styla']['email'])[0];
-        if (null !== $clientName) {
-            $this->createDefaultMagazine($clientName, 'magazine');
+        $domainName = explode('@', $this->connectionData['styla']['email'])[0];
+        if (isset($connectionData['client']) && $connectionData['client'] !== '') {
+            $this->createDefaultMagazine($connectionData['client'], 'magazine');
+        } else if (null != $domainName) {
+            $this->createDefaultMagazine($domainName, 'magazine');
         }
 
         //clear magento cache

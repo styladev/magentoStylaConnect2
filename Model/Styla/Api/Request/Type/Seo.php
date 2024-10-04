@@ -31,7 +31,10 @@ class Seo extends AbstractType
             $requestPath = rtrim($requestPath, '/');
         }
 
-        $apiUrl = sprintf($apiUrl, $apiBaseUrl, $clientName, $requestPath);
+        // Remove duplicated slashes
+        $apiUrl = preg_replace('#(?<!:)//+#', '/',
+            sprintf($apiUrl, $apiBaseUrl, $clientName, $requestPath)
+        );
 
         return $apiUrl;
     }

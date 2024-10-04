@@ -62,7 +62,7 @@
 
                 <field id="override_seo_url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Override Url for SEO Api</label>
-                    <comment>If filled, use this url instead of the automatically-acquired one. Eg. http://seo.styla.com/</comment>
+                    <comment>If filled, use this url instead of the automatically-acquired one. Eg. https://seo.styla.com/</comment>
                     <depends>
                         <field id="is_developer_mode">1</field>
                     </depends>
@@ -78,7 +78,7 @@
 
                 <field id="override_api_url" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Override Url for Styla Content Version API</label>
-                    <comment>If filled, use this url instead of the automatically-acquired one. Eg. http://live.styla.com/</comment>
+                    <comment>If filled, use this url instead of the automatically-acquired one. Eg. https://live.styla.com/</comment>
                     <depends>
                         <field id="is_developer_mode">1</field>
                     </depends>

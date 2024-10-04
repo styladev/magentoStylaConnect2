@@ -65,7 +65,7 @@ class Data extends AbstractHelper
 
     const IS_DEVELOPER_MODE_PATH = 'styla_connect2/developer/is_developer_mode';
 
-    const URL_SEO_PROD = 'http://seo.styla.com/';
+    const URL_SEO_PROD = 'https://seo.styla.com/';
 
     const URL_ASSETS_PROD = '//client-scripts.styla.com/';
 
@@ -73,7 +73,7 @@ class Data extends AbstractHelper
 
     const URL_PART_CSS = 'styles/clients/%s.css?v=%s';
 
-    const URL_VERSION_PROD = 'http://live.styla.com/';
+    const URL_VERSION_PROD = 'https://live.styla.com/';
 
     const URL_PART_VERSION = 'api/version/%s';
 
