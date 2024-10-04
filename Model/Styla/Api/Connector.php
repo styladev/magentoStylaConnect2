@@ -266,9 +266,10 @@ class Connector
         ]);
 
         $apiResponse = $this->stylaApi->callService($apiRequest, false, true); //no cache, but use the http headers in results
+        var_dump($apiResponse);
         if (!$apiResponse->isOk()) {
             throw new \Exception(
-                "Couldn't connect to Styla API. Error result: " . $apiResponse->getHttpStatus()
+                "Couldn't connect to Styla APIx. Error result: " . $apiResponse->getHttpStatus()
                 . ($apiResponse->getError() ? ' - ' . $apiResponse->getError() : '') .
                 ". Please check the Email and password used and try connecting one more time. In case still no success, contact Styla."
             );
