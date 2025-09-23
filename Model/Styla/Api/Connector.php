@@ -255,7 +255,7 @@ class Connector
     {
         /** @var Request\Type\Register $apiRequest */
         $apiRequest = $this->stylaApi->getRequest(Request\Type\Register::class);
-        $apiRequest->setConnectionType(\Zend\Http\Request::METHOD_POST);
+        $apiRequest->setConnectionType(\Laminas\Http\Request::METHOD_POST);
         $apiRequest->setParams([
             'styla_email'     => $loginData['email'],
             'styla_password'  => $loginData['password'],

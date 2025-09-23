@@ -225,7 +225,7 @@ class Api
         $requestMethod = $request->getConnectionType();
         $requestBody   = '';
 
-        if ($requestMethod == \Zend\Http\Request::METHOD_POST) {
+        if ($requestMethod == \Laminas\Http\Request::METHOD_POST) {
             $requestBody = $request->getParams();
         }
 
