@@ -10,7 +10,7 @@ abstract class AbstractType implements StylaRequestInterface
     protected $_requestType;
     protected $_params;
 
-    protected $_connectionType = HttpRequest::GET;
+    protected $_connectionType = HttpRequest::METHOD_GET;
 
     protected $_requestTimeout;
     protected $_requestConnectTimeout;
