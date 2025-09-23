@@ -22,14 +22,14 @@ class Gallery extends ConverterType\AbstractType
     }
 
     /**
-     * 
+     *
      * @param Collection $collection
      * @param Store $store
      */
     protected function _addCollectionRequirements(Collection $collection, Store $store = null)
     {
         $entityIdField = $this->converterHelper->getProductEntityIdField();
-        
+
         /** @var \Zend_Db_Select $select */
         $select = $collection->getSelect();
 
@@ -60,22 +60,25 @@ class Gallery extends ConverterType\AbstractType
         //bugfix! if i apply the ->group on select, the page and offset will be broken. i need to save them, first
         $pageSize   = $collection->getPageSize();
         $pageOffset = $collection->getCurPage();
-        
+
         $select->group('e.' . $entityIdField);
         $select->limit($pageSize, $pageOffset);
     }
 
     protected function _convertItem($item)
     {
-        $value = explode(self::SEPARATOR, $item->getData($this->getMagentoField()));
+        try {
+            $value = explode(self::SEPARATOR, $item->getData($this->getMagentoField()));
 
-        if ($this->getArgument('use_url')) {
-            foreach ($value as &$singleValue) {
-                $singleValue = $this->converterHelper->getUrlForMedia($singleValue);
+            if ($this->getArgument('use_url')) {
+                foreach ($value as &$singleValue) {
+                    $singleValue = $this->converterHelper->getUrlForMedia($singleValue);
+                }
             }
-        }
 
-        $this->_convertedValue = count($value) == 1 ? reset($value) : $value;
+            $this->_convertedValue = count($value) == 1 ? reset($value) : $value;
+        } catch (Exception $e) {
+            echo 'Product has no image - caught exception: ',  $e->getMessage(), "\n";
+        }
     }
 }
-
