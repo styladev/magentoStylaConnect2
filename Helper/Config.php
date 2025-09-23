@@ -18,10 +18,10 @@ class Config extends AbstractHelper
     const ASSET_TYPE_CSS = 'css';
     const ASSET_TYPE_JS  = 'js';
 
-    const URL_VERSION_PROD = 'http://live.styla.com/';
+    const URL_VERSION_PROD = 'https://live.styla.com/';
     const URL_PART_VERSION = 'api/version/%s';
 
-    const URL_SEO_PROD = 'http://seo.styla.com/';
+    const URL_SEO_PROD = 'https://seo.styla.com/';
 
     const XML_USERNAME           = 'styla_connect2/general/username';
     const XML_ENABLED            = 'styla_connect2/general/enable';

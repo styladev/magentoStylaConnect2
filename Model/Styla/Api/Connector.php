@@ -10,7 +10,7 @@ use Magento\Integration\Model\Oauth\TokenFactory;
 
 class Connector
 {
-    const STYLA_API_CONNECTOR_URL_PRODUCTION = 'http://live.styla.com/api/magento';
+    const STYLA_API_CONNECTOR_URL_PRODUCTION = 'https://live.styla.com/api/magento';
 
     const ADMIN_USERNAME      = 'StylaConnect2AdminUser';
     const ADMIN_EMAIL_PREPEND = 'styla_connect2_';
