@@ -2,7 +2,7 @@
 namespace Styla\Connect2\Model\Styla\Api\Request\Type;
 
 use Styla\Connect2\Api\Styla\RequestInterface as StylaRequestInterface;
-use Zend\Http\Request as HttpRequest;
+use Laminas\Http\Request as HttpRequest;
 
 abstract class AbstractType implements StylaRequestInterface
 {
@@ -10,7 +10,7 @@ abstract class AbstractType implements StylaRequestInterface
     protected $_requestType;
     protected $_params;
 
-    protected $_connectionType = HttpRequest::METHOD_GET;
+    protected $_connectionType = HttpRequest::GET;
 
     protected $_requestTimeout;
     protected $_requestConnectTimeout;

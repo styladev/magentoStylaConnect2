@@ -67,18 +67,21 @@ class Gallery extends ConverterType\AbstractType
 
     protected function _convertItem($item)
     {
-        try {
-            $value = explode(self::SEPARATOR, $item->getData($this->getMagentoField()));
+        $data = $item->getData($this->getMagentoField());
 
-            if ($this->getArgument('use_url')) {
-                foreach ($value as &$singleValue) {
-                    $singleValue = $this->converterHelper->getUrlForMedia($singleValue);
-                }
-            }
-
-            $this->_convertedValue = count($value) == 1 ? reset($value) : $value;
-        } catch (Exception $e) {
-            echo 'Product has no image - caught exception: ',  $e->getMessage(), "\n";
+        if (empty($data)) {
+            $this->_convertedValue = null;
+            return;
         }
+
+        $value = explode(self::SEPARATOR, $data);
+
+        if ($this->getArgument('use_url')) {
+            foreach ($value as &$singleValue) {
+                $singleValue = $this->converterHelper->getUrlForMedia($singleValue);
+            }
+        }
+
+        $this->_convertedValue = count($value) == 1 ? reset($value) : $value;
     }
 }
