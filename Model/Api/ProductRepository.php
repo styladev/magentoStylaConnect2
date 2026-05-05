@@ -171,7 +171,64 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
         $this->eventManager                    = $eventManager;
         $this->converterHelper                 = $converterHelper;
 
-        return parent::__construct($productFactory, $initializationHelper, $searchResultsFactory, $collectionFactory, $searchCriteriaBuilder, $attributeRepository, $resourceModel, $linkInitializer, $linkTypeProvider, $storeManager, $filterBuilder, $metadataServiceInterface, $extensibleDataObjectConverter, $optionConverter, $fileSystem, $contentValidator, $contentFactory, $mimeTypeExtensionMap, $imageProcessor, $extensionAttributesJoinProcessor);
+        /**
+         * Magento changed \Magento\Catalog\Model\ProductRepository constructor argument order across versions
+         * (notably moving $searchResultsFactory to argument #2). To keep this module compatible, we detect
+         * the parent signature at runtime and call it accordingly.
+         */
+        $parentCtor = new \ReflectionMethod(\Magento\Catalog\Model\ProductRepository::class, '__construct');
+        $parentParams = $parentCtor->getParameters();
+
+        // Newer Magento: ($productFactory, $searchResultsFactory, ... , $initializationHelper?)
+        if (isset($parentParams[1]) && $parentParams[1]->getName() === 'searchResultsFactory') {
+            parent::__construct(
+                $productFactory,
+                $searchResultsFactory,
+                $collectionFactory,
+                $searchCriteriaBuilder,
+                $attributeRepository,
+                $resourceModel,
+                $linkInitializer,
+                $linkTypeProvider,
+                $storeManager,
+                $filterBuilder,
+                $metadataServiceInterface,
+                $extensibleDataObjectConverter,
+                $optionConverter,
+                $fileSystem,
+                $contentValidator,
+                $contentFactory,
+                $mimeTypeExtensionMap,
+                $imageProcessor,
+                $extensionAttributesJoinProcessor,
+                $initializationHelper
+            );
+            return;
+        }
+
+        // Older Magento: ($productFactory, $initializationHelper, $searchResultsFactory, ...)
+        parent::__construct(
+            $productFactory,
+            $initializationHelper,
+            $searchResultsFactory,
+            $collectionFactory,
+            $searchCriteriaBuilder,
+            $attributeRepository,
+            $resourceModel,
+            $linkInitializer,
+            $linkTypeProvider,
+            $storeManager,
+            $filterBuilder,
+            $metadataServiceInterface,
+            $extensibleDataObjectConverter,
+            $optionConverter,
+            $fileSystem,
+            $contentValidator,
+            $contentFactory,
+            $mimeTypeExtensionMap,
+            $imageProcessor,
+            $extensionAttributesJoinProcessor
+        );
     }
 
     /**
