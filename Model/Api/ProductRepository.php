@@ -381,7 +381,7 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
      * @param SearchCriteria $searchCriteria
      * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
-    public function getList(SearchCriteria $searchCriteria = null)
+    public function getList(?SearchCriteria $searchCriteria = null)
     {
         //apply the default search criteria if none is defined, pre-process the filter values if needed
         $searchCriteria = $this->_processSearchCriteria($searchCriteria);

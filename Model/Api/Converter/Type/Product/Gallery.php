@@ -26,7 +26,7 @@ class Gallery extends ConverterType\AbstractType
      * @param Collection $collection
      * @param Store $store
      */
-    protected function _addCollectionRequirements(Collection $collection, Store $store = null)
+    protected function _addCollectionRequirements(Collection $collection, ?Store $store = null)
     {
         $entityIdField = $this->converterHelper->getProductEntityIdField();
 

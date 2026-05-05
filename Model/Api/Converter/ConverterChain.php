@@ -49,7 +49,7 @@ class ConverterChain
      * @param Collection $collection
      * @param Store $store
      */
-    public function addCollectionRequirements(Collection $collection, Store $store = null)
+    public function addCollectionRequirements(Collection $collection, ?Store $store = null)
     {
         $requirementsIdentifiers = [];
 

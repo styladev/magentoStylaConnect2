@@ -30,7 +30,7 @@ abstract class AbstractType
      * @param Collection $collection
      * @param Store                             $store
      */
-    final public function addCollectionRequirements(Collection $collection, Store $store = null)
+    final public function addCollectionRequirements(Collection $collection, ?Store $store = null)
     {
         $this->_addCollectionRequirements($collection, $store);
     }
@@ -40,7 +40,7 @@ abstract class AbstractType
      * @param Collection $collection
      * @param Store $store
      */
-    protected function _addCollectionRequirements(Collection $collection, Store $store = null)
+    protected function _addCollectionRequirements(Collection $collection, ?Store $store = null)
     {
         //overwrite this in child converters, if you need to do something with the collection
     }

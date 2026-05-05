@@ -21,5 +21,5 @@ interface ProductRepositoryInterface
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
      * @return \Styla\Connect2\Api\Data\StylaProductSearchResultsInterface
      */
-    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null);
+    public function getList(?\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null);
 }
