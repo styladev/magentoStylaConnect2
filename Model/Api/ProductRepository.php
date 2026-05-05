@@ -173,62 +173,60 @@ class ProductRepository extends \Magento\Catalog\Model\ProductRepository
 
         /**
          * Magento changed \Magento\Catalog\Model\ProductRepository constructor argument order across versions
-         * (notably moving $searchResultsFactory to argument #2). To keep this module compatible, we detect
-         * the parent signature at runtime and call it accordingly.
+         * across versions (new params were added and order changed). To keep this module compatible, we
+         * detect the parent signature at runtime and pass arguments by parameter name.
          */
         $parentCtor = new \ReflectionMethod(\Magento\Catalog\Model\ProductRepository::class, '__construct');
         $parentParams = $parentCtor->getParameters();
 
-        // Newer Magento: ($productFactory, $searchResultsFactory, ... , $initializationHelper?)
-        if (isset($parentParams[1]) && $parentParams[1]->getName() === 'searchResultsFactory') {
-            parent::__construct(
-                $productFactory,
-                $searchResultsFactory,
-                $collectionFactory,
-                $searchCriteriaBuilder,
-                $attributeRepository,
-                $resourceModel,
-                $linkInitializer,
-                $linkTypeProvider,
-                $storeManager,
-                $filterBuilder,
-                $metadataServiceInterface,
-                $extensibleDataObjectConverter,
-                $optionConverter,
-                $fileSystem,
-                $contentValidator,
-                $contentFactory,
-                $mimeTypeExtensionMap,
-                $imageProcessor,
-                $extensionAttributesJoinProcessor,
-                $initializationHelper
-            );
-            return;
+        $byName = [
+            // common Magento params (names based on core constructor)
+            'productFactory' => $productFactory,
+            'searchResultsFactory' => $searchResultsFactory,
+            'collectionFactory' => $collectionFactory,
+            'searchCriteriaBuilder' => $searchCriteriaBuilder,
+            'attributeRepository' => $attributeRepository,
+            'resourceModel' => $resourceModel,
+            'linkInitializer' => $linkInitializer,
+            'linkTypeProvider' => $linkTypeProvider,
+            'storeManager' => $storeManager,
+            'filterBuilder' => $filterBuilder,
+            'metadataServiceInterface' => $metadataServiceInterface,
+            'extensibleDataObjectConverter' => $extensibleDataObjectConverter,
+            'optionConverter' => $optionConverter,
+            'fileSystem' => $fileSystem,
+            'contentValidator' => $contentValidator,
+            'contentFactory' => $contentFactory,
+            'mimeTypeExtensionMap' => $mimeTypeExtensionMap,
+            'imageProcessor' => $imageProcessor,
+            'extensionAttributesJoinProcessor' => $extensionAttributesJoinProcessor,
+
+            // older Magento param
+            'initializationHelper' => $initializationHelper,
+
+            // newer Magento param (nullable in some versions)
+            'collectionProcessor' => null,
+        ];
+
+        $args = [];
+        foreach ($parentParams as $param) {
+            $name = $param->getName();
+            if (array_key_exists($name, $byName)) {
+                $args[] = $byName[$name];
+                continue;
+            }
+
+            // If Magento added a param we don't know about, fall back safely.
+            if ($param->isDefaultValueAvailable()) {
+                $args[] = $param->getDefaultValue();
+                continue;
+            }
+
+            // Nullable/optional params are safe to pass null; required ones should be covered above.
+            $args[] = null;
         }
 
-        // Older Magento: ($productFactory, $initializationHelper, $searchResultsFactory, ...)
-        parent::__construct(
-            $productFactory,
-            $initializationHelper,
-            $searchResultsFactory,
-            $collectionFactory,
-            $searchCriteriaBuilder,
-            $attributeRepository,
-            $resourceModel,
-            $linkInitializer,
-            $linkTypeProvider,
-            $storeManager,
-            $filterBuilder,
-            $metadataServiceInterface,
-            $extensibleDataObjectConverter,
-            $optionConverter,
-            $fileSystem,
-            $contentValidator,
-            $contentFactory,
-            $mimeTypeExtensionMap,
-            $imageProcessor,
-            $extensionAttributesJoinProcessor
-        );
+        parent::__construct(...$args);
     }
 
     /**
